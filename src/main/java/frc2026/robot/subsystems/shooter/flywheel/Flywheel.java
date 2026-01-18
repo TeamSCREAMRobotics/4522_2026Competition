@@ -1,17 +1,42 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc2026.robot.subsystems.shooter.flywheel;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.function.DoubleSupplier;
 
-public class Flywheel extends SubsystemBase {
-  /** Creates a new Flywheel. */
-  public Flywheel() {}
+import com.teamscreamrobotics.drivers.TalonFXSubsystem;
+
+public class Flywheel extends TalonFXSubsystem {
+  public Flywheel(TalonFXSubsystemConfiguration config) {
+    super(config);
+  }
+
+  public enum FlywheelGoal implements TalonFXSubsystemGoal {
+    IDLE(() -> 1, ControlType.VELOCITY),
+    SHOOTING(() -> 7, ControlType.VELOCITY);
+
+    public final DoubleSupplier velocity;
+    public final ControlType controlType;
+
+    private FlywheelGoal(DoubleSupplier vel, ControlType controlType) {
+      this.velocity = vel;
+      this.controlType = controlType;
+    }
+
+    @Override
+    public DoubleSupplier target() {
+      return velocity;
+    }
+
+    @Override
+    public ControlType controlType() {
+      return controlType;
+    }
+
+    @Override
+    public DoubleSupplier feedForward() {
+      return () -> 0;
+    }
+  }
 
   @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+  public void periodic() {}
 }
