@@ -1,8 +1,7 @@
 package frc2026.robot.subsystems.shooter.flywheel;
 
-import java.util.function.DoubleSupplier;
-
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
+import java.util.function.DoubleSupplier;
 
 public class Flywheel extends TalonFXSubsystem {
   public Flywheel(TalonFXSubsystemConfiguration config) {
