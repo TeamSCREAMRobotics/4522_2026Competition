@@ -37,5 +37,7 @@ public class Flywheel extends TalonFXSubsystem {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    super.periodic();
+  }
 }

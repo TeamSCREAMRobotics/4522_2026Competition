@@ -1,17 +1,54 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc2026.robot.subsystems.shooter.hood;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.function.DoubleSupplier;
 
-public class Hood extends SubsystemBase {
-  /** Creates a new Hood. */
-  public Hood() {}
+import com.teamscreamrobotics.drivers.TalonFXSubsystem;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
+
+public class Hood extends TalonFXSubsystem {
+  private static double angle;
+  
+    public Hood(TalonFXSubsystemConfiguration config, double angle) {
+      super(config);
+      Hood.angle = angle;
+    }
+  
+    public enum HoodGoal implements TalonFXSubsystemGoal {
+      ZERO(Rotation2d.fromDegrees(0.0)),
+      TOPOSE(Rotation2d.fromDegrees(angle));
+
+    Rotation2d angleRot;
+    DoubleSupplier target;
+
+    HoodGoal(Rotation2d angleRot) {
+      this.angleRot = angleRot;
+      this.target = () -> angleRot.getRotations();
+    }
+
+    @Override
+    public DoubleSupplier target() {
+      return target;
+    }
+
+    @Override
+    public ControlType controlType() {
+      return ControlType.MOTION_MAGIC_POSITION;
+    }
+
+    @Override
+    public DoubleSupplier feedForward() {
+      return () -> 0.0;
+    }
+  }
+
+  public Command applyUntilAtGoalCommand(HoodGoal goal) {
+    return super.applyGoalCommand(goal).until(() -> atGoal());
+  }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    super.periodic();
   }
 }
