@@ -7,15 +7,14 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.controllers.PathFollowingController;
 import com.teamscreamrobotics.data.Length;
+import com.teamscreamrobotics.pid.ScreamPIDConstants;
+import com.teamscreamrobotics.util.PPUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import frc2026.robot.subsystems.drivetrain.generated.TunerConstants;
-
-import com.teamscreamrobotics.pid.ScreamPIDConstants;
-import com.teamscreamrobotics.util.PPUtil;
 
 public final class DrivetrainConstants {
   public static final double maxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
@@ -52,7 +51,13 @@ public final class DrivetrainConstants {
 
   public static final RobotConfig robotConfig =
       new RobotConfig(
-          Units.lbsToKilograms(125), 6.883, moduleConfig, TunerConstants.frontLeftPos, TunerConstants.frontRightPos, TunerConstants.backLeftPos, TunerConstants.backRightPos);
+          Units.lbsToKilograms(125),
+          6.883,
+          moduleConfig,
+          TunerConstants.frontLeftPos,
+          TunerConstants.frontRightPos,
+          TunerConstants.backLeftPos,
+          TunerConstants.backRightPos);
 
   public static final PathFollowingController pathFollowingController =
       new PPHolonomicDriveController(

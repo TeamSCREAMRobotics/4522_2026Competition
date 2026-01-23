@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.Timer;
 import frc2026.robot.Robot;
 import frc2026.robot.subsystems.drivetrain.Drivetrain;
 import frc2026.robot.subsystems.shooter.turret.Turret;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
