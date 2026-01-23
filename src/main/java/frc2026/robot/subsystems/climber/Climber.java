@@ -1,14 +1,39 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc2026.robot.subsystems.climber;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.teamscreamrobotics.drivers.TalonFXSubsystem;
+import java.util.function.DoubleSupplier;
 
-public class Climber extends SubsystemBase {
-  /** Creates a new Climber. */
-  public Climber() {}
+public class Climber extends TalonFXSubsystem {
+  public Climber(TalonFXSubsystemConfiguration config) {
+    super(config);
+  }
+
+  public enum ClimberGoal implements TalonFXSubsystemGoal {
+    STOW(() -> 0.0, ControlType.MOTION_MAGIC_POSITION);
+
+    public final DoubleSupplier height;
+    public final ControlType controlType;
+
+    private ClimberGoal(DoubleSupplier height, ControlType controlType) {
+      this.height = height;
+      this.controlType = controlType;
+    }
+
+    @Override
+    public ControlType controlType() {
+      return controlType;
+    }
+
+    @Override
+    public DoubleSupplier feedForward() {
+      return () -> 0.0;
+    }
+
+    @Override
+    public DoubleSupplier target() {
+      return height;
+    }
+  }
 
   @Override
   public void periodic() {
