@@ -2,6 +2,7 @@ package com.teamscreamrobotics.gameutil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.teamscreamrobotics.zones.RectangularPoseArea;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -12,6 +13,11 @@ import lombok.Getter;
 public class FieldConstants {
   public static final double fieldLength = AprilTagLayoutType.OFFICIAL.getLayout().getFieldLength();
   public static final double fieldWidth = AprilTagLayoutType.OFFICIAL.getLayout().getFieldWidth();
+
+  public static final Translation2d fieldDimensions = new Translation2d(fieldLength, fieldWidth);
+
+  public static final RectangularPoseArea FIELD_AREA =
+      new RectangularPoseArea(new Translation2d(0, 0), fieldDimensions);
 
   public static final int aprilTagCount = AprilTagLayoutType.OFFICIAL.getLayout().getTags().size();
   public static final double aprilTagWidth = Units.inchesToMeters(6.5);
