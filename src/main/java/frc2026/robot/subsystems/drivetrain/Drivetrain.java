@@ -10,7 +10,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.teamscreamrobotics.drivers.PhoenixSwerveHelper;
-import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.util.Logger;
 import com.teamscreamrobotics.util.ScreamUtil;
 import edu.wpi.first.math.Matrix;
@@ -34,6 +33,7 @@ import frc2026.robot.subsystems.drivetrain.generated.TunerConstants.TunerSwerveD
 import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.Getter;
+import org.littletonrobotics.frc2026.FieldConstants;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily

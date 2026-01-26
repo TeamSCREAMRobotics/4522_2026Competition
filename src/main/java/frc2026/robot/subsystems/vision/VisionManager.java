@@ -1,6 +1,5 @@
 package frc2026.robot.subsystems.vision;
 
-import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.util.GeomUtil;
 import com.teamscreamrobotics.util.Logger;
 import com.teamscreamrobotics.vision.LimelightHelpers;
@@ -24,6 +23,7 @@ import frc2026.robot.subsystems.shooter.turret.Turret;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.littletonrobotics.frc2026.FieldConstants;
 import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
@@ -185,7 +185,7 @@ public class VisionManager {
   private boolean rejectEstimate(PoseEstimate estimate, Limelight limelight) {
     if (estimate == null
         || estimate.tagCount == 0
-        || !FieldConstants.FIELD_AREA.contains(estimate.pose)) {
+        || !FieldConstants.fieldArea.contains(estimate.pose)) {
       Logger.log("Vision/" + limelight.name() + "/VisionType", VisionType.REJECTED_INVALID);
       return true;
     } else if ((estimate.tagCount == 1 && estimate.rawFiducials[0].ambiguity > 0.3)) {
