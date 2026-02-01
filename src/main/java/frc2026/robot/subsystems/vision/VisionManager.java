@@ -24,7 +24,6 @@ import frc2026.robot.subsystems.shooter.turret.Turret;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
