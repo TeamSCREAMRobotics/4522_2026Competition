@@ -13,25 +13,32 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc2026.robot.constants.SimConstants;
 import frc2026.robot.controlboard.Controlboard;
-import frc2026.robot.subsystems.drivetrain.Drivetrain;
-import frc2026.robot.subsystems.drivetrain.generated.TunerConstants;
 import frc2026.robot.subsystems.intake.IntakeConstants;
 import frc2026.robot.subsystems.intake.IntakeWrist;
 import frc2026.robot.subsystems.intake.IntakeWrist.IntakeWristGoal;
+import frc2026.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc2026.robot.subsystems.swerve.TunerConstants;
+import lombok.Getter;
 
 public class RobotContainer {
 
+  public record Subsystems(CommandSwerveDrivetrain drivetrain, IntakeWrist intakeWrist) {}
+
   private final CommandXboxController joystick = new CommandXboxController(0);
 
-  private final IntakeWrist s_IntakeWrist = new IntakeWrist(IntakeConstants.WRIST_CONFIG);
-  private final Drivetrain drivetrain = TunerConstants.drivetrain;
+  private final IntakeWrist intakeWrist = new IntakeWrist(IntakeConstants.WRIST_CONFIG);
+  private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+  @Getter private final Subsystems subsystems = new Subsystems(drivetrain, intakeWrist);
+
+  @Getter private final RobotState robotState = new RobotState(subsystems);
 
   private final MechanismVisualizer mechVisualizer =
       new MechanismVisualizer(
           SimConstants.MEASURED_MECHANISM,
           SimConstants.SETPOINT_MECHANISM,
           RobotContainer::telemeterizeMechanisms,
-          s_IntakeWrist.intakeMech);
+          intakeWrist.intakeMech);
 
   public RobotContainer() {
     configureBindings();
@@ -63,7 +70,11 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    joystick.a().whileTrue(s_IntakeWrist.applyGoalCommand(IntakeWristGoal.EXTENDED));
+    joystick
+        .a()
+        .whileTrue(intakeWrist.applyGoalCommand(IntakeWristGoal.EXTENDED))
+        .onFalse(intakeWrist.applyGoalCommand(IntakeWristGoal.STOW));
+    joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
   }
 
   public Command getAutonomousCommand() {
@@ -73,5 +84,9 @@ public class RobotContainer {
   public static void telemeterizeMechanisms(Mechanism2d measured, Mechanism2d setpoint) {
     Logger.log("RobotState/Mechanisms/Measured", measured);
     Logger.log("RobotState/Mechanisms/Setpoint", setpoint);
+  }
+
+  public void logState() {
+    robotState.logArea();
   }
 }

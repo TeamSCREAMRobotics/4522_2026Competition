@@ -10,6 +10,7 @@ import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc2026.robot.constants.SimConstants;
 import java.util.function.DoubleSupplier;
@@ -19,23 +20,31 @@ public class IntakeWrist extends TalonFXSubsystem {
 
   private final Ligament intakeOne =
       new Ligament()
-          .withStaticLength(Length.fromInches(5.0))
+          .withStaticLength(Length.fromInches(9.58))
           .withDynamicAngle(() -> getAngle(), () -> Rotation2d.fromRotations(getSetpoint()));
   private final Ligament intakeTwo =
       new Ligament()
-          .withStaticLength(Length.fromInches(5.0))
-          .withStaticAngle(Rotation2d.fromDegrees(45.0));
+          .withStaticLength(Length.fromInches(8.5))
+          .withDynamicAngle(
+              () -> getAngle().unaryMinus().minus(Rotation2d.fromDegrees(90)),
+              () ->
+                  Rotation2d.fromRotations(getSetpoint())
+                      .unaryMinus()
+                      .minus(Rotation2d.fromDegrees(90)));
   public final Mechanism intakeMech =
       new Mechanism("Intake Mech", intakeOne, intakeTwo)
-          .withStaticPosition(new Translation2d(SimConstants.MECH_WIDTH / 2.0, 0.0));
+          .withStaticPosition(
+              new Translation2d(
+                  (SimConstants.MECH_WIDTH / 2.0) + Units.inchesToMeters(12.125),
+                  Units.inchesToMeters(8)));
 
   public IntakeWrist(TalonFXSubsystemConfiguration config) {
-    super(config, IntakeWristGoal.EXTENDED);
+    super(config, IntakeWristGoal.STOW);
   }
 
   public enum IntakeWristGoal implements TalonFXSubsystemGoal {
-    STOW(() -> 0.0, ControlType.MOTION_MAGIC_POSITION),
-    EXTENDED(() -> 2.5, ControlType.MOTION_MAGIC_POSITION);
+    STOW(() -> Units.degreesToRotations(111.6736), ControlType.MOTION_MAGIC_POSITION),
+    EXTENDED(() -> Units.degreesToRotations(45), ControlType.MOTION_MAGIC_POSITION);
 
     public final DoubleSupplier position;
     public final ControlType controlType;

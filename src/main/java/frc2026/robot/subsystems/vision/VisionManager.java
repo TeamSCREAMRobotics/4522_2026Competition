@@ -18,12 +18,13 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import frc2026.robot.Robot;
+import frc2026.robot.constants.FieldConstants;
 import frc2026.robot.subsystems.drivetrain.Drivetrain;
 import frc2026.robot.subsystems.shooter.turret.Turret;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.littletonrobotics.frc2026.FieldConstants;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;

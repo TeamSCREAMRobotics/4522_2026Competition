@@ -1,36 +1,59 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc2026.robot.subsystems.climber;
 
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import com.teamscreamrobotics.math.Conversions;
 import com.teamscreamrobotics.math.ScreamMath;
+import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc2026.robot.subsystems.climber.constants.ElevatorConstants;
 import java.util.function.DoubleSupplier;
 
-public class Climber extends TalonFXSubsystem {
-  public Climber(TalonFXSubsystemConfiguration config) {
+public class ClimbElevator extends TalonFXSubsystem {
+  /** Creates a new Elevator. */
+  public ClimbElevator(TalonFXSubsystemConfiguration config) {
     super(config);
+
+    resetPosition(0.0);
   }
 
-  public enum ClimberGoal implements TalonFXSubsystemGoal {
-    STOW(() -> 0.0, ControlType.MOTION_MAGIC_POSITION);
+  public enum ElevatorGoal implements TalonFXSubsystemGoal {
+    HOME(Length.kZero),
+    FEED(Length.kZero),
+    TROUGH_FEED(Length.fromInches(13.0)),
+    TROUGH(Length.fromInches(2.0)), // 2.0
+    L2(Length.fromInches(24.5)),
+    L3(Length.fromInches(40.5)),
+    L4(Length.fromInches(64.8)),
+    CLEAR_ALGAE_L1(Length.fromInches(14.1)),
+    CLEAR_ALGAE_L2(Length.fromInches(29.611)),
+    BARGE(Length.fromInches(70.203)),
+    MAX(ElevatorConstants.MAX_HEIGHT);
+    ;
 
-    public final DoubleSupplier height;
-    public final ControlType controlType;
+    public DoubleSupplier targetRotations;
+    public Length height;
 
-    private ClimberGoal(DoubleSupplier height, ControlType controlType) {
-      this.height = height;
-      this.controlType = controlType;
+    private ElevatorGoal(Length targetHeight) {
+      this.height = targetHeight;
+      this.targetRotations =
+          () ->
+              Conversions.linearDistanceToRotations(
+                  targetHeight, ElevatorConstants.PULLEY_CIRCUMFERENCE);
     }
 
     @Override
     public ControlType controlType() {
-      return controlType;
+      return ControlType.MOTION_MAGIC_POSITION;
     }
 
     @Override
@@ -40,7 +63,7 @@ public class Climber extends TalonFXSubsystem {
 
     @Override
     public DoubleSupplier target() {
-      return height;
+      return targetRotations;
     }
   }
 
@@ -49,7 +72,7 @@ public class Climber extends TalonFXSubsystem {
     return super.applyGoalCommand(goal).beforeStarting(() -> super.goal = goal);
   }
 
-  public Command applyUntilAtGoalCommand(ClimberGoal goal) {
+  public Command applyUntilAtGoalCommand(ElevatorGoal goal) {
     return super.applyGoalCommand(goal)
         .until(() -> atGoal())
         .beforeStarting(() -> super.goal = goal);
@@ -57,44 +80,43 @@ public class Climber extends TalonFXSubsystem {
 
   public double getHeightPercent() {
     return (MathUtil.clamp(
-                getMeasuredHeight().getInches(), 0, ClimberConstants.MAX_HEIGHT.getInches())
-            / ClimberConstants.MAX_HEIGHT.getInches())
+                getMeasuredHeight().getInches(), 0, ElevatorConstants.MAX_HEIGHT.getInches())
+            / ElevatorConstants.MAX_HEIGHT.getInches())
         * 100.0;
   }
 
   public Length getMeasuredHeight() {
-    return Length.fromRotations(getPosition(), ClimberConstants.PULLEY_CIRCUMFERENCE);
+    return Length.fromRotations(getPosition(), ElevatorConstants.PULLEY_CIRCUMFERENCE);
   }
 
   public Length getSetpointHeight() {
-    return Length.fromRotations(getSetpoint(), ClimberConstants.PULLEY_CIRCUMFERENCE);
+    return Length.fromRotations(getSetpoint(), ElevatorConstants.PULLEY_CIRCUMFERENCE);
   }
 
-  @SuppressWarnings("unused")
   private double rotationsToHeightInches(double rotations) {
     return rotations * (2.256 * Math.PI);
   }
 
   public static double heightToRotations(Length height) {
-    return Conversions.linearDistanceToRotations(height, ClimberConstants.PULLEY_CIRCUMFERENCE);
+    return Conversions.linearDistanceToRotations(height, ElevatorConstants.PULLEY_CIRCUMFERENCE);
   }
 
   public double getDriveScalar() {
     double clampedHeight =
         MathUtil.clamp(
-            getMeasuredHeight().getInches(), 0.0, ClimberConstants.MAX_HEIGHT.getInches());
+            getMeasuredHeight().getInches(), 0.0, ElevatorConstants.MAX_HEIGHT.getInches());
 
     return ScreamMath.mapRange(
-        clampedHeight, 0.0, ClimberConstants.MAX_HEIGHT.getInches(), 3.9, 1.0);
+        clampedHeight, 0.0, ElevatorConstants.MAX_HEIGHT.getInches(), 3.9, 1.0);
   }
 
   public double getAccelScalar() {
     double clampedHeight =
         MathUtil.clamp(
-            getMeasuredHeight().getInches(), 0.0, ClimberConstants.MAX_HEIGHT.getInches());
+            getMeasuredHeight().getInches(), 0.0, ElevatorConstants.MAX_HEIGHT.getInches());
 
     return ScreamMath.mapRange(
-        clampedHeight, 0.0, ClimberConstants.MAX_HEIGHT.getInches(), 4.3, 3.0);
+        clampedHeight, 0.0, ElevatorConstants.MAX_HEIGHT.getInches(), 4.3, 3.0);
   }
 
   private double startTime = 0.0;
@@ -128,12 +150,15 @@ public class Climber extends TalonFXSubsystem {
     simController.reset(getPosition(), getVelocity());
   }
 
-  public void setGoal(ClimberGoal goal) {
+  public void setGoal(ElevatorGoal goal) {
     super.goal = goal;
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    super.periodic();
+    Logger.log(logPrefix + "Height", rotationsToHeightInches(getPosition()));
+    Logger.log(logPrefix + "AbsHeight", rotationsToHeightInches(getPosition()) + 10.7125);
+    Logger.log(logPrefix + "ErrorHeight", rotationsToHeightInches(getError()));
   }
 }
