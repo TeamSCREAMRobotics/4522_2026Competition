@@ -1,61 +1,50 @@
-package frc2026.robot.subsystems.climber;
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc2026.robot.subsystems.climber.constants;
 
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.CANDevice;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXConstants;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemConfiguration;
-import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemSimConstants;
 import com.teamscreamrobotics.pid.ScreamPIDConstants;
 import com.teamscreamrobotics.pid.ScreamPIDConstants.FeedforwardConstants;
-import com.teamscreamrobotics.sim.SimWrapper;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import frc2026.robot.subsystems.climber.ClimbElevator;
 
-public final class ClimberConstants {
+/** Add your docs here. */
+public final class ElevatorConstants {
 
-  public static final double CLIMBER_REDUCTION = 416.66;
+  // As measured from wrist pivot axis
+  public static final Length MIN_HEIGHT_FROM_FLOOR = Length.fromInches(10.7125);
+  public static final Length MAX_HEIGHT_FROM_FLOOR = Length.fromInches(89.825);
+
+  public static final double MIN_HEIGHT = 0.0;
+  public static final Length MAX_HEIGHT =
+      MAX_HEIGHT_FROM_FLOOR.minus(MIN_HEIGHT_FROM_FLOOR); // 79.1125
+
+  public static final Length PULLEY_DIAMETER = Length.fromInches(2.256);
+  public static final Length PULLEY_CIRCUMFERENCE = PULLEY_DIAMETER.times(Math.PI);
 
   // Theoretically MAX_HEIGHT / PULLEY_CIRCUMFERENCE, but needs to actually be measured
-  public static final double ENCODER_MAX = Units.degreesToRotations(180);
-
+  public static final double ENCODER_MAX =
+      MAX_HEIGHT.getInches() / PULLEY_CIRCUMFERENCE.getInches();
   public static final double ENCODER_MIN = 0.0;
 
-  public static final double REDUCTION = 20;
-
-  public static final SingleJointedArmSim SIM =
-      new SingleJointedArmSim(
-          DCMotor.getKrakenX44(1),
-          CLIMBER_REDUCTION,
-          0.0007,
-          6,
-          ENCODER_MIN,
-          ENCODER_MAX,
-          false,
-          CLIMBER_REDUCTION,
-          null);
-  public static final ScreamPIDConstants SIM_GAINS = new ScreamPIDConstants(5.0, 0.0, 0.0);
+  public static final double REDUCTION = 3.125;
 
   public static final TalonFXSubsystemConfiguration CONFIGURATION =
       new TalonFXSubsystemConfiguration();
 
   static {
-    CONFIGURATION.name = "Climber";
+    CONFIGURATION.name = "Elevator";
 
     CONFIGURATION.codeEnabled = true;
     CONFIGURATION.logTelemetry = false;
     CONFIGURATION.debugMode = false;
-
-    CONFIGURATION.simConstants =
-        new TalonFXSubsystemSimConstants(
-            new SimWrapper(SIM, REDUCTION),
-            REDUCTION,
-            SIM_GAINS.getProfiledPIDController(new Constraints(1.5 * 0.7, 0.7)),
-            true,
-            true);
 
     CONFIGURATION.masterConstants =
         new TalonFXConstants(
@@ -71,7 +60,6 @@ public final class ClimberConstants {
               new CANDevice(15, ""),
               InvertedValue.CounterClockwise_Positive), // Right Elevator Outside
         };
-
     CONFIGURATION.neutralMode = NeutralModeValue.Brake;
     CONFIGURATION.sensorToMechRatio = REDUCTION;
     CONFIGURATION.enableSupplyCurrentLimit = true;
@@ -85,6 +73,7 @@ public final class ClimberConstants {
         new ScreamPIDConstants(45.0, 0, 0) // 60.0
             .getSlot0Configs(
                 new FeedforwardConstants(0, 0.0, 0.3, 0, GravityTypeValue.Elevator_Static));
-    // CONFIGURATION.positionThreshold = Climber.heightToRotations(Length.fromInches(0.2)); // 4.0
+    CONFIGURATION.positionThreshold =
+        ClimbElevator.heightToRotations(Length.fromInches(0.2)); // 4.0
   }
 }
