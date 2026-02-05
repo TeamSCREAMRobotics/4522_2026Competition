@@ -59,7 +59,7 @@ public class IntakeConstants {
             new SimWrapper(SIM, INTAKE_REDUCTION),
             INTAKE_REDUCTION,
             SIM_GAINS.getProfiledPIDController(new Constraints(0.5, 0.1)),
-            true,
+            false,
             true);
 
     WRIST_CONFIG.masterConstants =

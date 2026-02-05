@@ -13,21 +13,21 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc2026.robot.constants.SimConstants;
 import frc2026.robot.controlboard.Controlboard;
+import frc2026.robot.subsystems.drivetrain.Drivetrain;
+import frc2026.robot.subsystems.drivetrain.generated.TunerConstants;
 import frc2026.robot.subsystems.intake.IntakeConstants;
 import frc2026.robot.subsystems.intake.IntakeWrist;
 import frc2026.robot.subsystems.intake.IntakeWrist.IntakeWristGoal;
-import frc2026.robot.subsystems.swerve.CommandSwerveDrivetrain;
-import frc2026.robot.subsystems.swerve.TunerConstants;
 import lombok.Getter;
 
 public class RobotContainer {
 
-  public record Subsystems(CommandSwerveDrivetrain drivetrain, IntakeWrist intakeWrist) {}
+  public record Subsystems(Drivetrain drivetrain, IntakeWrist intakeWrist) {}
 
   private final CommandXboxController joystick = new CommandXboxController(0);
 
   private final IntakeWrist intakeWrist = new IntakeWrist(IntakeConstants.WRIST_CONFIG);
-  private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+  private final Drivetrain drivetrain = TunerConstants.drivetrain;
 
   @Getter private final Subsystems subsystems = new Subsystems(drivetrain, intakeWrist);
 
