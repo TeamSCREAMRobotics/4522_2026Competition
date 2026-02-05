@@ -9,15 +9,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import frc2026.robot.RobotContainer.Subsystems;
 import frc2026.robot.constants.FieldConstants;
 import frc2026.robot.controlboard.Controlboard;
+import frc2026.robot.subsystems.drivetrain.Drivetrain;
 import frc2026.robot.subsystems.intake.IntakeWrist;
-import frc2026.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
 public class RobotState {
-  private final CommandSwerveDrivetrain drivetrain;
+  private final Drivetrain drivetrain;
   private final IntakeWrist intakeWrist;
   private static final RectangularPoseArea test =
       new RectangularPoseArea(new Translation2d(1, 1), new Translation2d(5, 5));

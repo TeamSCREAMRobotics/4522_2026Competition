@@ -54,7 +54,7 @@ public final class ClimberConstants {
             new SimWrapper(SIM, REDUCTION),
             REDUCTION,
             SIM_GAINS.getProfiledPIDController(new Constraints(1.5 * 0.7, 0.7)),
-            true,
+            false,
             true);
 
     CONFIGURATION.masterConstants =
