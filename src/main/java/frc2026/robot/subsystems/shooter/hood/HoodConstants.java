@@ -10,6 +10,9 @@ public class HoodConstants {
   // TODO: Put in actual values
   public static final double HOOD_REDUCTION = 0;
 
+  public static final double HOOD_MAX_ANGLE = 0;
+  public static final double HOOD_MIN_ANGLE = 0;
+
   public static final TalonFXSubsystemConfiguration HOOD_CONFIG =
       new TalonFXSubsystemConfiguration();
 

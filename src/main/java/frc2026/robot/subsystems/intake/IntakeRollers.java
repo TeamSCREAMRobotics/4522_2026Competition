@@ -4,24 +4,30 @@ import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import java.util.function.DoubleSupplier;
 
 public class IntakeRollers extends TalonFXSubsystem {
+
   public IntakeRollers(TalonFXSubsystemConfiguration config) {
     super(config);
   }
 
+  @Override
+  public void periodic() {
+    super.periodic();
+  }
+
   public enum IntakeRollersGoal implements TalonFXSubsystemGoal {
-    STOW(() -> 0.0, ControlType.VOLTAGE);
+    STOW(() -> 0.0),
+    INTAKE(() -> 6.0),
+    OUTTAKE(() -> -6.0);
 
     public final DoubleSupplier voltage;
-    public final ControlType controlType;
 
-    private IntakeRollersGoal(DoubleSupplier voltage, ControlType controlType) {
+    private IntakeRollersGoal(DoubleSupplier voltage) {
       this.voltage = voltage;
-      this.controlType = controlType;
     }
 
     @Override
     public ControlType controlType() {
-      return controlType;
+      return ControlType.VOLTAGE;
     }
 
     @Override
@@ -34,7 +40,4 @@ public class IntakeRollers extends TalonFXSubsystem {
       return voltage;
     }
   }
-
-  @Override
-  public void periodic() {}
 }

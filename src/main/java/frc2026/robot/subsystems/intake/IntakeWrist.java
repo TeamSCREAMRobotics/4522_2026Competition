@@ -43,20 +43,19 @@ public class IntakeWrist extends TalonFXSubsystem {
   }
 
   public enum IntakeWristGoal implements TalonFXSubsystemGoal {
-    STOW(() -> Units.degreesToRotations(111.6736), ControlType.MOTION_MAGIC_POSITION),
-    EXTENDED(() -> Units.degreesToRotations(45), ControlType.MOTION_MAGIC_POSITION);
+    STOW(() -> Units.degreesToRotations(111.6736)),
+    EXTENDED(() -> Units.degreesToRotations(45));
 
     public final DoubleSupplier position;
-    public final ControlType controlType;
+    ;
 
-    private IntakeWristGoal(DoubleSupplier position, ControlType controlType) {
+    private IntakeWristGoal(DoubleSupplier position) {
       this.position = position;
-      this.controlType = controlType;
     }
 
     @Override
     public ControlType controlType() {
-      return controlType;
+      return ControlType.MOTION_MAGIC_POSITION;
     }
 
     @Override

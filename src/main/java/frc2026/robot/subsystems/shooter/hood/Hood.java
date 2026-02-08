@@ -6,18 +6,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.DoubleSupplier;
 
 public class Hood extends TalonFXSubsystem {
-  private static double angle;
+  public static double angle;
 
-  public Hood(TalonFXSubsystemConfiguration config, double angle) {
+  public Hood(TalonFXSubsystemConfiguration config) {
     super(config);
-    Hood.angle = angle;
   }
 
   public enum HoodGoal implements TalonFXSubsystemGoal {
     ZERO(Rotation2d.fromDegrees(0.0)),
     TOPOSE(Rotation2d.fromDegrees(angle));
 
-    Rotation2d angleRot;
+    public Rotation2d angleRot;
     DoubleSupplier target;
 
     HoodGoal(Rotation2d angleRot) {
