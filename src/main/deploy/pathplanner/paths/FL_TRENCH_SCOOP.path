@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.95737841043891,
+        "y": 6.482716488730723
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.387746144721234,
+        "y": 6.3966429418742585
+      },
+      "isLocked": false,
+      "linkedName": "FL_TRENCH_TNZ_END"
+    },
+    {
+      "anchor": {
+        "x": 7.81811387900356,
+        "y": 5.686536180308422
+      },
+      "prevControl": {
+        "x": 7.516856465005931,
+        "y": 6.375124555160142
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "FL_TRENCH_SCOOP_END"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 93.43363036245057
+  },
+  "reversed": false,
+  "folder": "FL_TRENCH",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 152.85031830221686
+  },
+  "useDefaultConstraints": true
+}
