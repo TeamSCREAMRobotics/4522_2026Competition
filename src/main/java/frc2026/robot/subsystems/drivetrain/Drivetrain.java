@@ -10,6 +10,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.teamscreamrobotics.drivers.PhoenixSwerveHelper;
+import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.util.Logger;
 import com.teamscreamrobotics.util.ScreamUtil;
 import edu.wpi.first.math.Matrix;
@@ -29,7 +30,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc2026.robot.constants.FieldConstants;
 import frc2026.robot.subsystems.drivetrain.generated.TunerConstants.TunerSwerveDrivetrain;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -77,6 +77,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
               output -> setControl(m_translationCharacterization.withVolts(output)), null, this));
 
   /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
+  @SuppressWarnings("unused")
   private final SysIdRoutine m_sysIdRoutineSteer =
       new SysIdRoutine(
           new SysIdRoutine.Config(
@@ -88,6 +89,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
           new SysIdRoutine.Mechanism(
               volts -> setControl(m_steerCharacterization.withVolts(volts)), null, this));
 
+  @SuppressWarnings("unused")
   private final SysIdRoutine m_sysIdRoutineRotation =
       new SysIdRoutine(
           new SysIdRoutine.Config(

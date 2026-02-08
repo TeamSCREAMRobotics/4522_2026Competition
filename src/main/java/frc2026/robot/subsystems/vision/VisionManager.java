@@ -1,5 +1,6 @@
 package frc2026.robot.subsystems.vision;
 
+import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.util.GeomUtil;
 import com.teamscreamrobotics.util.Logger;
 import com.teamscreamrobotics.vision.LimelightHelpers;
@@ -18,9 +19,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import frc2026.robot.Robot;
-import frc2026.robot.constants.FieldConstants;
 import frc2026.robot.subsystems.drivetrain.Drivetrain;
-import frc2026.robot.subsystems.shooter.turret.Turret;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -90,7 +89,6 @@ public class VisionManager {
   }
 
   private final Drivetrain drivetrain;
-  private final Turret turret;
   private final Limelight[] limelights =
       new Limelight[] {
         Limelights.intake, Limelights.turret // , Limelights.STATION, //Limelights.CLIMBER
@@ -98,9 +96,8 @@ public class VisionManager {
 
   public static boolean hasEnabled = false;
 
-  public VisionManager(Drivetrain drivetrain, Turret turret) {
+  public VisionManager(Drivetrain drivetrain) {
     this.drivetrain = drivetrain;
-    this.turret = turret;
 
     if (Robot.isSimulation()) {
       climberA = new PhotonCamera("climberA");

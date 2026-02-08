@@ -15,20 +15,18 @@ public class Indexer extends TalonFXSubsystem {
   }
 
   public enum IndexerGoal implements TalonFXSubsystemGoal {
-    STOP(() -> 0.0, ControlType.VOLTAGE),
-    RUN(() -> 4.5, ControlType.VOLTAGE);
+    STOP(() -> 0.0),
+    RUN(() -> 4.5);
 
     public final DoubleSupplier voltage;
-    public final ControlType controlType;
 
-    private IndexerGoal(DoubleSupplier voltage, ControlType controlType) {
+    private IndexerGoal(DoubleSupplier voltage) {
       this.voltage = voltage;
-      this.controlType = controlType;
     }
 
     @Override
     public ControlType controlType() {
-      return controlType;
+      return ControlType.VOLTAGE;
     }
 
     @Override

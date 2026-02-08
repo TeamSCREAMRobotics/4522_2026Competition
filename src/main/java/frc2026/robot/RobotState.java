@@ -1,5 +1,6 @@
 package frc2026.robot;
 
+import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.gameutil.GameState;
 import com.teamscreamrobotics.util.Logger;
 import com.teamscreamrobotics.zones.RectangularPoseArea;
@@ -7,7 +8,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc2026.robot.RobotContainer.Subsystems;
-import frc2026.robot.constants.FieldConstants;
 import frc2026.robot.controlboard.Controlboard;
 import frc2026.robot.subsystems.drivetrain.Drivetrain;
 import frc2026.robot.subsystems.intake.IntakeWrist;
@@ -32,8 +32,8 @@ public class RobotState {
   }
 
   public enum Area {
-    REDALLIANCE(FieldConstants.REDALLIANCE),
-    BLUEALLIANCE(FieldConstants.BLUEALLIANCE),
+    REDALLIANCE(FieldConstants.AllianceZones.redAlliance),
+    BLUEALLIANCE(FieldConstants.AllianceZones.blueAlliance),
     BUMPS(
         FieldConstants.LeftBump.leftBump,
         FieldConstants.LeftBump.oppLeftBump,
@@ -44,8 +44,8 @@ public class RobotState {
         FieldConstants.LeftTrench.oppLeftTrench,
         FieldConstants.RightTrench.rightTrench,
         FieldConstants.RightTrench.oppRightTrench),
-    UPPERNEUTRALZONE(FieldConstants.UPPER_NEUTRAL),
-    LOWERNEUTRALZONE(FieldConstants.LOWER_NEUTRAL);
+    UPPERNEUTRALZONE(FieldConstants.NeutralZones.UPPER_NEUTRAL),
+    LOWERNEUTRALZONE(FieldConstants.NeutralZones.LOWER_NEUTRAL);
 
     public List<RectangularPoseArea> areas;
 
@@ -100,17 +100,16 @@ public class RobotState {
         .findFirst();
   }
 
-  // TODO: ACTUALLY DO
-
   public static DoubleSupplier getSpeedLimit() {
     return () -> {
-      if (false) {
-        return 1;
+      boolean isLimited = false;
+      if (isLimited) {
+        return 0.5;
       } else if (Controlboard.driveController.getLeftTriggerAxis()
           > Controlboard.TRIGGER_DEADBAND) {
         return 0.5;
       } else {
-        return 1;
+        return 1.0;
       }
     };
   }

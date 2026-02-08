@@ -1,23 +1,26 @@
 package frc2026.robot.subsystems.shooter.flywheel;
 
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc2026.robot.subsystems.shooter.hood.Hood.HoodGoal;
 import java.util.function.DoubleSupplier;
 
 public class Flywheel extends TalonFXSubsystem {
-  public Flywheel(TalonFXSubsystemConfiguration config) {
+  public static double shootVel;
+
+  public Flywheel(TalonFXSubsystemConfiguration config, double shootVel) {
     super(config);
+    Flywheel.shootVel = shootVel;
   }
 
   public enum FlywheelGoal implements TalonFXSubsystemGoal {
-    IDLE(() -> 1, ControlType.VELOCITY),
-    SHOOTING(() -> 7, ControlType.VELOCITY);
+    IDLE(() -> 1),
+    SHOOTING(() -> shootVel);
 
-    public final DoubleSupplier velocity;
-    public final ControlType controlType;
+    public DoubleSupplier velocity;
 
-    private FlywheelGoal(DoubleSupplier vel, ControlType controlType) {
+    private FlywheelGoal(DoubleSupplier vel) {
       this.velocity = vel;
-      this.controlType = controlType;
     }
 
     @Override
@@ -27,13 +30,17 @@ public class Flywheel extends TalonFXSubsystem {
 
     @Override
     public ControlType controlType() {
-      return controlType;
+      return ControlType.VELOCITY;
     }
 
     @Override
     public DoubleSupplier feedForward() {
       return () -> 0;
     }
+  }
+
+  public Command applyUntilAtGoalCommand(HoodGoal goal) {
+    return super.applyGoalCommand(goal).until(() -> atGoal());
   }
 
   @Override
