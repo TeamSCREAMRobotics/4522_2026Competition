@@ -16,7 +16,7 @@ public class Indexer extends TalonFXSubsystem {
 
   public enum IndexerGoal implements TalonFXSubsystemGoal {
     STOP(() -> 0.0, ControlType.VOLTAGE),
-    RUN(()-> 4.5, ControlType.VOLTAGE);
+    RUN(() -> 4.5, ControlType.VOLTAGE);
 
     public final DoubleSupplier voltage;
     public final ControlType controlType;
@@ -41,5 +41,4 @@ public class Indexer extends TalonFXSubsystem {
       return voltage;
     }
   }
-
 }
