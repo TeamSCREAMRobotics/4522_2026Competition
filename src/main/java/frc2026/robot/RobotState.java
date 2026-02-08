@@ -6,15 +6,21 @@ import com.teamscreamrobotics.zones.RectangularPoseArea;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc2026.robot.RobotContainer.Subsystems;
 import frc2026.robot.constants.FieldConstants;
 import frc2026.robot.controlboard.Controlboard;
 import frc2026.robot.subsystems.drivetrain.Drivetrain;
+import frc2026.robot.subsystems.intake.IntakeConstants;
+import frc2026.robot.subsystems.intake.IntakeRollers;
 import frc2026.robot.subsystems.intake.IntakeWrist;
+import frc2026.robot.subsystems.intake.IntakeWrist.IntakeWristGoal;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 public class RobotState {
   private final Drivetrain drivetrain;
@@ -115,6 +121,7 @@ public class RobotState {
     };
   }
 
+   
   public void logArea() {
     int index = 0;
     for (Area area : Area.values()) {
