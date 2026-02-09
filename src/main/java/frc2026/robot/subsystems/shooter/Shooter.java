@@ -60,8 +60,6 @@ public class Shooter extends SubsystemBase {
             Math.max(
                 HoodConstants.HOOD_MIN_ANGLE, Math.min(HoodConstants.HOOD_MAX_ANGLE, optimalAngle));
         angleLookup.put(distance, optimalAngle);
-
-        System.out.printf("Distance: %.1fm -> Initial Hood Angle: %.1f°%n", distance, optimalAngle);
       }
     }
   }
@@ -79,6 +77,16 @@ public class Shooter extends SubsystemBase {
           flywheel.stop();
         });
   }
+
+
+
+
+
+
+
+
+
+  
 
   public Command shootAtTargetCommand(Translation2d target) {
     return runEnd(
