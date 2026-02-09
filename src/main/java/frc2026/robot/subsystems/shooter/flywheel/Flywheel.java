@@ -8,9 +8,8 @@ import java.util.function.DoubleSupplier;
 public class Flywheel extends TalonFXSubsystem {
   public static double shootVel;
 
-  public Flywheel(TalonFXSubsystemConfiguration config, double shootVel) {
+  public Flywheel(TalonFXSubsystemConfiguration config) {
     super(config);
-    Flywheel.shootVel = shootVel;
   }
 
   public enum FlywheelGoal implements TalonFXSubsystemGoal {

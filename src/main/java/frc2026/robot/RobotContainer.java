@@ -18,18 +18,29 @@ import frc2026.robot.subsystems.drivetrain.generated.TunerConstants;
 import frc2026.robot.subsystems.intake.IntakeConstants;
 import frc2026.robot.subsystems.intake.IntakeWrist;
 import frc2026.robot.subsystems.intake.IntakeWrist.IntakeWristGoal;
+import frc2026.robot.subsystems.shooter.Shooter;
+import frc2026.robot.subsystems.shooter.flywheel.Flywheel;
+import frc2026.robot.subsystems.shooter.flywheel.FlywheelConstants;
+import frc2026.robot.subsystems.shooter.hood.Hood;
+import frc2026.robot.subsystems.shooter.hood.HoodConstants;
+import frc2026.robot.subsystems.shooter.turret.Turret;
+import frc2026.robot.subsystems.shooter.turret.TurretConstants;
 import lombok.Getter;
 
 public class RobotContainer {
 
-  public record Subsystems(Drivetrain drivetrain, IntakeWrist intakeWrist) {}
+  public record Subsystems(Drivetrain drivetrain, IntakeWrist intakeWrist, Shooter shooter, Turret turret, Hood hood, Flywheel flywheel) {}
 
   private final CommandXboxController joystick = new CommandXboxController(0);
 
   private final IntakeWrist intakeWrist = new IntakeWrist(IntakeConstants.WRIST_CONFIG);
   private final Drivetrain drivetrain = TunerConstants.drivetrain;
+  private final Shooter shooter = new Shooter(null, null);
+  private final Turret turret = new Turret(TurretConstants.TURRET_CONFIG);
+  private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
+  private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
 
-  @Getter private final Subsystems subsystems = new Subsystems(drivetrain, intakeWrist);
+  @Getter private final Subsystems subsystems = new Subsystems(drivetrain, intakeWrist, shooter, turret, hood, flywheel);
 
   @Getter private final RobotState robotState = new RobotState(subsystems);
 
@@ -42,6 +53,9 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureBindings();
+    configureManualOverrides();
+    configureDefaultCommands();
+
     SmartDashboard.putNumber("test", 1);
 
     mechVisualizer.setEnabled(true);
@@ -76,6 +90,10 @@ public class RobotContainer {
         .onFalse(intakeWrist.applyGoalCommand(IntakeWristGoal.STOW));
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
   }
+
+  private void configureManualOverrides() {}
+
+  private void configureDefaultCommands() {}
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");

@@ -81,7 +81,7 @@ public class RobotState {
   public Mode getMode() {
     Mode currentMode = Mode.NOTHING;
 
-    if (GameState.determineGameState().toString() == "AUTO") {
+    if ("AUTO".equals(GameState.determineGameState().toString())) {
       currentMode = Mode.AUTO;
     } else {
 
