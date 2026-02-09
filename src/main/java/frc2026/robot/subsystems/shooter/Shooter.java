@@ -78,16 +78,6 @@ public class Shooter extends SubsystemBase {
         });
   }
 
-
-
-
-
-
-
-
-
-  
-
   public Command shootAtTargetCommand(Translation2d target) {
     return runEnd(
         () -> {
