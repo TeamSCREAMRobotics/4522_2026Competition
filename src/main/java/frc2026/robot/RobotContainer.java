@@ -29,7 +29,13 @@ import lombok.Getter;
 
 public class RobotContainer {
 
-  public record Subsystems(Drivetrain drivetrain, IntakeWrist intakeWrist, Shooter shooter, Turret turret, Hood hood, Flywheel flywheel) {}
+  public record Subsystems(
+      Drivetrain drivetrain,
+      IntakeWrist intakeWrist,
+      Shooter shooter,
+      Turret turret,
+      Hood hood,
+      Flywheel flywheel) {}
 
   private final CommandXboxController joystick = new CommandXboxController(0);
 
@@ -40,7 +46,9 @@ public class RobotContainer {
   private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
   private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
 
-  @Getter private final Subsystems subsystems = new Subsystems(drivetrain, intakeWrist, shooter, turret, hood, flywheel);
+  @Getter
+  private final Subsystems subsystems =
+      new Subsystems(drivetrain, intakeWrist, shooter, turret, hood, flywheel);
 
   @Getter private final RobotState robotState = new RobotState(subsystems);
 
