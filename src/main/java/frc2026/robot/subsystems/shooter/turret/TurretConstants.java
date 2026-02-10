@@ -26,6 +26,8 @@ public class TurretConstants {
   public static final double FORWARD_SOFTWARE_LIMIT = 0.95;
   public static final double BACKWARD_SOFTWARE_LIMIT = -0.95;
 
+  public static final double MAGNITUDE = 0.95;
+
   public static final DCMotor DC_MOTOR = DCMotor.getKrakenX60(1);
   public static final int CAN_ID = 8;
   public static final double kP = 6.9;
