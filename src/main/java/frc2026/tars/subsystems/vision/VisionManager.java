@@ -20,7 +20,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import frc2026.tars.Robot;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

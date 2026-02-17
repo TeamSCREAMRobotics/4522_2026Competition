@@ -139,34 +139,44 @@ public class TunerConstants {
   public static final Length backWidth = Length.fromInches(13.276151);
   public static final Length wheelBase = Length.fromInches(23.496847); // Front to back
 
-private static final double CENTER_OFFSET_METERS = 0.142543;
+  private static final double CENTER_OFFSET_METERS = 0.142543;
 
-public static final Translation2d frontLeftPos =
-    new Translation2d(frontWidth.getMeters() / 2.0, wheelBase.getMeters() / 2.0 );
-public static final Translation2d frontRightPos =
-    new Translation2d(frontWidth.getMeters() / 2.0, -wheelBase.getMeters() / 2.0);
-public static final Translation2d backLeftPos =
-    new Translation2d(-backWidth.getMeters() / 2.0, wheelBase.getMeters() / 2.0 - CENTER_OFFSET_METERS);
-public static final Translation2d backRightPos =
-    new Translation2d(-backWidth.getMeters() / 2.0, -wheelBase.getMeters() / 2.0 + CENTER_OFFSET_METERS);
+  public static final Translation2d frontLeftPos =
+      new Translation2d(frontWidth.getMeters() / 2.0, wheelBase.getMeters() / 2.0);
+  public static final Translation2d frontRightPos =
+      new Translation2d(frontWidth.getMeters() / 2.0, -wheelBase.getMeters() / 2.0);
+  public static final Translation2d backLeftPos =
+      new Translation2d(
+          -backWidth.getMeters() / 2.0, wheelBase.getMeters() / 2.0 - CENTER_OFFSET_METERS);
+  public static final Translation2d backRightPos =
+      new Translation2d(
+          -backWidth.getMeters() / 2.0, -wheelBase.getMeters() / 2.0 + CENTER_OFFSET_METERS);
 
   public static final double driveBaseRadius = frontLeftPos.getNorm();
 
   private static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
-      module_0 = ConstantCreator.createModuleConstants(1, 0, 0, -0.445068359375 + 0.25, 0, 0, false, false, false);
+      module_0 =
+          ConstantCreator.createModuleConstants(
+              1, 0, 0, -0.445068359375 + 0.25, 0, 0, false, false, false);
 
   private static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
-      module_1 = ConstantCreator.createModuleConstants(3, 2, 1, 0.496826171875 + 0.25, 0, 0, false, false, false);
+      module_1 =
+          ConstantCreator.createModuleConstants(
+              3, 2, 1, 0.496826171875 + 0.25, 0, 0, false, false, false);
 
   private static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
-      module_2 = ConstantCreator.createModuleConstants(5, 4, 2, -0.31787109375 + 0.25, 0, 0, true, false, false);
+      module_2 =
+          ConstantCreator.createModuleConstants(
+              5, 4, 2, -0.31787109375 + 0.25, 0, 0, true, false, false);
 
   private static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
-      module_3 = ConstantCreator.createModuleConstants(7, 6, 3, 0.025146484375 + 0.25, 0, 0, true, false, false);
+      module_3 =
+          ConstantCreator.createModuleConstants(
+              7, 6, 3, 0.025146484375 + 0.25, 0, 0, true, false, false);
 
   private static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>

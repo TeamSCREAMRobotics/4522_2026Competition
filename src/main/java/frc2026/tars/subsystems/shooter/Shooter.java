@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel.FlywheelGoal;
 import frc2026.tars.subsystems.shooter.hood.Hood;
-import frc2026.tars.subsystems.shooter.hood.HoodConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood.HoodGoal;
+import frc2026.tars.subsystems.shooter.hood.HoodConstants;
 
 public class Shooter extends SubsystemBase {
   Hood hood;
