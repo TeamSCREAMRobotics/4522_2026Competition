@@ -4,31 +4,20 @@
 
 package frc2026.tars;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
-import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc2026.tars.constants.SimConstants;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.drivetrain.generated.TunerConstants;
-import frc2026.tars.subsystems.intake.IntakeConstants;
 import frc2026.tars.subsystems.intake.IntakeWrist;
-import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
 import frc2026.tars.subsystems.shooter.Shooter;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
-import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
-import frc2026.tars.subsystems.shooter.hood.HoodConstants;
 import frc2026.tars.subsystems.shooter.turret.Turret;
-import frc2026.tars.subsystems.shooter.turret.TurretConstants;
-import lombok.Getter;
 
 public class RobotContainer {
 
@@ -44,6 +33,7 @@ public class RobotContainer {
 
   // private final IntakeWrist intakeWrist = new IntakeWrist(IntakeConstants.WRIST_CONFIG);
   private final Drivetrain drivetrain = TunerConstants.drivetrain;
+
   // private final Shooter shooter = new Shooter(null, null);
   // private final Turret turret = new Turret(TurretConstants.TURRET_CONFIG);
   // private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);

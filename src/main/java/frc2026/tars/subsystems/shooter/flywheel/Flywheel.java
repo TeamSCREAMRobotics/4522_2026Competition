@@ -3,7 +3,6 @@ package frc2026.tars.subsystems.shooter.flywheel;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc2026.tars.subsystems.shooter.hood.Hood.HoodGoal;
-
 import java.util.function.DoubleSupplier;
 
 public class Flywheel extends TalonFXSubsystem {
