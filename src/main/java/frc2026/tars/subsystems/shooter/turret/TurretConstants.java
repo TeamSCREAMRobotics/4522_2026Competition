@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class TurretConstants {
 
-  public static final double REDUCTION = 13.2;
+  public static final double REDUCTION = 36.0;
   public static final double MIN_ROT_DEG = -360.0;
   public static final double MAX_ROT_DEG = 360.0;
 

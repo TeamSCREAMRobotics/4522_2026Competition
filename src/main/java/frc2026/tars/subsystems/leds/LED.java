@@ -138,7 +138,7 @@ public class LED extends SubsystemBase {
         (int) Math.round(ScreamMath.mapRange(currentValue, 1.0, targetValue, 0, length / 2));
     mapped = MathUtil.clamp(mapped, 0, length / 2);
 
-    boolean isOdd = (length % 2) == 1;
+    boolean isOdd = (length % 2) != 0;
 
     for (int i = 0; i < mapped + (isOdd ? 1 : 0); i++) {
       buffer.setLED(i, color);

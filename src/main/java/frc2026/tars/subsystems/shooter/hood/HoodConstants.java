@@ -5,13 +5,15 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.CANDevice;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXConstants;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemConfiguration;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 
 public class HoodConstants {
   // TODO: Put in actual values
-  public static final double HOOD_REDUCTION = 0;
+  public static final double HOOD_REDUCTION = 2.0;
 
-  public static final double HOOD_MAX_ANGLE = 0;
-  public static final double HOOD_MIN_ANGLE = 0;
+  public static final Rotation2d HOOD_MAX_ANGLE = new Rotation2d(Units.degreesToRadians(42.786125));
+  public static final Rotation2d HOOD_MIN_ANGLE = new Rotation2d(Units.degreesToRadians(20.786125));
 
   public static final TalonFXSubsystemConfiguration HOOD_CONFIG =
       new TalonFXSubsystemConfiguration();
