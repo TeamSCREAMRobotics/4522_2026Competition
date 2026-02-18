@@ -4,6 +4,7 @@ import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc2026.tars.subsystems.shooter.hood.Hood.HoodGoal;
 import java.util.function.DoubleSupplier;
+import lombok.Getter;
 
 public class Flywheel extends TalonFXSubsystem {
   public static double shootVel;
@@ -11,6 +12,8 @@ public class Flywheel extends TalonFXSubsystem {
   public Flywheel(TalonFXSubsystemConfiguration config) {
     super(config);
   }
+
+  @Getter public double currentVelocity = master.getRotorVelocity().getValueAsDouble();
 
   public enum FlywheelGoal implements TalonFXSubsystemGoal {
     IDLE(() -> 1),

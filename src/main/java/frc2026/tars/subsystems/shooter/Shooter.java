@@ -58,7 +58,8 @@ public class Shooter extends SubsystemBase {
       if (optimalAngle > 0) {
         optimalAngle =
             Math.max(
-                HoodConstants.HOOD_MIN_ANGLE, Math.min(HoodConstants.HOOD_MAX_ANGLE, optimalAngle));
+                HoodConstants.HOOD_MIN_ANGLE.getDegrees(),
+                Math.min(HoodConstants.HOOD_MAX_ANGLE.getDegrees(), optimalAngle));
         angleLookup.put(distance, optimalAngle);
       }
     }
@@ -105,7 +106,9 @@ public class Shooter extends SubsystemBase {
     double hoodAngle = angleLookup.get(horizontalDistance);
 
     hoodAngle =
-        Math.max(HoodConstants.HOOD_MIN_ANGLE, Math.min(HoodConstants.HOOD_MAX_ANGLE, hoodAngle));
+        Math.max(
+            HoodConstants.HOOD_MIN_ANGLE.getDegrees(),
+            Math.min(HoodConstants.HOOD_MAX_ANGLE.getDegrees(), hoodAngle));
 
     Trajectory.configure()
         .setTargetDistance(horizontalDistance)
@@ -129,7 +132,8 @@ public class Shooter extends SubsystemBase {
 
     angleDegrees =
         Math.max(
-            HoodConstants.HOOD_MIN_ANGLE, Math.min(HoodConstants.HOOD_MAX_ANGLE, angleDegrees));
+            HoodConstants.HOOD_MIN_ANGLE.getDegrees(),
+            Math.min(HoodConstants.HOOD_MAX_ANGLE.getDegrees(), angleDegrees));
 
     return Rotation2d.fromDegrees(angleDegrees);
   }
@@ -154,7 +158,8 @@ public class Shooter extends SubsystemBase {
 
     optimalAngle =
         Math.max(
-            HoodConstants.HOOD_MIN_ANGLE, Math.min(HoodConstants.HOOD_MAX_ANGLE, optimalAngle));
+            HoodConstants.HOOD_MIN_ANGLE.getDegrees(),
+            Math.min(HoodConstants.HOOD_MAX_ANGLE.getDegrees(), optimalAngle));
 
     Trajectory.configure()
         .setTargetDistance(horizontalDistance)

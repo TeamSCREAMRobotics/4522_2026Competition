@@ -51,7 +51,7 @@ public final class DrivetrainConstants {
 
   public static final RobotConfig robotConfig =
       new RobotConfig(
-          Units.lbsToKilograms(125),
+          Units.lbsToKilograms(121.0),
           6.883,
           moduleConfig,
           TunerConstants.frontLeftPos,
