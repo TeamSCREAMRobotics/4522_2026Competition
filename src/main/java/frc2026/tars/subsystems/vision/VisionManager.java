@@ -8,12 +8,10 @@ import com.teamscreamrobotics.vision.LimelightHelpers.PoseEstimate;
 import com.teamscreamrobotics.vision.LimelightVision.Limelight;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
@@ -40,9 +38,9 @@ public class VisionManager {
         new Limelight(
             "limelight-turret",
             new Pose3d(
-          Units.inchesToMeters(7.608245),
-          Units.inchesToMeters(0.062500),
-          Units.inchesToMeters(20.130854),
+                Units.inchesToMeters(7.608245),
+                Units.inchesToMeters(0.062500),
+                Units.inchesToMeters(20.130854),
                 new Rotation3d(0.0, Units.degreesToRadians(-28.1), 0.0)));
     // public static final Limelight intake =
     //     new Limelight(
@@ -74,7 +72,7 @@ public class VisionManager {
 
   private PhotonCamera swerveLeft;
   private PhotonCamera swerveRight;
-  //private PhotonCamera intake;
+  // private PhotonCamera intake;
   private PhotonCamera turretCam;
   private PhotonCamera[] cameras;
   private PhotonCameraSim swerveLeftSim;
@@ -117,7 +115,7 @@ public class VisionManager {
     if (Robot.isSimulation()) {
       swerveLeft = new PhotonCamera("limelight-left");
       swerveRight = new PhotonCamera("limelight-right");
-      //intake = new PhotonCamera("intake");
+      // intake = new PhotonCamera("intake");
       turretCam = new PhotonCamera("limelight-turret");
       cameras = new PhotonCamera[] {swerveLeft, swerveRight, turretCam};
 
@@ -157,7 +155,7 @@ public class VisionManager {
     }
   }
 
-  private void addTurretEstimate(){
+  private void addTurretEstimate() {
     Limelight turretCam = Limelights.turret;
 
     LimelightHelpers.SetRobotOrientation(
@@ -170,7 +168,7 @@ public class VisionManager {
         0);
     PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(turretCam.name());
 
-    if(rejectEstimate(estimate, turretCam)){
+    if (rejectEstimate(estimate, turretCam)) {
       return;
     }
 
@@ -193,18 +191,19 @@ public class VisionManager {
         0,
         0);
 
-    PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.name());
+    PoseEstimate poseEstimate =
+        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.name());
     addPoseEstimate(poseEstimate, limelight);
   }
 
-  private void addPoseEstimate(PoseEstimate estimate, Limelight limelight){
+  private void addPoseEstimate(PoseEstimate estimate, Limelight limelight) {
     boolean shouldUseMt2 = !rejectEstimate(estimate, limelight);
 
     if (shouldUseMt2) {
       double stdFactor = Math.pow(estimate.avgTagDist, 2.75) / (estimate.tagCount * 0.5);
       double xyStds = VisionConstants.xyStdBaseline * stdFactor * VisionConstants.xyMt2StdFactor;
       double thetaStds = VisionConstants.thetaStdBaseline * stdFactor;
-      //drivetrain.addVisionMeasurement(
+      // drivetrain.addVisionMeasurement(
       //    estimate.pose,
       //    estimate.timestampSeconds,
       //    VecBuilder.fill(xyStds, xyStds, 999999999999.0),
@@ -241,8 +240,13 @@ public class VisionManager {
     }
   }
 
-  private Transform3d getRobotToTurretCamera(){
-    return robotToTurretFixed.plus(new Transform3d(GeomUtil.rotationToTransform(turret.getAngle()))).plus(new Transform3d(turretToCameraFixed.getTranslation(), new Rotation3d(0, Limelights.turret.relativePosition().getRotation().getY(),0)));
+  private Transform3d getRobotToTurretCamera() {
+    return robotToTurretFixed
+        .plus(new Transform3d(GeomUtil.rotationToTransform(turret.getAngle())))
+        .plus(
+            new Transform3d(
+                turretToCameraFixed.getTranslation(),
+                new Rotation3d(0, Limelights.turret.relativePosition().getRotation().getY(), 0)));
   }
 
   private boolean rejectEstimate(PoseEstimate estimate, Limelight limelight) {
