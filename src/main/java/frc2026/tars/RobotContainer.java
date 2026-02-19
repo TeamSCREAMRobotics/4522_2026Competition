@@ -51,7 +51,7 @@ public class RobotContainer {
   private final Turret turret = new Turret(TurretConstants.TURRET_CONFIG);
   private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
   private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
-  private final VisionManager visionManager = new VisionManager(drivetrain);
+  private final VisionManager visionManager = new VisionManager(drivetrain, turret);
 
   @Getter
   private final Subsystems subsystems =
@@ -143,7 +143,8 @@ public class RobotContainer {
     Logger.log("RobotState/Mechanisms/Setpoint", setpoint);
   }
 
-  public void logState() {
+  public void periodic() {
+    visionManager.periodic();
     robotState.logArea();
   }
 }

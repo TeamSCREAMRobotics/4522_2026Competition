@@ -4,12 +4,15 @@
 
 package frc2026.tars;
 
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.teamscreamrobotics.util.Logger;
 import dev.doglog.DogLogOptions;
+import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc2026.tars.controlboard.Dashboard;
+import frc2026.tars.subsystems.vision.VisionManager;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -29,13 +32,17 @@ public class Robot extends TimedRobot {
             .withNtPublish(true)
             .withLogEntryQueueCapacity(2000));
     Logger.setEnabled(true);
+
+    CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
+
+    Threads.setCurrentThreadPriority(true, 10);
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
 
-    m_robotContainer.logState();
+    m_robotContainer.periodic();
   }
 
   @Override
