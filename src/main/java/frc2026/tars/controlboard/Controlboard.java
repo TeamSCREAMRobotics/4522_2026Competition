@@ -14,7 +14,6 @@ import java.util.function.Supplier;
 
 public class Controlboard {
   public static final CommandXboxController driveController = new CommandXboxController(0);
-  public static final CommandXboxController operatorController = new CommandXboxController(1);
 
   public static final double STICK_DEADBAND = 0.05;
   public static final double TRIGGER_DEADBAND = 0.1;
@@ -66,18 +65,34 @@ public class Controlboard {
   }
 
   public static BooleanSupplier getFieldCentric() {
-    return () -> fieldCentric;
-  }
-
-  public static BooleanSupplier getSlowMode() {
-    return driveController.leftTrigger(TRIGGER_DEADBAND).or(driveController.leftBumper());
+    return () -> Dashboard.fieldCentric.get();
   }
 
   public static Trigger intake() {
-    return driveController.rightTrigger(TRIGGER_DEADBAND);
+    return driveController.leftTrigger(TRIGGER_DEADBAND);
   }
 
   public static Trigger shoot() {
-    return driveController.leftBumper();
+    return driveController.rightTrigger(TRIGGER_DEADBAND);
+  }
+
+  public static Trigger zeroIntake() {
+    return new Trigger(() -> Dashboard.zeroIntake.get());
+  }
+
+  public static Trigger zeroClimber() {
+    return new Trigger(() -> Dashboard.zeroClimber.get());
+  }
+
+  public static Trigger zeroHood() {
+    return new Trigger(() -> Dashboard.zeroHood.get());
+  }
+
+  public static Trigger resetManuals() {
+    return new Trigger(() -> Dashboard.resetManuals.get());
+  }
+
+  public static Trigger resetFieldCentric() {
+    return new Trigger(() -> Dashboard.fieldCentric.get());
   }
 }
