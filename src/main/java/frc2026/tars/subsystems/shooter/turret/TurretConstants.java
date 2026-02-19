@@ -75,7 +75,7 @@ public class TurretConstants {
   static {
     TURRET_CONFIG.name = "Turret";
 
-    TURRET_CONFIG.codeEnabled = false;
+    TURRET_CONFIG.codeEnabled = true;
     TURRET_CONFIG.logTelemetry = false;
     TURRET_CONFIG.debugMode = false;
 
