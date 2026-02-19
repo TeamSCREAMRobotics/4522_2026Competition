@@ -96,7 +96,7 @@ public class IntakeWrist extends TalonFXSubsystem {
                 new WaitUntilCommand(
                     () ->
                         ((Timer.getFPGATimestamp() - startTime) > 0.5)
-                            && master.getSupplyCurrent().getValueAsDouble() > 2.0)),
+                            && master.getSupplyCurrent().getValueAsDouble() > 1.8)),
         new InstantCommand(() -> resetPosition(0)));
   }
 }
