@@ -32,5 +32,7 @@ public class HoodConstants {
     HOOD_CONFIG.rotorToSensorRatio = HOOD_REDUCTION;
     HOOD_CONFIG.enableSupplyCurrentLimit = true;
     HOOD_CONFIG.supplyCurrentLimit = 35;
+
+    HOOD_CONFIG.acceleration = 120.0;
   }
 }
