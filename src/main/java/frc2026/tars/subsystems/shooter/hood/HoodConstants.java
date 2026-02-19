@@ -21,12 +21,12 @@ public class HoodConstants {
   static {
     HOOD_CONFIG.name = "Hood";
 
-    HOOD_CONFIG.codeEnabled = true;
+    HOOD_CONFIG.codeEnabled = false;
     HOOD_CONFIG.logTelemetry = false;
     HOOD_CONFIG.debugMode = false;
 
     HOOD_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(10), InvertedValue.CounterClockwise_Positive);
+        new TalonFXConstants(new CANDevice(9), InvertedValue.CounterClockwise_Positive);
 
     HOOD_CONFIG.neutralMode = NeutralModeValue.Brake;
     HOOD_CONFIG.rotorToSensorRatio = HOOD_REDUCTION;

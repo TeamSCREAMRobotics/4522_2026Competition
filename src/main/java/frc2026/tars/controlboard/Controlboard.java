@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc2026.tars.subsystems.drivetrain.DrivetrainConstants;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -14,7 +15,6 @@ import java.util.function.Supplier;
 public class Controlboard {
   public static final CommandXboxController driveController = new CommandXboxController(0);
   public static final CommandXboxController operatorController = new CommandXboxController(1);
-  public static final Buttonboard buttonboard = new Buttonboard(2, 3);
 
   public static final double STICK_DEADBAND = 0.05;
   public static final double TRIGGER_DEADBAND = 0.1;
@@ -71,5 +71,13 @@ public class Controlboard {
 
   public static BooleanSupplier getSlowMode() {
     return driveController.leftTrigger(TRIGGER_DEADBAND).or(driveController.leftBumper());
+  }
+
+  public static Trigger intake() {
+    return driveController.rightTrigger(TRIGGER_DEADBAND);
+  }
+
+  public static Trigger shoot() {
+    return driveController.leftBumper();
   }
 }

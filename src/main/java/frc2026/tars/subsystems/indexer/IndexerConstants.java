@@ -22,13 +22,13 @@ public class IndexerConstants {
   static {
     INDEXER_CONFIG.name = "Indexer";
 
-    INDEXER_CONFIG.codeEnabled = true;
+    INDEXER_CONFIG.codeEnabled = false;
     INDEXER_CONFIG.logTelemetry = false;
     INDEXER_CONFIG.logTelemetry = false;
     INDEXER_CONFIG.debugMode = false;
 
     INDEXER_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(10, ""), InvertedValue.Clockwise_Positive);
+        new TalonFXConstants(new CANDevice(13, ""), InvertedValue.Clockwise_Positive);
     INDEXER_CONFIG.sensorToMechRatio = INDEXER_REDUCTION;
     INDEXER_CONFIG.supplyCurrentLimit = 40;
     INDEXER_CONFIG.enableSupplyCurrentLimit = true;

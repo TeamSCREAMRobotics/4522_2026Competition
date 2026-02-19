@@ -32,8 +32,8 @@ public class RobotState {
   }
 
   public enum Area {
-    REDALLIANCE(FieldConstants.AllianceZones.redAlliance),
-    BLUEALLIANCE(FieldConstants.AllianceZones.blueAlliance),
+    REDALLIANCE(FieldConstants.REDALLIANCE),
+    BLUEALLIANCE(FieldConstants.BLUEALLIANCE),
     BUMPS(
         FieldConstants.LeftBump.leftBump,
         FieldConstants.LeftBump.oppLeftBump,
@@ -44,8 +44,8 @@ public class RobotState {
         FieldConstants.LeftTrench.oppLeftTrench,
         FieldConstants.RightTrench.rightTrench,
         FieldConstants.RightTrench.oppRightTrench),
-    UPPERNEUTRALZONE(FieldConstants.NeutralZones.UPPER_NEUTRAL),
-    LOWERNEUTRALZONE(FieldConstants.NeutralZones.LOWER_NEUTRAL);
+    UPPERNEUTRALZONE(FieldConstants.UPPER_NEUTRAL),
+    LOWERNEUTRALZONE(FieldConstants.LOWER_NEUTRAL);
 
     public List<RectangularPoseArea> areas;
 
@@ -123,8 +123,8 @@ public class RobotState {
     }
 
     Logger.log("RobotState/Area Is Present", getArea().isPresent());
-    if (getArea().isPresent()) {
-      Logger.log("RobotState/Area", getArea().get().name());
-    }
+    // if (getArea().isPresent()) {
+    //   Logger.log("RobotState/Area", getArea().get().name());
+    // }
   }
 }

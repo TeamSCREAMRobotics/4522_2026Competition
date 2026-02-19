@@ -15,7 +15,7 @@ public class IntakeRollers extends TalonFXSubsystem {
   }
 
   public enum IntakeRollersGoal implements TalonFXSubsystemGoal {
-    STOW(() -> 0.0),
+    STOP(() -> 0.0),
     INTAKE(() -> 6.0),
     OUTTAKE(() -> -6.0);
 

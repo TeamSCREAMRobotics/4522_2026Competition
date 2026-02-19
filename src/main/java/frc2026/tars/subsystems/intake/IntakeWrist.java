@@ -8,10 +8,15 @@ import com.teamscreamrobotics.dashboard.Ligament;
 import com.teamscreamrobotics.dashboard.Mechanism;
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
+import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc2026.tars.constants.SimConstants;
 import java.util.function.DoubleSupplier;
 
@@ -43,8 +48,8 @@ public class IntakeWrist extends TalonFXSubsystem {
   }
 
   public enum IntakeWristGoal implements TalonFXSubsystemGoal {
-    STOW(() -> Units.degreesToRotations(111.6736)),
-    EXTENDED(() -> Units.degreesToRotations(45));
+    STOW(() -> Units.degreesToRotations(0.0)),
+    EXTENDED(() -> Units.degreesToRotations(90.0));
 
     public final DoubleSupplier position;
     ;
@@ -71,5 +76,27 @@ public class IntakeWrist extends TalonFXSubsystem {
   @Override
   public synchronized Command applyGoalCommand(TalonFXSubsystemGoal goal) {
     return super.applyGoalCommand(goal).beforeStarting(() -> super.goal = goal);
+  }
+
+  @Override
+  public void periodic() {
+    super.periodic();
+
+    Logger.log(logPrefix + "Angle", this.getAngle().getDegrees());
+  }
+
+  private double startTime = 0.0;
+
+  public Command zero() {
+
+    return new SequentialCommandGroup(
+        new InstantCommand(() -> startTime = Timer.getFPGATimestamp()),
+        applyVoltageCommand(() -> -1.0)
+            .withDeadline(
+                new WaitUntilCommand(
+                    () ->
+                        ((Timer.getFPGATimestamp() - startTime) > 0.5)
+                            && master.getSupplyCurrent().getValueAsDouble() > 2.0)),
+        new InstantCommand(() -> resetPosition(0)));
   }
 }
