@@ -73,7 +73,7 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("test", 1);
 
-    // mechVisualizer.setEnabled(true);
+    mechVisualizer.setEnabled(true);
 
     drivetrain.setDefaultCommand(
         drivetrain
