@@ -274,7 +274,9 @@ public class Turret extends TalonFXSubsystem {
   public Command pointAtHubCenter(Supplier<Pose2d> robotPose) {
     return pointAtFieldPosition(
             () ->
-                AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter),
+                AllianceFlipUtil.get(
+                    FieldConstants.Hub.innerCenterPoint.toTranslation2d(),
+                    FieldConstants.Hub.oppTopCenterPoint.toTranslation2d()),
             robotPose)
         .withName("PointAtHubCenter");
   }

@@ -139,7 +139,7 @@ public class TunerConstants {
   public static final Length backWidth = Length.fromInches(13.276151);
   public static final Length wheelBase = Length.fromInches(23.496847);
 
-  private static final double CENTER_OFFSET_METERS = 0.142543;
+  private static final double CENTER_OFFSET_METERS = 0.143;
 
   public static final Translation2d frontLeftPos =
       new Translation2d(frontWidth.getMeters() / 2.0, wheelBase.getMeters() / 2.0);

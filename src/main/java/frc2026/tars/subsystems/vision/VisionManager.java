@@ -42,25 +42,25 @@ public class VisionManager {
                 Units.inchesToMeters(8.0),
                 Units.inchesToMeters(18.5),
                 new Rotation3d(0.0, Units.degreesToRadians(28.1), 0.0)));
-    public static final Limelight intake =
+    // public static final Limelight intake =
+    //     new Limelight(
+    //         "limelight-intake",
+    //         new Pose3d(
+    //             0.0,
+    //             Units.inchesToMeters(10.5),
+    //             Units.inchesToMeters(16.0),
+    //             new Rotation3d(0, Units.degreesToRadians(-20.0), Units.degreesToRadians(35))));
+    public static final Limelight swerveLeft =
         new Limelight(
-            "limelight-intake",
-            new Pose3d(
-                0.0,
-                Units.inchesToMeters(10.5),
-                Units.inchesToMeters(16.0),
-                new Rotation3d(0, Units.degreesToRadians(-20.0), Units.degreesToRadians(35))));
-    public static final Limelight climberA =
-        new Limelight(
-            "limelight-climbera",
+            "limelight-left",
             new Pose3d(
                 0.0,
                 0.0,
                 Units.inchesToMeters(8.0),
                 new Rotation3d(0.0, Units.degreesToRadians(28.1), Math.PI)));
-    public static final Limelight climberB =
+    public static final Limelight swerveRight =
         new Limelight(
-            "limelight-climberb",
+            "limelight-right",
             new Pose3d(
                 0.0,
                 0.0,
@@ -68,14 +68,14 @@ public class VisionManager {
                 new Rotation3d(0, Units.degreesToRadians(28.1), Math.PI)));
   }
 
-  private PhotonCamera climberA;
-  private PhotonCamera climberB;
+  private PhotonCamera swerveLeft;
+  private PhotonCamera swerveRight;
   private PhotonCamera intake;
   private PhotonCamera turretCam;
   private PhotonCamera[] cameras;
-  private PhotonCameraSim climberASim;
-  private PhotonCameraSim climberbsim;
-  private PhotonCameraSim intakeSim;
+  private PhotonCameraSim swerveLeftSim;
+  private PhotonCameraSim swerveRightSim;
+  // private PhotonCameraSim intakeSim;
   private PhotonCameraSim turretSim;
   private PhotonCameraSim[] simCameras;
   private VisionSystemSim visionSim;
@@ -90,9 +90,7 @@ public class VisionManager {
 
   private final Drivetrain drivetrain;
   private final Limelight[] limelights =
-      new Limelight[] {
-        Limelights.intake, Limelights.turret // , Limelights.STATION, //Limelights.CLIMBER
-      };
+      new Limelight[] {Limelights.turret, Limelights.swerveLeft, Limelights.swerveRight};
 
   public static boolean hasEnabled = false;
 
@@ -100,11 +98,11 @@ public class VisionManager {
     this.drivetrain = drivetrain;
 
     if (Robot.isSimulation()) {
-      climberA = new PhotonCamera("climberA");
-      climberB = new PhotonCamera("climberB");
+      swerveLeft = new PhotonCamera("left");
+      swerveRight = new PhotonCamera("right");
       intake = new PhotonCamera("intake");
       turretCam = new PhotonCamera("turret");
-      cameras = new PhotonCamera[] {climberA, climberB, intake, turretCam};
+      cameras = new PhotonCamera[] {swerveLeft, swerveRight, intake, turretCam};
 
       visionSim = new VisionSystemSim("main");
 
@@ -120,21 +118,19 @@ public class VisionManager {
       cameraProps.setAvgLatencyMs(10);
       cameraProps.setLatencyStdDevMs(3);
 
-      climberASim = new PhotonCameraSim(climberA, cameraProps);
-      climberbsim = new PhotonCameraSim(climberB, cameraProps);
-      intakeSim = new PhotonCameraSim(intake, cameraProps);
+      swerveLeftSim = new PhotonCameraSim(swerveLeft, cameraProps);
+      swerveRightSim = new PhotonCameraSim(swerveRight, cameraProps);
+      // intakeSim = new PhotonCameraSim(intake, cameraProps);
       turretSim = new PhotonCameraSim(turretCam, cameraProps);
 
-      simCameras = new PhotonCameraSim[] {climberASim, climberbsim, intakeSim, turretSim};
+      simCameras = new PhotonCameraSim[] {swerveLeftSim, swerveRightSim, turretSim};
 
       visionSim.addCamera(
-          climberASim, GeomUtil.pose3dToTransform3d(Limelights.intake.relativePosition()));
+          swerveLeftSim, GeomUtil.pose3dToTransform3d(Limelights.swerveLeft.relativePosition()));
       visionSim.addCamera(
-          climberbsim, GeomUtil.pose3dToTransform3d(Limelights.turret.relativePosition()));
+          swerveRightSim, GeomUtil.pose3dToTransform3d(Limelights.swerveRight.relativePosition()));
       visionSim.addCamera(
-          intakeSim, GeomUtil.pose3dToTransform3d(Limelights.climberA.relativePosition()));
-      visionSim.addCamera(
-          turretSim, GeomUtil.pose3dToTransform3d(Limelights.climberB.relativePosition()));
+          turretSim, GeomUtil.pose3dToTransform3d(Limelights.swerveRight.relativePosition()));
 
       for (PhotonCameraSim camera : simCameras) {
         camera.enableRawStream(true);

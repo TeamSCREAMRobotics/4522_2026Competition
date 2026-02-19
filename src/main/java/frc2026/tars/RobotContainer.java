@@ -4,20 +4,32 @@
 
 package frc2026.tars;
 
+import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc2026.tars.constants.SimConstants;
 import frc2026.tars.controlboard.Controlboard;
+import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.drivetrain.generated.TunerConstants;
+import frc2026.tars.subsystems.intake.IntakeConstants;
+import frc2026.tars.subsystems.intake.IntakeRollers;
 import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.shooter.Shooter;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
+import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
+import frc2026.tars.subsystems.shooter.hood.HoodConstants;
 import frc2026.tars.subsystems.shooter.turret.Turret;
+import frc2026.tars.subsystems.shooter.turret.TurretConstants;
+import frc2026.tars.subsystems.vision.VisionManager;
+import lombok.Getter;
 
 public class RobotContainer {
 
@@ -31,26 +43,28 @@ public class RobotContainer {
 
   private final CommandXboxController joystick = new CommandXboxController(0);
 
-  // private final IntakeWrist intakeWrist = new IntakeWrist(IntakeConstants.WRIST_CONFIG);
+  private final IntakeWrist intakeWrist = new IntakeWrist(IntakeConstants.INTAKE_WRIST_CONFIG);
+  private final IntakeRollers intakeRollers = new IntakeRollers(IntakeConstants.ROLLERS_CONFIG);
   private final Drivetrain drivetrain = TunerConstants.drivetrain;
 
-  // private final Shooter shooter = new Shooter(null, null);
-  // private final Turret turret = new Turret(TurretConstants.TURRET_CONFIG);
-  // private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
-  // private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
+  private final Shooter shooter = new Shooter(null, null);
+  private final Turret turret = new Turret(TurretConstants.TURRET_CONFIG);
+  private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
+  private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
+  private final VisionManager visionManager = new VisionManager(drivetrain);
 
-  // @Getter
-  // private final Subsystems subsystems =
-  //     new Subsystems(drivetrain, intakeWrist, shooter, turret, hood, flywheel);
+  @Getter
+  private final Subsystems subsystems =
+      new Subsystems(drivetrain, intakeWrist, shooter, turret, hood, flywheel);
 
-  // @Getter private final RobotState robotState = new RobotState(subsystems);
+  @Getter private final RobotState robotState = new RobotState(subsystems);
 
-  // private final MechanismVisualizer mechVisualizer =
-  //     new MechanismVisualizer(
-  //         SimConstants.MEASURED_MECHANISM,
-  //         SimConstants.SETPOINT_MECHANISM,
-  //         RobotContainer::telemeterizeMechanisms,
-  //         intakeWrist.intakeMech);
+  private final MechanismVisualizer mechVisualizer =
+      new MechanismVisualizer(
+          SimConstants.MEASURED_MECHANISM,
+          SimConstants.SETPOINT_MECHANISM,
+          RobotContainer::telemeterizeMechanisms,
+          intakeWrist.intakeMech);
 
   public RobotContainer() {
     configureBindings();
@@ -90,11 +104,35 @@ public class RobotContainer {
     //     .whileTrue(intakeWrist.applyGoalCommand(IntakeWristGoal.EXTENDED))
     //     .onFalse(intakeWrist.applyGoalCommand(IntakeWristGoal.STOW));
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+    Controlboard.intake()
+        .onTrue(
+            new SequentialCommandGroup(
+                    intakeRollers
+                        .applyGoalCommand(IntakeRollers.IntakeRollersGoal.INTAKE)
+                        .alongWith(
+                            intakeWrist.applyGoalCommand(IntakeWrist.IntakeWristGoal.EXTENDED)))
+                .withName("Intaking"))
+        .onFalse(
+            new SequentialCommandGroup(
+                    intakeRollers
+                        .applyGoalCommand(IntakeRollers.IntakeRollersGoal.STOP)
+                        .alongWith(intakeWrist.applyGoalCommand(IntakeWrist.IntakeWristGoal.STOW)))
+                .withName("Stowed"));
   }
 
-  private void configureManualOverrides() {}
+  private void configureManualOverrides() {
+    new Trigger(() -> Dashboard.zeroIntake.get())
+        .whileTrue(intakeWrist.zero().andThen(() -> Dashboard.zeroIntake.set(false)));
+  }
 
-  private void configureDefaultCommands() {}
+  private void configureDefaultCommands() {
+    intakeWrist.setDefaultCommand(
+        intakeWrist.applyGoalCommand(IntakeWrist.IntakeWristGoal.STOW).withName("Stow"));
+
+    intakeRollers.setDefaultCommand(
+        intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.STOP).withName("Stopped"));
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
@@ -106,6 +144,6 @@ public class RobotContainer {
   }
 
   public void logState() {
-    // robotState.logArea();
+    robotState.logArea();
   }
 }
