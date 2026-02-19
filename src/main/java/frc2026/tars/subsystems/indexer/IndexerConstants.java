@@ -1,22 +1,15 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc2026.tars.subsystems.indexer;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.*;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemConfiguration;
 
-/** Add your docs here. */
 public class IndexerConstants {
-  private static final double INDEXER_REDUCTION = 0.0;
-  private static final double PIPELINE_REDUCTION = 0.0;
+  private static final double SPINDEXER_REDUCTION = 0.0;
 
-  private static final TalonFXSubsystemConfiguration INDEXER_CONFIG =
-      new TalonFXSubsystemConfiguration();
+  private static final double FEEDER_REDUCTION = 0.0;
 
-  private static final TalonFXSubsystemConfiguration PIPELINE_CONFIG =
+  public static final TalonFXSubsystemConfiguration INDEXER_CONFIG =
       new TalonFXSubsystemConfiguration();
 
   static {
@@ -28,22 +21,37 @@ public class IndexerConstants {
     INDEXER_CONFIG.debugMode = false;
 
     INDEXER_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(13, ""), InvertedValue.Clockwise_Positive);
-    INDEXER_CONFIG.sensorToMechRatio = INDEXER_REDUCTION;
+        new TalonFXConstants(new CANDevice(13), InvertedValue.Clockwise_Positive);
+    INDEXER_CONFIG.slaveConstants =
+        new TalonFXConstants[] {
+          new TalonFXConstants(new CANDevice(12), InvertedValue.Clockwise_Positive)
+        };
+
+    INDEXER_CONFIG.sensorToMechRatio = SPINDEXER_REDUCTION;
     INDEXER_CONFIG.supplyCurrentLimit = 40;
     INDEXER_CONFIG.enableSupplyCurrentLimit = true;
     INDEXER_CONFIG.statorCurrentLimit = 80;
     INDEXER_CONFIG.enableStatorCurrentLimit = true;
   }
 
+  public static final TalonFXSubsystemConfiguration FEEDER_CONFIG =
+      new TalonFXSubsystemConfiguration();
+
   static {
-    PIPELINE_CONFIG.name = "PIPELINE";
+    FEEDER_CONFIG.name = "Feeder";
 
-    PIPELINE_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(23), InvertedValue.Clockwise_Positive);
+    FEEDER_CONFIG.codeEnabled = false;
+    FEEDER_CONFIG.logTelemetry = false;
+    FEEDER_CONFIG.logTelemetry = false;
+    FEEDER_CONFIG.debugMode = false;
 
-    PIPELINE_CONFIG.supplyCurrentLimit = 40;
-    PIPELINE_CONFIG.enableSupplyCurrentLimit = true;
-    PIPELINE_CONFIG.sensorToMechRatio = PIPELINE_REDUCTION;
+    FEEDER_CONFIG.masterConstants =
+        new TalonFXConstants(new CANDevice(12), InvertedValue.Clockwise_Positive);
+
+    FEEDER_CONFIG.sensorToMechRatio = FEEDER_REDUCTION;
+    FEEDER_CONFIG.supplyCurrentLimit = 40;
+    FEEDER_CONFIG.enableSupplyCurrentLimit = true;
+    FEEDER_CONFIG.statorCurrentLimit = 80;
+    FEEDER_CONFIG.enableStatorCurrentLimit = true;
   }
 }
