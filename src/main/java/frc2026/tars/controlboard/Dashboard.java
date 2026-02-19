@@ -61,7 +61,8 @@ public class Dashboard {
     zeroClimber = new DashboardBoolean(overrides, "Zero Climber", false);
     zeroHood = new DashboardBoolean(overrides, "Zero Hood", false);
     fieldCentric = new DashboardBoolean(overrides, "Reset Field Centric", false);
-    disableWaitUntilAtVelocity = new DashboardBoolean(overrides, "Disable Wait Until At Velocity", false);
+    disableWaitUntilAtVelocity =
+        new DashboardBoolean(overrides, "Disable Wait Until At Velocity", false);
     manualMode = new DashboardBoolean(overrides, "Manual Mode", false);
     resetManuals = new DashboardBoolean(overrides, "Reset Manuals", false);
     manualTurretAngle = new DashboardNumber(overrides, "Manual Turret Angle", 0.0);
