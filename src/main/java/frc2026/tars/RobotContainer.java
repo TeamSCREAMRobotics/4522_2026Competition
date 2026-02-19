@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc2026.tars;
 
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
@@ -11,11 +7,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc2026.tars.constants.SimConstants;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
+import frc2026.tars.subsystems.climber.Climber;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.drivetrain.generated.TunerConstants;
 import frc2026.tars.subsystems.intake.IntakeConstants;
@@ -41,8 +36,6 @@ public class RobotContainer {
       Hood hood,
       Flywheel flywheel) {}
 
-  private final CommandXboxController joystick = new CommandXboxController(0);
-
   private final IntakeWrist intakeWrist = new IntakeWrist(IntakeConstants.INTAKE_WRIST_CONFIG);
   private final IntakeRollers intakeRollers = new IntakeRollers(IntakeConstants.ROLLERS_CONFIG);
   private final Drivetrain drivetrain = TunerConstants.drivetrain;
@@ -51,6 +44,8 @@ public class RobotContainer {
   private final Turret turret = new Turret(TurretConstants.TURRET_CONFIG);
   private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
   private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
+  private final Climber climber = new Climber(HoodConstants.HOOD_CONFIG);
+
   private final VisionManager visionManager = new VisionManager(drivetrain, turret);
 
   @Getter
@@ -74,6 +69,26 @@ public class RobotContainer {
     SmartDashboard.putNumber("test", 1);
 
     mechVisualizer.setEnabled(true);
+  }
+
+  private void configureBindings() {
+    Controlboard.intake()
+        .onTrue(
+            new SequentialCommandGroup(
+                    intakeRollers
+                        .applyGoalCommand(IntakeRollers.IntakeRollersGoal.INTAKE)
+                        .alongWith(
+                            intakeWrist.applyGoalCommand(IntakeWrist.IntakeWristGoal.EXTENDED)))
+                .withName("Intaking"))
+        .onFalse(
+            new SequentialCommandGroup(
+                    intakeRollers
+                        .applyGoalCommand(IntakeRollers.IntakeRollersGoal.STOP)
+                        .alongWith(intakeWrist.applyGoalCommand(IntakeWrist.IntakeWristGoal.STOW)))
+                .withName("Stowed"));
+  }
+
+  private void configureDefaultCommands() {
 
     drivetrain.setDefaultCommand(
         drivetrain
@@ -96,42 +111,28 @@ public class RobotContainer {
                                 Controlboard.getRotation().getAsDouble()))
             .beforeStarting(() -> drivetrain.getHelper().setLastAngle(drivetrain.getHeading()))
             .withName("Drivetrain: Default command"));
-  }
 
-  private void configureBindings() {
-    // joystick
-    //     .a()
-    //     .whileTrue(intakeWrist.applyGoalCommand(IntakeWristGoal.EXTENDED))
-    //     .onFalse(intakeWrist.applyGoalCommand(IntakeWristGoal.STOW));
-    joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-
-    Controlboard.intake()
-        .onTrue(
-            new SequentialCommandGroup(
-                    intakeRollers
-                        .applyGoalCommand(IntakeRollers.IntakeRollersGoal.INTAKE)
-                        .alongWith(
-                            intakeWrist.applyGoalCommand(IntakeWrist.IntakeWristGoal.EXTENDED)))
-                .withName("Intaking"))
-        .onFalse(
-            new SequentialCommandGroup(
-                    intakeRollers
-                        .applyGoalCommand(IntakeRollers.IntakeRollersGoal.STOP)
-                        .alongWith(intakeWrist.applyGoalCommand(IntakeWrist.IntakeWristGoal.STOW)))
-                .withName("Stowed"));
-  }
-
-  private void configureManualOverrides() {
-    new Trigger(() -> Dashboard.zeroIntake.get())
-        .whileTrue(intakeWrist.zero().andThen(() -> Dashboard.zeroIntake.set(false)));
-  }
-
-  private void configureDefaultCommands() {
     intakeWrist.setDefaultCommand(
         intakeWrist.applyGoalCommand(IntakeWrist.IntakeWristGoal.STOW).withName("Stow"));
 
     intakeRollers.setDefaultCommand(
         intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.STOP).withName("Stopped"));
+  }
+
+  private void configureManualOverrides() {
+    Controlboard.resetFieldCentric()
+        .whileTrue(
+            drivetrain
+                .runOnce(() -> drivetrain.seedFieldCentric())
+                .andThen(() -> Dashboard.zeroIntake.set(false)));
+
+    Controlboard.zeroIntake()
+        .whileTrue(intakeWrist.zero().andThen(() -> Dashboard.zeroIntake.set(false)));
+
+    Controlboard.zeroClimber()
+        .whileTrue(climber.zero().andThen(() -> Dashboard.zeroClimber.set(false)));
+
+    Controlboard.zeroHood().whileTrue(hood.zero().andThen(() -> Dashboard.zeroHood.set(false)));
   }
 
   public Command getAutonomousCommand() {
