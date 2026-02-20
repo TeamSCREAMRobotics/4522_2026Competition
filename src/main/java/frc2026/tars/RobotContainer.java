@@ -1,5 +1,7 @@
 package frc2026.tars;
 
+import java.util.function.BooleanSupplier;
+
 import com.pathplanner.lib.auto.NamedCommands;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.gameutil.FieldConstants;
