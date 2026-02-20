@@ -1,7 +1,6 @@
 package frc2026.tars;
 
-import java.util.function.BooleanSupplier;
-
+import com.pathplanner.lib.auto.NamedCommands;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
@@ -27,7 +26,9 @@ import frc2026.tars.subsystems.indexer.Feeder.FeederGoal;
 import frc2026.tars.subsystems.indexer.Spindexer.SpindexerGoal;
 import frc2026.tars.subsystems.intake.IntakeConstants;
 import frc2026.tars.subsystems.intake.IntakeRollers;
+import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
 import frc2026.tars.subsystems.intake.IntakeWrist;
+import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
 import frc2026.tars.subsystems.shooter.Shooter;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
@@ -125,6 +126,7 @@ public class RobotContainer {
     configureBindings();
     configureManualOverrides();
     configureDefaultCommands();
+    configureAutoCommands();
 
     SmartDashboard.putNumber("test", 1);
 
@@ -175,6 +177,25 @@ public class RobotContainer {
             .withName("Drivetrain: Default command"));
 
             turret.setDefaultCommand(aimCommand());
+  }
+
+  private void configureAutoCommands() {
+
+    NamedCommands.registerCommand(
+        "Intake Out",
+        new SequentialCommandGroup(
+                intakeWrist
+                    .applyGoalCommand(IntakeWristGoal.STOW)
+                    .alongWith(intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE)))
+            .withName("Auto Intake Out"));
+
+    NamedCommands.registerCommand(
+        "Intake In",
+        new SequentialCommandGroup(
+                intakeWrist
+                    .applyGoalCommand(IntakeWristGoal.STOW)
+                    .alongWith(intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE)))
+            .withName("Auto Intake Out"));
   }
 
   private void configureManualOverrides() {
