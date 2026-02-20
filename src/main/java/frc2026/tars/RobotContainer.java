@@ -1,5 +1,6 @@
 package frc2026.tars;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -16,6 +17,8 @@ import frc2026.tars.subsystems.drivetrain.generated.TunerConstants;
 import frc2026.tars.subsystems.intake.IntakeConstants;
 import frc2026.tars.subsystems.intake.IntakeRollers;
 import frc2026.tars.subsystems.intake.IntakeWrist;
+import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
+import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
 import frc2026.tars.subsystems.shooter.Shooter;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
@@ -65,6 +68,7 @@ public class RobotContainer {
     configureBindings();
     configureManualOverrides();
     configureDefaultCommands();
+    configureAutoCommands();
 
     SmartDashboard.putNumber("test", 1);
 
@@ -117,6 +121,24 @@ public class RobotContainer {
 
     intakeRollers.setDefaultCommand(
         intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.STOP).withName("Stopped"));
+  }
+
+  private void configureAutoCommands(){
+
+    NamedCommands.registerCommand("Intake Out", 
+        new SequentialCommandGroup(
+            intakeWrist.applyGoalCommand(IntakeWristGoal.STOW)
+        .alongWith(
+            intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE)
+        )).withName("Auto Intake Out"));
+
+    NamedCommands.registerCommand("Intake In", 
+        new SequentialCommandGroup(
+            intakeWrist.applyGoalCommand(IntakeWristGoal.STOW)
+        .alongWith(
+            intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE)
+        )).withName("Auto Intake Out"));
+        
   }
 
   private void configureManualOverrides() {
