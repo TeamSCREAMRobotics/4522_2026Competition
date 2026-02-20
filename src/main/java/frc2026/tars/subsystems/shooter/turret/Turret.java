@@ -79,8 +79,8 @@ public class Turret extends TalonFXSubsystem {
                 TurretConstants.GEAR_1_TOOTH_COUNT,
                 TurretConstants.GEAR_2_TOOTH_COUNT)
             .withMechanismRange(
-                Rotations.of(TurretConstants.MIN_ROT_DEG / 360),
-                Rotations.of(TurretConstants.MAX_ROT_DEG / 360))
+                Rotations.of(TurretConstants.MIN_ROT_DEG / TurretConstants.REDUCTION),
+                Rotations.of(TurretConstants.MAX_ROT_DEG / TurretConstants.REDUCTION))
             .withMatchTolerance(Rotations.of(TurretConstants.CRT_MATCH_TOLERANCE));
 
     easyCRT = new EasyCRT(easyCRTConfig);

@@ -14,7 +14,7 @@ public class FlywheelConstants {
   static {
     FLYWHEEL_CONFIG.name = "Flywheel";
 
-    FLYWHEEL_CONFIG.codeEnabled = false;
+    FLYWHEEL_CONFIG.codeEnabled = true;
     FLYWHEEL_CONFIG.logTelemetry = false;
     FLYWHEEL_CONFIG.debugMode = false;
 

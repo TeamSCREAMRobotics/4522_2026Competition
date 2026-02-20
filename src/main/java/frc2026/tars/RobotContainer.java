@@ -1,7 +1,14 @@
 package frc2026.tars;
 
+import java.util.function.BooleanSupplier;
+
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
+import com.teamscreamrobotics.gameutil.FieldConstants;
+import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
+
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,6 +20,11 @@ import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.climber.Climber;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.drivetrain.generated.TunerConstants;
+import frc2026.tars.subsystems.indexer.Feeder;
+import frc2026.tars.subsystems.indexer.IndexerConstants;
+import frc2026.tars.subsystems.indexer.Spindexer;
+import frc2026.tars.subsystems.indexer.Feeder.FeederGoal;
+import frc2026.tars.subsystems.indexer.Spindexer.SpindexerGoal;
 import frc2026.tars.subsystems.intake.IntakeConstants;
 import frc2026.tars.subsystems.intake.IntakeRollers;
 import frc2026.tars.subsystems.intake.IntakeWrist;
@@ -34,7 +46,9 @@ public class RobotContainer {
       Shooter shooter,
       Turret turret,
       Hood hood,
-      Flywheel flywheel) {}
+      Flywheel flywheel,
+      Spindexer spindexer,
+      Feeder feeder) {}
 
   private final IntakeWrist intakeWrist = new IntakeWrist(IntakeConstants.INTAKE_WRIST_CONFIG);
   private final IntakeRollers intakeRollers = new IntakeRollers(IntakeConstants.ROLLERS_CONFIG);
@@ -46,11 +60,14 @@ public class RobotContainer {
   private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
   private final Climber climber = new Climber(HoodConstants.HOOD_CONFIG);
 
+  private final Spindexer spindexer = new Spindexer(IndexerConstants.SPINDEXER_CONFIG);
+  private final Feeder feeder = new Feeder(IndexerConstants.FEEDER_CONFIG);
+
   private final VisionManager visionManager = new VisionManager(drivetrain, turret);
 
   @Getter
   private final Subsystems subsystems =
-      new Subsystems(drivetrain, intakeWrist, shooter, turret, hood, flywheel);
+      new Subsystems(drivetrain, intakeWrist, shooter, turret, hood, flywheel, spindexer, feeder);
 
   @Getter private final RobotState robotState = new RobotState(subsystems);
 
@@ -60,6 +77,49 @@ public class RobotContainer {
           SimConstants.SETPOINT_MECHANISM,
           RobotContainer::telemeterizeMechanisms,
           intakeWrist.intakeMech);
+
+          public Translation2d getFerryZone() {
+    if (drivetrain.getEstimatedPose().getY() >= FieldConstants.fieldWidth / 2.0) {
+      return AllianceFlipUtil.get(
+          FieldConstants.AllianceZones.leftAllianceZone,
+          FieldConstants.AllianceZones.oppLeftAllianceZone);
+    } else {
+      return AllianceFlipUtil.get(
+          FieldConstants.AllianceZones.rightAllianceZone,
+          FieldConstants.AllianceZones.oppRightAllianceZone);
+    }
+  }
+
+  public BooleanSupplier inAllianceZone() {
+    if (drivetrain.getEstimatedPose().getX()
+        >= AllianceFlipUtil.get(
+            FieldConstants.fieldLength / 4, (FieldConstants.fieldLength * 3) / 4)) {
+      return () -> true;
+    } else {
+      return () -> false;
+    }
+  }
+
+  // public Rotation2d getCrossedReferencedAngle() {
+  //   double visionAngle =
+  // Units.radiansToDegrees(vision.getRotation(Length.fromInches(MaxAngularRate).getMeters()));
+  //   double
+  // }
+
+  public Command aimCommand() {
+    return turret.aimOnTheFlyPosition(
+        () ->
+            (inAllianceZone().getAsBoolean() == false
+                ? getFerryZone()
+                : AllianceFlipUtil.get(
+                    FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter)),
+        () -> drivetrain.getEstimatedPose(),
+        () ->
+            new ChassisSpeeds(
+                drivetrain.getState().Speeds.vxMetersPerSecond,
+                drivetrain.getState().Speeds.vyMetersPerSecond,
+                drivetrain.getState().Speeds.omegaRadiansPerSecond));
+  }
 
   public RobotContainer() {
     configureBindings();
@@ -72,6 +132,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    Controlboard.makeThingWork().whileTrue(Commands.parallel(spindexer.applyGoalCommand(SpindexerGoal.RUN), feeder.applyGoalCommand(FeederGoal.RUN))).whileFalse(Commands.parallel(spindexer.applyGoalCommand(SpindexerGoal.STOP), feeder.applyGoalCommand(FeederGoal.STOP)));
+
     Controlboard.intake()
         .onTrue(
             new SequentialCommandGroup(
@@ -112,11 +174,7 @@ public class RobotContainer {
             .beforeStarting(() -> drivetrain.getHelper().setLastAngle(drivetrain.getHeading()))
             .withName("Drivetrain: Default command"));
 
-    intakeWrist.setDefaultCommand(
-        intakeWrist.applyGoalCommand(IntakeWrist.IntakeWristGoal.STOW).withName("Stow"));
-
-    intakeRollers.setDefaultCommand(
-        intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.STOP).withName("Stopped"));
+            turret.setDefaultCommand(aimCommand());
   }
 
   private void configureManualOverrides() {

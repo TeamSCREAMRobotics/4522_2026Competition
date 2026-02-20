@@ -48,14 +48,15 @@ public class IntakeWrist extends TalonFXSubsystem {
   }
 
   public enum IntakeWristGoal implements TalonFXSubsystemGoal {
-    STOW(() -> Units.degreesToRotations(0.0)),
-    EXTENDED(() -> Units.degreesToRotations(90.0));
+    STOW(Rotation2d.fromDegrees(0.0)),
+    EXTENDED(Rotation2d.fromDegrees(90.0));
 
     public final DoubleSupplier position;
-    ;
+    public final Rotation2d angle;
 
-    private IntakeWristGoal(DoubleSupplier position) {
-      this.position = position;
+    private IntakeWristGoal(Rotation2d angle) {
+      this.angle = angle;
+      this.position = () -> angle.getRotations();
     }
 
     @Override
