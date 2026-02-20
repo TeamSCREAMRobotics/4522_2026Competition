@@ -96,7 +96,6 @@ public class Controlboard {
     return new Trigger(() -> Dashboard.fieldCentric.get());
   }
 
-
   public static Trigger makeThingWork() {
     return driveController.b();
   }

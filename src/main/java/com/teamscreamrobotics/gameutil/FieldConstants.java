@@ -132,7 +132,6 @@ public class FieldConstants {
 
   /** Hub related constants */
   public static class Hub {
-    
 
     // Dimensions
     public static final double width = Units.inchesToMeters(47.0);
@@ -177,8 +176,8 @@ public class FieldConstants {
     public static final Translation2d oppFarRightCorner =
         new Translation2d(oppTopCenterPoint.getX() + width / 2.0, fieldWidth / 2.0 - width / 2.0);
 
-            public static final Translation2d hubCenter = nearLeftCorner.interpolate(farRightCorner, 0.5);
-  public static final Translation2d oppHubCenter =
+    public static final Translation2d hubCenter = nearLeftCorner.interpolate(farRightCorner, 0.5);
+    public static final Translation2d oppHubCenter =
         oppNearLeftCorner.interpolate(oppFarRightCorner, 0.5);
     // Hub faces
     public static final Pose2d nearFace =

@@ -1,13 +1,10 @@
 package frc2026.tars;
 
-import java.util.function.BooleanSupplier;
-
 import com.pathplanner.lib.auto.NamedCommands;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -22,9 +19,9 @@ import frc2026.tars.subsystems.climber.Climber;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.drivetrain.generated.TunerConstants;
 import frc2026.tars.subsystems.indexer.Feeder;
+import frc2026.tars.subsystems.indexer.Feeder.FeederGoal;
 import frc2026.tars.subsystems.indexer.IndexerConstants;
 import frc2026.tars.subsystems.indexer.Spindexer;
-import frc2026.tars.subsystems.indexer.Feeder.FeederGoal;
 import frc2026.tars.subsystems.indexer.Spindexer.SpindexerGoal;
 import frc2026.tars.subsystems.intake.IntakeConstants;
 import frc2026.tars.subsystems.intake.IntakeRollers;
@@ -39,6 +36,7 @@ import frc2026.tars.subsystems.shooter.hood.HoodConstants;
 import frc2026.tars.subsystems.shooter.turret.Turret;
 import frc2026.tars.subsystems.shooter.turret.TurretConstants;
 import frc2026.tars.subsystems.vision.VisionManager;
+import java.util.function.BooleanSupplier;
 import lombok.Getter;
 
 public class RobotContainer {
@@ -81,7 +79,7 @@ public class RobotContainer {
           RobotContainer::telemeterizeMechanisms,
           intakeWrist.intakeMech);
 
-          public Translation2d getFerryZone() {
+  public Translation2d getFerryZone() {
     if (drivetrain.getEstimatedPose().getY() >= FieldConstants.fieldWidth / 2.0) {
       return AllianceFlipUtil.get(
           FieldConstants.AllianceZones.leftAllianceZone,
@@ -136,7 +134,15 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    Controlboard.makeThingWork().whileTrue(Commands.parallel(spindexer.applyGoalCommand(SpindexerGoal.RUN), feeder.applyGoalCommand(FeederGoal.RUN))).whileFalse(Commands.parallel(spindexer.applyGoalCommand(SpindexerGoal.STOP), feeder.applyGoalCommand(FeederGoal.STOP)));
+    Controlboard.makeThingWork()
+        .whileTrue(
+            Commands.parallel(
+                spindexer.applyGoalCommand(SpindexerGoal.RUN),
+                feeder.applyGoalCommand(FeederGoal.RUN)))
+        .whileFalse(
+            Commands.parallel(
+                spindexer.applyGoalCommand(SpindexerGoal.STOP),
+                feeder.applyGoalCommand(FeederGoal.STOP)));
 
     Controlboard.intake()
         .onTrue(
@@ -178,7 +184,7 @@ public class RobotContainer {
             .beforeStarting(() -> drivetrain.getHelper().setLastAngle(drivetrain.getHeading()))
             .withName("Drivetrain: Default command"));
 
-            turret.setDefaultCommand(aimCommand());
+    turret.setDefaultCommand(aimCommand());
   }
 
   private void configureAutoCommands() {
