@@ -19,18 +19,18 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 public class TurretConstants {
 
   public static final double REDUCTION = 45.0;
-  public static final double MIN_ROT_DEG = -360.0;
-  public static final double MAX_ROT_DEG = 360.0;
+  public static final double MIN_ROT_DEG = -180.0;
+  public static final double MAX_ROT_DEG = 180.0;
 
   public static final boolean ENABLE_SOFTWARE_LIMIT = true;
-  public static final double FORWARD_SOFTWARE_LIMIT = 0.95;
-  public static final double BACKWARD_SOFTWARE_LIMIT = -0.95;
+  public static final double FORWARD_SOFTWARE_LIMIT = 1;
+  public static final double BACKWARD_SOFTWARE_LIMIT = -1;
 
   public static final double MAGNITUDE = 0.95;
 
   public static final DCMotor DC_MOTOR = DCMotor.getKrakenX60(1);
   public static final int CAN_ID = 8;
-  public static final double kP = 6.9;
+  public static final double kP = 7.9;
   public static final double kI = 0.0;
   public static final double kD = 0.05;
   public static final double kS = 0.5;
@@ -75,7 +75,7 @@ public class TurretConstants {
   static {
     TURRET_CONFIG.name = "Turret";
 
-    TURRET_CONFIG.codeEnabled = true;
+    TURRET_CONFIG.codeEnabled = false;
     TURRET_CONFIG.logTelemetry = false;
     TURRET_CONFIG.debugMode = false;
 
@@ -113,11 +113,11 @@ public class TurretConstants {
             .getSlot0Configs(new FeedforwardConstants(kV, kS, 0.0, kA));
 
     INNER_CANCODER_CONFIG.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1.0);
-    INNER_CANCODER_CONFIG.MagnetSensor.withMagnetOffset(-0.00537109375);
+    INNER_CANCODER_CONFIG.MagnetSensor.withMagnetOffset(-0.296142578125);
     INNER_CANCODER_CONFIG.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
 
     OUTTER_CODER_CONFIG.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1.0);
-    OUTTER_CODER_CONFIG.MagnetSensor.withMagnetOffset(-0.924072265625);
+    OUTTER_CODER_CONFIG.MagnetSensor.withMagnetOffset(-0.386962890625);
     OUTTER_CODER_CONFIG.MagnetSensor.SensorDirection =
         SensorDirectionValue.CounterClockwise_Positive;
   }
