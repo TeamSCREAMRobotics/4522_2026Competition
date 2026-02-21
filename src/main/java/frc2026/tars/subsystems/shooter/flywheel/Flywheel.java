@@ -16,7 +16,7 @@ public class Flywheel extends TalonFXSubsystem {
   @Getter public double currentVelocity = master.getRotorVelocity().getValueAsDouble();
 
   public enum FlywheelGoal implements TalonFXSubsystemGoal {
-    IDLE(() -> 1),
+    IDLE(() -> 7.5),
     SHOOTING(shootVel);
 
     public DoubleSupplier velocity;

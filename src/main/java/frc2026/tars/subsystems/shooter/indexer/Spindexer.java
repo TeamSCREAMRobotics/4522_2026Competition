@@ -1,4 +1,4 @@
-package frc2026.tars.subsystems.indexer;
+package frc2026.tars.subsystems.shooter.indexer;
 
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import java.util.function.DoubleSupplier;

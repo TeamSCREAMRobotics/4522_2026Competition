@@ -3,9 +3,10 @@ package frc2026.tars;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.gameutil.FieldConstants;
-import com.teamscreamrobotics.math.ScreamMath;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,24 +18,22 @@ import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.climber.Climber;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.drivetrain.generated.TunerConstants;
-import frc2026.tars.subsystems.indexer.Feeder;
-import frc2026.tars.subsystems.indexer.Feeder.FeederGoal;
-import frc2026.tars.subsystems.indexer.IndexerConstants;
-import frc2026.tars.subsystems.indexer.Spindexer;
-import frc2026.tars.subsystems.indexer.Spindexer.SpindexerGoal;
 import frc2026.tars.subsystems.intake.IntakeConstants;
 import frc2026.tars.subsystems.intake.IntakeRollers;
 import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
 import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
+import frc2026.tars.subsystems.shooter.Shooter;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
 import frc2026.tars.subsystems.shooter.hood.HoodConstants;
+import frc2026.tars.subsystems.shooter.indexer.Feeder;
+import frc2026.tars.subsystems.shooter.indexer.IndexerConstants;
+import frc2026.tars.subsystems.shooter.indexer.Spindexer;
 import frc2026.tars.subsystems.shooter.turret.Turret;
 import frc2026.tars.subsystems.shooter.turret.TurretConstants;
 import frc2026.tars.subsystems.vision.VisionManager;
-import java.util.function.BooleanSupplier;
 import lombok.Getter;
 
 public class RobotContainer {
@@ -45,7 +44,6 @@ public class RobotContainer {
       Turret turret,
       Hood hood,
       Flywheel flywheel,
-      Spindexer spindexer,
       Feeder feeder) {}
 
   private final IntakeWrist intakeWrist = new IntakeWrist(IntakeConstants.INTAKE_WRIST_CONFIG);
@@ -56,17 +54,20 @@ public class RobotContainer {
   private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
   private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
   private final Climber climber = new Climber(HoodConstants.HOOD_CONFIG);
-
   private final Spindexer spindexer = new Spindexer(IndexerConstants.SPINDEXER_CONFIG);
   private final Feeder feeder = new Feeder(IndexerConstants.FEEDER_CONFIG);
 
-  private final VisionManager visionManager = new VisionManager(drivetrain, turret);
+  @Getter
+  private final Subsystems subsystems =
+      new Subsystems(drivetrain, intakeWrist, turret, hood, flywheel, feeder);
 
-  public BooleanSupplier inAllianceZone() {
-    return () ->
-        robotState.getArea().isPresent()
-            && robotState.getArea().get() == RobotState.Area.ALLIANCEZONE;
-  }
+  @Getter private final RobotState robotState = new RobotState(subsystems);
+
+  private final Shooter shooter =
+      new Shooter(
+          flywheel, hood, turret, spindexer, feeder, drivetrain::getEstimatedPose, getRobotState());
+
+  private final VisionManager visionManager = new VisionManager(drivetrain, turret);
 
   public Command aimCommand() {
     return turret.aimOnTheFlyPosition(
@@ -74,12 +75,6 @@ public class RobotContainer {
         () -> drivetrain.getEstimatedPose(),
         () -> drivetrain.getState().Speeds);
   }
-
-  @Getter
-  private final Subsystems subsystems =
-      new Subsystems(drivetrain, intakeWrist, turret, hood, flywheel, spindexer, feeder);
-
-  @Getter private final RobotState robotState = new RobotState(subsystems);
 
   private final MechanismVisualizer mechVisualizer =
       new MechanismVisualizer(
@@ -121,15 +116,15 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    Controlboard.makeThingWork()
-        .whileTrue(
-            Commands.parallel(
-                spindexer.applyGoalCommand(SpindexerGoal.RUN),
-                feeder.applyGoalCommand(FeederGoal.RUN)))
-        .whileFalse(
-            Commands.parallel(
-                spindexer.applyGoalCommand(SpindexerGoal.STOP),
-                feeder.applyGoalCommand(FeederGoal.STOP)));
+    // Controlboard.makeThingWork()
+    //     .whileTrue(
+    //         Commands.parallel(
+    //             spindexer.applyGoalCommand(SpindexerGoal.RUN),
+    //             feeder.applyGoalCommand(FeederGoal.RUN)))
+    //     .whileFalse(
+    //         Commands.parallel(
+    //             spindexer.applyGoalCommand(SpindexerGoal.STOP),
+    //             feeder.applyGoalCommand(FeederGoal.STOP)));
 
     Controlboard.intake()
         .onTrue(
@@ -170,6 +165,8 @@ public class RobotContainer {
         turret
             .pointAtHubCenter(() -> drivetrain.getEstimatedPose())
             .withName("Turret: Point at hub center"));
+
+    shooter.setDefaultCommand(shooter.defaultCommand());
   }
 
   private void configureAutoCommands() {
@@ -217,10 +214,32 @@ public class RobotContainer {
     visionManager.periodic();
     robotState.logArea();
 
+    /*
+    Tell this to jackson dummy future me, turret looked correct in sim, so that means that our values or calculations for CRT are prob wrong.
+    Things that we need to check:
+    - Are we using the correct gear ratio for the turret?
+    - is the calculation for CRT correct?
+    - Is zeroing right? (I guess this is connected to CRT)
+    - Pose?
+    - Pigeon bad?
+    - Some weird issue with the DogLog stuff?
+    - Rio issue?
+    */
+
     Logger.log(
-        "Subsystems/Turret/Angle Setpoint",
-        ScreamMath.calculateAngleToPoint(
-                drivetrain.getEstimatedPose().getTranslation(), FieldConstants.Hub.hubCenter)
-            .getDegrees());
+        "Turret Pose",
+        new Pose3d(
+            drivetrain.getEstimatedPose().getX(),
+            drivetrain.getEstimatedPose().getY(),
+            0.5,
+            new Rotation3d(
+                0,
+                0,
+                drivetrain.getEstimatedPose().getRotation().getRadians()
+                    + turret.getAngle().getRadians())));
+
+    // Logger.log("Subsystems/Turret/Angle Setpoint",
+    // ScreamMath.calculateAngleToPoint(drivetrain.getEstimatedPose().getTranslation(),
+    // FieldConstants.Hub.hubCenter).getDegrees());
   }
 }

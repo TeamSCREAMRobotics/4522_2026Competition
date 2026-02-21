@@ -15,7 +15,7 @@ public class Dashboard {
   public static DashboardBoolean zeroClimber;
   public static DashboardBoolean zeroHood;
 
-  public static DashboardBoolean fieldCentric;
+  public static DashboardBoolean unClogFeeder;
   public static DashboardBoolean disableWaitUntilAtVelocity;
 
   public static DashboardBoolean manualMode;
@@ -60,7 +60,7 @@ public class Dashboard {
     zeroIntake = new DashboardBoolean(overrides, "Zero Intake", false);
     zeroClimber = new DashboardBoolean(overrides, "Zero Climber", false);
     zeroHood = new DashboardBoolean(overrides, "Zero Hood", false);
-    fieldCentric = new DashboardBoolean(overrides, "Reset Field Centric", false);
+    unClogFeeder = new DashboardBoolean(overrides, "Reset Field Centric", false);
     disableWaitUntilAtVelocity =
         new DashboardBoolean(overrides, "Disable Wait Until At Velocity", false);
     manualMode = new DashboardBoolean(overrides, "Manual Mode", false);

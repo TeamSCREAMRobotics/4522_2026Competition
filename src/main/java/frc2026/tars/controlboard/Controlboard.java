@@ -94,6 +94,10 @@ public class Controlboard {
     return new Trigger(() -> Dashboard.resetManuals.get());
   }
 
+  public static Trigger getManualMode() {
+    return new Trigger(() -> Dashboard.unClogFeeder.get());
+  }
+
   public static Trigger resetFieldCentric() {
     return driveController.back();
   }
