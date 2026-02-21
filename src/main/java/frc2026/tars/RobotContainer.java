@@ -6,7 +6,6 @@ import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.math.ScreamMath;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -64,17 +63,16 @@ public class RobotContainer {
   private final VisionManager visionManager = new VisionManager(drivetrain, turret);
 
   public BooleanSupplier inAllianceZone() {
-    return () -> robotState.getArea().isPresent() && robotState.getArea().get() == RobotState.Area.ALLIANCEZONE;
+    return () ->
+        robotState.getArea().isPresent()
+            && robotState.getArea().get() == RobotState.Area.ALLIANCEZONE;
   }
 
   public Command aimCommand() {
     return turret.aimOnTheFlyPosition(
-        () ->
-            (AllianceFlipUtil.get(
-                    FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter)),
+        () -> (AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter)),
         () -> drivetrain.getEstimatedPose(),
-        () ->
-            drivetrain.getState().Speeds);
+        () -> drivetrain.getState().Speeds);
   }
 
   @Getter
@@ -168,7 +166,10 @@ public class RobotContainer {
             .beforeStarting(() -> drivetrain.getHelper().setLastAngle(drivetrain.getHeading()))
             .withName("Drivetrain: Default command"));
 
-    turret.setDefaultCommand(turret.pointAtHubCenter(() -> drivetrain.getEstimatedPose()).withName("Turret: Point at hub center"));
+    turret.setDefaultCommand(
+        turret
+            .pointAtHubCenter(() -> drivetrain.getEstimatedPose())
+            .withName("Turret: Point at hub center"));
   }
 
   private void configureAutoCommands() {
@@ -216,6 +217,10 @@ public class RobotContainer {
     visionManager.periodic();
     robotState.logArea();
 
-    Logger.log("Subsystems/Turret/Angle Setpoint", ScreamMath.calculateAngleToPoint(drivetrain.getEstimatedPose().getTranslation(), FieldConstants.Hub.hubCenter).getDegrees());
+    Logger.log(
+        "Subsystems/Turret/Angle Setpoint",
+        ScreamMath.calculateAngleToPoint(
+                drivetrain.getEstimatedPose().getTranslation(), FieldConstants.Hub.hubCenter)
+            .getDegrees());
   }
 }

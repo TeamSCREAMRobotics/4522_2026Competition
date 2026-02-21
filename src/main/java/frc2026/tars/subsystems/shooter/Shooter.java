@@ -2,9 +2,7 @@ package frc2026.tars.subsystems.shooter;
 
 import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
-
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -47,10 +45,16 @@ public class Shooter extends SubsystemBase {
           setAimingTarget(FieldConstants.Hub.hubCenter);
           break;
         case DEPOT_SIDE_NEUTRALZONE:
-          setAimingTarget(AllianceFlipUtil.get(FieldConstants.AllianceZones.leftAllianceZone, FieldConstants.AllianceZones.oppRightAllianceZone));
+          setAimingTarget(
+              AllianceFlipUtil.get(
+                  FieldConstants.AllianceZones.leftAllianceZone,
+                  FieldConstants.AllianceZones.oppRightAllianceZone));
           break;
         case OUTPOST_SIDE_NEUTRALZONE:
-        setAimingTarget(AllianceFlipUtil.get(FieldConstants.AllianceZones.rightAllianceZone, FieldConstants.AllianceZones.oppLeftAllianceZone));
+          setAimingTarget(
+              AllianceFlipUtil.get(
+                  FieldConstants.AllianceZones.rightAllianceZone,
+                  FieldConstants.AllianceZones.oppLeftAllianceZone));
           break;
         case OTHERALLIANCEZONE:
           break;
@@ -79,7 +83,5 @@ public class Shooter extends SubsystemBase {
         });
   }
 
-  public void setAimingTarget(Translation2d target){
-
-  }
+  public void setAimingTarget(Translation2d target) {}
 }
