@@ -16,36 +16,12 @@ public class Hood extends TalonFXSubsystem {
     super(config);
   }
 
-  public enum HoodGoal implements TalonFXSubsystemGoal {
-    ZERO(Rotation2d.fromDegrees(0.0)),
-    TOPOSE(Rotation2d.fromDegrees(angle.getAsDouble()));
-
-    public Rotation2d angleRot;
-    DoubleSupplier target;
-
-    HoodGoal(Rotation2d angleRot) {
-      this.angleRot = angleRot;
-      this.target = () -> angleRot.getRotations();
-    }
-
-    @Override
-    public DoubleSupplier target() {
-      return target;
-    }
-
-    @Override
-    public ControlType controlType() {
-      return ControlType.MOTION_MAGIC_POSITION;
-    }
-
-    @Override
-    public DoubleSupplier feedForward() {
-      return () -> 0.0;
-    }
-  }
-
-  public Command applyUntilAtGoalCommand(HoodGoal goal) {
-    return super.applyGoalCommand(goal).until(() -> atGoal());
+  public Command moveToAngleCommand(Rotation2d targetAngle) {
+    return run(() -> {
+      double targetRotations = 0;
+    targetRotations = targetAngle.getRotations();
+    setSetpointMotionMagicPosition(targetRotations);
+    });
   }
 
   private double startTime = 0.0;
