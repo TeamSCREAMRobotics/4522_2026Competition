@@ -215,14 +215,18 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setShooterState() {
-    if (Controlboard.shoot().getAsBoolean() && robotState.getArea().get() == RobotState.Area.ALLIANCEZONE && !robotState.getArea().isEmpty()) {
+    if (Controlboard.shoot().getAsBoolean()
+        && robotState.getArea().get() == RobotState.Area.ALLIANCEZONE
+        && !robotState.getArea().isEmpty()) {
       setState(ShooterState.SHOOTING);
     } else if (Controlboard.shoot().getAsBoolean()
         && (robotState.getArea().get() == RobotState.Area.DEPOT_SIDE_NEUTRALZONE
-            || robotState.getArea().get() == RobotState.Area.OUTPOST_SIDE_NEUTRALZONE) && !robotState.getArea().isEmpty()) {
+            || robotState.getArea().get() == RobotState.Area.OUTPOST_SIDE_NEUTRALZONE)
+        && !robotState.getArea().isEmpty()) {
       setState(ShooterState.FERRYING);
     } else if (robotState.getArea().isPresent()
-        && robotState.getArea().get() == RobotState.Area.TRENCHES && !robotState.getArea().isEmpty()) {
+        && robotState.getArea().get() == RobotState.Area.TRENCHES
+        && !robotState.getArea().isEmpty()) {
       setState(ShooterState.STOWED);
     } else if (robotState.getArea().isEmpty()) {
       return;
