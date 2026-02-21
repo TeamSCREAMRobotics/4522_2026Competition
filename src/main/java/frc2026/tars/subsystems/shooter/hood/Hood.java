@@ -17,11 +17,12 @@ public class Hood extends TalonFXSubsystem {
   }
 
   public Command moveToAngleCommand(Rotation2d targetAngle) {
-    return run(() -> {
-      double targetRotations = 0;
-    targetRotations = targetAngle.getRotations();
-    setSetpointMotionMagicPosition(targetRotations);
-    });
+    return run(
+        () -> {
+          double targetRotations = 0;
+          targetRotations = targetAngle.getRotations();
+          setSetpointMotionMagicPosition(targetRotations);
+        });
   }
 
   private double startTime = 0.0;
