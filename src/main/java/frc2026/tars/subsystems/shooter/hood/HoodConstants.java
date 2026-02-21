@@ -26,7 +26,7 @@ public class HoodConstants {
     HOOD_CONFIG.debugMode = false;
 
     HOOD_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(9), InvertedValue.CounterClockwise_Positive);
+        new TalonFXConstants(new CANDevice(9), InvertedValue.Clockwise_Positive);
 
     HOOD_CONFIG.neutralMode = NeutralModeValue.Brake;
     HOOD_CONFIG.rotorToSensorRatio = HOOD_REDUCTION;

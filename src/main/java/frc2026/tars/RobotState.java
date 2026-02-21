@@ -2,6 +2,7 @@ package frc2026.tars;
 
 import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.gameutil.GameState;
+import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
 import com.teamscreamrobotics.zones.RectangularPoseArea;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 public class RobotState {
   private final Drivetrain drivetrain;
@@ -31,25 +33,31 @@ public class RobotState {
     NOTHING
   }
 
+  @SuppressWarnings("unchecked")
   public enum Area {
-    REDALLIANCE(FieldConstants.REDALLIANCE),
-    BLUEALLIANCE(FieldConstants.BLUEALLIANCE),
+    ALLIANCEZONE(
+        () -> AllianceFlipUtil.get(FieldConstants.BLUEALLIANCE, FieldConstants.REDALLIANCE)),
+    OTHERALLIANCEZONE(
+        () -> AllianceFlipUtil.get(FieldConstants.REDALLIANCE, FieldConstants.BLUEALLIANCE)),
     BUMPS(
-        FieldConstants.LeftBump.leftBump,
-        FieldConstants.LeftBump.oppLeftBump,
-        FieldConstants.RightBump.rightBump,
-        FieldConstants.RightBump.oppRightBump),
+        () -> FieldConstants.LeftBump.leftBump,
+        () -> FieldConstants.LeftBump.oppLeftBump,
+        () -> FieldConstants.RightBump.rightBump,
+        () -> FieldConstants.RightBump.oppRightBump),
+
     TRENCHES(
-        FieldConstants.LeftTrench.leftTrench,
-        FieldConstants.LeftTrench.oppLeftTrench,
-        FieldConstants.RightTrench.rightTrench,
-        FieldConstants.RightTrench.oppRightTrench),
-    UPPERNEUTRALZONE(FieldConstants.UPPER_NEUTRAL),
-    LOWERNEUTRALZONE(FieldConstants.LOWER_NEUTRAL);
+        () -> FieldConstants.LeftTrench.leftTrench,
+        () -> FieldConstants.LeftTrench.oppLeftTrench,
+        () -> FieldConstants.RightTrench.rightTrench,
+        () -> FieldConstants.RightTrench.oppRightTrench),
+    DEPOT_SIDE_NEUTRALZONE(
+        () -> AllianceFlipUtil.get(FieldConstants.UPPER_NEUTRAL, FieldConstants.LOWER_NEUTRAL)),
+    OUTPOST_SIDE_NEUTRALZONE(
+        () -> AllianceFlipUtil.get(FieldConstants.LOWER_NEUTRAL, FieldConstants.UPPER_NEUTRAL));
 
-    public List<RectangularPoseArea> areas;
+    public List<Supplier<RectangularPoseArea>> areas;
 
-    private Area(RectangularPoseArea... areas) {
+    private Area(Supplier<RectangularPoseArea>... areas) {
       this.areas = Arrays.asList(areas);
     }
   }
@@ -96,7 +104,8 @@ public class RobotState {
             a ->
                 a.areas != null
                     && a.areas.stream()
-                        .anyMatch(r -> r != null && r.contains(drivetrain.getEstimatedPose())))
+                        .anyMatch(
+                            r -> r != null && r.get().contains(drivetrain.getEstimatedPose())))
         .findFirst();
   }
 
@@ -117,7 +126,7 @@ public class RobotState {
   public void logArea() {
     int index = 0;
     for (Area area : Area.values()) {
-      for (RectangularPoseArea rect : area.areas) {
+      for (RectangularPoseArea rect : area.areas.stream().map(Supplier::get).toList()) {
         Logger.log("Field/Zones/" + area.name() + "_" + index++, rectangleToPolygon(rect));
       }
     }

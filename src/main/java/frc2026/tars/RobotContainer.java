@@ -3,9 +3,14 @@ package frc2026.tars;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.gameutil.FieldConstants;
+import com.teamscreamrobotics.math.ScreamMath;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
+<<<<<<< Updated upstream
 import edu.wpi.first.math.geometry.Translation2d;
+=======
+
+>>>>>>> Stashed changes
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,7 +33,6 @@ import frc2026.tars.subsystems.intake.IntakeRollers;
 import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
 import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
-import frc2026.tars.subsystems.shooter.Shooter;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
@@ -44,7 +48,6 @@ public class RobotContainer {
   public record Subsystems(
       Drivetrain drivetrain,
       IntakeWrist intakeWrist,
-      Shooter shooter,
       Turret turret,
       Hood hood,
       Flywheel flywheel,
@@ -55,7 +58,6 @@ public class RobotContainer {
   private final IntakeRollers intakeRollers = new IntakeRollers(IntakeConstants.ROLLERS_CONFIG);
   private final Drivetrain drivetrain = TunerConstants.drivetrain;
 
-  private final Shooter shooter = new Shooter(null, null);
   private final Turret turret = new Turret(TurretConstants.TURRET_CONFIG);
   private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
   private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
@@ -66,9 +68,23 @@ public class RobotContainer {
 
   private final VisionManager visionManager = new VisionManager(drivetrain, turret);
 
+  public BooleanSupplier inAllianceZone() {
+    return () -> robotState.getArea().isPresent() && robotState.getArea().get() == RobotState.Area.ALLIANCEZONE;
+  }
+
+  public Command aimCommand() {
+    return turret.aimOnTheFlyPosition(
+        () ->
+            (AllianceFlipUtil.get(
+                    FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter)),
+        () -> drivetrain.getEstimatedPose(),
+        () ->
+            drivetrain.getState().Speeds);
+  }
+
   @Getter
   private final Subsystems subsystems =
-      new Subsystems(drivetrain, intakeWrist, shooter, turret, hood, flywheel, spindexer, feeder);
+      new Subsystems(drivetrain, intakeWrist, turret, hood, flywheel, spindexer, feeder);
 
   @Getter private final RobotState robotState = new RobotState(subsystems);
 
@@ -79,48 +95,26 @@ public class RobotContainer {
           RobotContainer::telemeterizeMechanisms,
           intakeWrist.intakeMech);
 
-  public Translation2d getFerryZone() {
-    if (drivetrain.getEstimatedPose().getY() >= FieldConstants.fieldWidth / 2.0) {
-      return AllianceFlipUtil.get(
-          FieldConstants.AllianceZones.leftAllianceZone,
-          FieldConstants.AllianceZones.oppLeftAllianceZone);
-    } else {
-      return AllianceFlipUtil.get(
-          FieldConstants.AllianceZones.rightAllianceZone,
-          FieldConstants.AllianceZones.oppRightAllianceZone);
-    }
-  }
-
-  public BooleanSupplier inAllianceZone() {
-    if (drivetrain.getEstimatedPose().getX()
-        >= AllianceFlipUtil.get(
-            FieldConstants.fieldLength / 4, (FieldConstants.fieldLength * 3) / 4)) {
-      return () -> true;
-    } else {
-      return () -> false;
-    }
-  }
-
   // public Rotation2d getCrossedReferencedAngle() {
   //   double visionAngle =
   // Units.radiansToDegrees(vision.getRotation(Length.fromInches(MaxAngularRate).getMeters()));
   //   double
   // }
 
-  public Command aimCommand() {
-    return turret.aimOnTheFlyPosition(
-        () ->
-            (inAllianceZone().getAsBoolean() == false
-                ? getFerryZone()
-                : AllianceFlipUtil.get(
-                    FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter)),
-        () -> drivetrain.getEstimatedPose(),
-        () ->
-            new ChassisSpeeds(
-                drivetrain.getState().Speeds.vxMetersPerSecond,
-                drivetrain.getState().Speeds.vyMetersPerSecond,
-                drivetrain.getState().Speeds.omegaRadiansPerSecond));
-  }
+  // public Command aimCommand() {
+  //   return turret.aimOnTheFlyPosition(
+  //       () ->
+  //           (inAllianceZone().getAsBoolean() == false
+  //               ? getFerryZone()
+  //               : AllianceFlipUtil.get(
+  //                   FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter)),
+  //       () -> drivetrain.getEstimatedPose(),
+  //       () ->
+  //           new ChassisSpeeds(
+  //               drivetrain.getState().Speeds.vxMetersPerSecond,
+  //               drivetrain.getState().Speeds.vyMetersPerSecond,
+  //               drivetrain.getState().Speeds.omegaRadiansPerSecond));
+  // }
 
   public RobotContainer() {
     configureBindings();
@@ -147,17 +141,12 @@ public class RobotContainer {
     Controlboard.intake()
         .onTrue(
             new SequentialCommandGroup(
-                    intakeRollers
-                        .applyGoalCommand(IntakeRollers.IntakeRollersGoal.INTAKE)
-                        .alongWith(
-                            intakeWrist.applyGoalCommand(IntakeWrist.IntakeWristGoal.EXTENDED)))
-                .withName("Intaking"))
+                    intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.INTAKE))
+                .withName("Intakeing"))
         .onFalse(
             new SequentialCommandGroup(
-                    intakeRollers
-                        .applyGoalCommand(IntakeRollers.IntakeRollersGoal.STOP)
-                        .alongWith(intakeWrist.applyGoalCommand(IntakeWrist.IntakeWristGoal.STOW)))
-                .withName("Stowed"));
+                    intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.STOP))
+                .withName("Not Intake"));
   }
 
   private void configureDefaultCommands() {
@@ -173,7 +162,7 @@ public class RobotContainer {
                                 Controlboard.getTranslation()
                                     .get()
                                     .times(RobotState.getSpeedLimit().getAsDouble()),
-                                -Controlboard.getRotation().getAsDouble())
+                                Controlboard.getRotation().getAsDouble())
                         : drivetrain
                             .getHelper()
                             .getRobotCentric(
@@ -184,7 +173,11 @@ public class RobotContainer {
             .beforeStarting(() -> drivetrain.getHelper().setLastAngle(drivetrain.getHeading()))
             .withName("Drivetrain: Default command"));
 
+<<<<<<< Updated upstream
     turret.setDefaultCommand(aimCommand());
+=======
+    turret.setDefaultCommand(turret.pointAtHubCenter(() -> drivetrain.getEstimatedPose()).withName("Turret: Point at hub center"));
+>>>>>>> Stashed changes
   }
 
   private void configureAutoCommands() {
@@ -208,10 +201,7 @@ public class RobotContainer {
 
   private void configureManualOverrides() {
     Controlboard.resetFieldCentric()
-        .whileTrue(
-            drivetrain
-                .runOnce(() -> drivetrain.seedFieldCentric())
-                .andThen(() -> Dashboard.zeroIntake.set(false)));
+        .onTrue(Commands.runOnce(() -> drivetrain.resetRotation(AllianceFlipUtil.getFwdHeading())));
 
     Controlboard.zeroIntake()
         .whileTrue(intakeWrist.zero().andThen(() -> Dashboard.zeroIntake.set(false)));
@@ -234,5 +224,7 @@ public class RobotContainer {
   public void periodic() {
     visionManager.periodic();
     robotState.logArea();
+
+    Logger.log("Subsystems/Turret/Angle Setpoint", ScreamMath.calculateAngleToPoint(drivetrain.getEstimatedPose().getTranslation(), FieldConstants.Hub.hubCenter).getDegrees());
   }
 }

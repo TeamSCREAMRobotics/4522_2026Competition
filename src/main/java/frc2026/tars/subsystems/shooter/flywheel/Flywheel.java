@@ -7,7 +7,7 @@ import java.util.function.DoubleSupplier;
 import lombok.Getter;
 
 public class Flywheel extends TalonFXSubsystem {
-  public static double shootVel;
+  public static DoubleSupplier shootVel;
 
   public Flywheel(TalonFXSubsystemConfiguration config) {
     super(config);
@@ -17,7 +17,7 @@ public class Flywheel extends TalonFXSubsystem {
 
   public enum FlywheelGoal implements TalonFXSubsystemGoal {
     IDLE(() -> 1),
-    SHOOTING(() -> shootVel);
+    SHOOTING(shootVel);
 
     public DoubleSupplier velocity;
 

@@ -11,7 +11,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.teamscreamrobotics.drivers.PhoenixSwerveHelper;
 import com.teamscreamrobotics.gameutil.FieldConstants;
+import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
+import com.teamscreamrobotics.util.RunnableUtil.RunOnce;
 import com.teamscreamrobotics.util.ScreamUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -49,12 +51,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
 
   @Getter private final PhoenixSwerveHelper helper;
 
-  /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
-  private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
-  /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
-  private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
-  /* Keep track if we've ever applied the operator perspective before or not */
-  private boolean m_hasAppliedOperatorPerspective = false;
+  private RunOnce operatorPerspectiveApplier = new RunOnce();
 
   /* Swerve requests to apply during SysId characterization */
   private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization =
@@ -258,17 +255,14 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
 
   @Override
   public void periodic() {
-    if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
-      DriverStation.getAlliance()
-          .ifPresent(
-              allianceColor -> {
-                setOperatorPerspectiveForward(
-                    allianceColor == Alliance.Red
-                        ? kRedAlliancePerspectiveRotation
-                        : kBlueAlliancePerspectiveRotation);
-                m_hasAppliedOperatorPerspective = true;
-              });
-    }
+    //attemptToSetPerspective();
+  }
+
+  public void attemptToSetPerspective() {
+    operatorPerspectiveApplier.runOnceWhenTrueThenWhenChanged(
+        () -> setOperatorPerspectiveForward(AllianceFlipUtil.getFwdHeading()),
+        DriverStation.getAlliance().isPresent(),
+        DriverStation.getAlliance().orElse(null));
   }
 
   public void stop() {

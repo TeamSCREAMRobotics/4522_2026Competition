@@ -44,7 +44,7 @@ public class IntakeWrist extends TalonFXSubsystem {
                   Units.inchesToMeters(8)));
 
   public IntakeWrist(TalonFXSubsystemConfiguration config) {
-    super(config, IntakeWristGoal.STOW);
+    super(config, IntakeWristGoal.EXTENDED);
   }
 
   public enum IntakeWristGoal implements TalonFXSubsystemGoal {
