@@ -1,5 +1,6 @@
 package frc2026.tars.controlboard;
 
+import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.ScreamUtil;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -37,11 +38,12 @@ public class Controlboard {
     return () ->
         snapTranslationToPole(
             new Translation2d(
-                    applyPower(
-                        -MathUtil.applyDeadband(driveController.getLeftY(), STICK_DEADBAND), 2),
-                    applyPower(
-                        -MathUtil.applyDeadband(driveController.getLeftX(), STICK_DEADBAND), 2))
-                .times(DrivetrainConstants.maxSpeed));
+                    -applyPower(
+                        MathUtil.applyDeadband(driveController.getLeftY(), STICK_DEADBAND), 2),
+                    -applyPower(
+                        MathUtil.applyDeadband(driveController.getLeftX(), STICK_DEADBAND), 2))
+                .times(DrivetrainConstants.maxSpeed))
+                .times(AllianceFlipUtil.getDirectionCoefficient());
   }
 
   public static Translation2d snapTranslationToPole(Translation2d translation) {
@@ -60,12 +62,12 @@ public class Controlboard {
 
   public static DoubleSupplier getRotation() {
     return () ->
-        applyPower(-MathUtil.applyDeadband(driveController.getRightX(), STICK_DEADBAND), 3)
+      -applyPower(MathUtil.applyDeadband(driveController.getRightX(), STICK_DEADBAND), 3)
             * DrivetrainConstants.maxAngularSpeedRads;
   }
 
   public static BooleanSupplier getFieldCentric() {
-    return () -> Dashboard.fieldCentric.get();
+    return () -> fieldCentric;
   }
 
   public static Trigger intake() {
@@ -93,7 +95,7 @@ public class Controlboard {
   }
 
   public static Trigger resetFieldCentric() {
-    return new Trigger(() -> Dashboard.fieldCentric.get());
+    return driveController.back();
   }
 
   public static Trigger makeThingWork() {

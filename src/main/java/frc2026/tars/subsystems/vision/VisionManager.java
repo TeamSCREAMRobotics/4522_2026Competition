@@ -8,6 +8,7 @@ import com.teamscreamrobotics.vision.LimelightHelpers.PoseEstimate;
 import com.teamscreamrobotics.vision.LimelightVision.Limelight;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -58,7 +59,7 @@ public class VisionManager {
                 Units.inchesToMeters(6.856019),
                 Units.inchesToMeters(8.597005),
                 new Rotation3d(
-                    0.0, Units.degreesToRadians(-24.832735), Units.degreesToRadians(135.47249))));
+                    0.0, Units.degreesToRadians(24.832735), Units.degreesToRadians(135.47249))));
     public static final Limelight swerveRight =
         new Limelight(
             "limelight-right",
@@ -67,7 +68,7 @@ public class VisionManager {
                 Units.inchesToMeters(-6.855182),
                 Units.inchesToMeters(8.597005),
                 new Rotation3d(
-                    0.0, Units.degreesToRadians(-24.832735), Units.degreesToRadians(-135.47249))));
+                    0.0, Units.degreesToRadians(24.832735), Units.degreesToRadians(-135.47249))));
   }
 
   private PhotonCamera swerveLeft;
@@ -203,11 +204,11 @@ public class VisionManager {
       double stdFactor = Math.pow(estimate.avgTagDist, 2.75) / (estimate.tagCount * 0.5);
       double xyStds = VisionConstants.xyStdBaseline * stdFactor * VisionConstants.xyMt2StdFactor;
       double thetaStds = VisionConstants.thetaStdBaseline * stdFactor;
-      // drivetrain.addVisionMeasurement(
-      //    estimate.pose,
-      //    estimate.timestampSeconds,
-      //    VecBuilder.fill(xyStds, xyStds, 999999999999.0),
-      //    true);
+      drivetrain.addVisionMeasurement(
+          estimate.pose,
+          estimate.timestampSeconds,
+          VecBuilder.fill(xyStds, xyStds, 999999999999.0),
+          true);
 
       Logger.log("Vision/" + limelight.name() + "/VisionType", VisionType.MT2);
       Logger.log("Vision/" + limelight.name() + "/PoseEstimate", estimate.pose);
@@ -223,7 +224,7 @@ public class VisionManager {
   public void periodic() {
     addStaticEstimate(Limelights.swerveLeft);
     addStaticEstimate(Limelights.swerveRight);
-    addTurretEstimate();
+    // addTurretEstimate();
 
     if (Robot.isSimulation() && visionSim != null) {
       visionSim.update(drivetrain.getEstimatedPose());

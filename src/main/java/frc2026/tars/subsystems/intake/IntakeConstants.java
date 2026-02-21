@@ -47,7 +47,7 @@ public class IntakeConstants {
     INTAKE_WRIST_CONFIG.name = "IntakeWrist";
 
     INTAKE_WRIST_CONFIG.codeEnabled = true;
-    INTAKE_WRIST_CONFIG.logTelemetry = true;
+    INTAKE_WRIST_CONFIG.logTelemetry = false;
     INTAKE_WRIST_CONFIG.debugMode = true;
 
     INTAKE_WRIST_CONFIG.simConstants =
