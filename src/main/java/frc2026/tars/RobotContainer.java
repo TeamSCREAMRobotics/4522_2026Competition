@@ -6,11 +6,6 @@ import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.math.ScreamMath;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
-<<<<<<< Updated upstream
-import edu.wpi.first.math.geometry.Translation2d;
-=======
-
->>>>>>> Stashed changes
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -173,11 +168,7 @@ public class RobotContainer {
             .beforeStarting(() -> drivetrain.getHelper().setLastAngle(drivetrain.getHeading()))
             .withName("Drivetrain: Default command"));
 
-<<<<<<< Updated upstream
-    turret.setDefaultCommand(aimCommand());
-=======
     turret.setDefaultCommand(turret.pointAtHubCenter(() -> drivetrain.getEstimatedPose()).withName("Turret: Point at hub center"));
->>>>>>> Stashed changes
   }
 
   private void configureAutoCommands() {
