@@ -8,6 +8,7 @@ import com.teamscreamrobotics.physics.Trajectory.GamePiece;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.Units;
@@ -16,10 +17,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc2026.tars.RobotState;
+import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
-import frc2026.tars.subsystems.shooter.flywheel.Flywheel.FlywheelGoal;
 import frc2026.tars.subsystems.shooter.hood.Hood;
-import frc2026.tars.subsystems.shooter.hood.Hood.HoodGoal;
 import frc2026.tars.subsystems.shooter.indexer.Feeder;
 import frc2026.tars.subsystems.shooter.indexer.Feeder.FeederGoal;
 import frc2026.tars.subsystems.shooter.indexer.Spindexer;
@@ -48,11 +48,11 @@ public class Shooter extends SubsystemBase {
 
     hoodMapAllainceZone.put(0.0, 0.0);
     hoodMapAllainceZone.put(5., 10.0);
-    hoodMapAllainceZone.put(10.0, 20.0);
+    hoodMapAllainceZone.put(11.0, 22.0);
 
     hoodMapNeutralZone.put(0.0, 0.0);
-    hoodMapNeutralZone.put(0.5, 10.0);
-    hoodMapNeutralZone.put(1.0, 20.0);
+    hoodMapNeutralZone.put(5., 10.0);
+    hoodMapNeutralZone.put(11.0, 22.0);
   }
 
   private enum ShooterState {
@@ -98,16 +98,14 @@ public class Shooter extends SubsystemBase {
   public Command aimAtPoint(InterpolatingDoubleTreeMap treeMap, double distance) {
     return run(
         () -> {
-          Hood.angle = () -> treeMap.get(distance);
-          hood.applyGoalCommand(HoodGoal.TOPOSE);
+          hood.moveToAngleCommand(Rotation2d.fromDegrees(treeMap.get(distance)));
         });
   }
 
   public Command rampUpToVelocity(double velocity) {
     return run(
         () -> {
-          Flywheel.shootVel = () -> velocity;
-          flywheel.applyGoalCommand(FlywheelGoal.SHOOTING);
+          flywheel.setSetpointVelocity(velocity);
         });
   }
 
@@ -150,7 +148,10 @@ public class Shooter extends SubsystemBase {
 
     aimAtPoint(treeMap, distance.getAsDouble());
     rampUpToVelocity(Trajectory.getRequiredVelocity() / 4);
-    if (feeder.atGoal()) {
+
+    Logger.log(logprefix + "Hood Angle", treeMap.get(distance.getAsDouble()));
+    Logger.log(logprefix + "Flywheel Velocity", Trajectory.getRequiredVelocity());
+    if (true) {
       double time = Timer.getFPGATimestamp();
       feed(() -> time >= 3.0);
     } else return;
@@ -213,6 +214,23 @@ public class Shooter extends SubsystemBase {
     }
   }
 
+  public void setShooterState() {
+    if (Controlboard.shoot().getAsBoolean() && robotState.getArea().get() == RobotState.Area.ALLIANCEZONE && !robotState.getArea().isEmpty()) {
+      setState(ShooterState.SHOOTING);
+    } else if (Controlboard.shoot().getAsBoolean()
+        && (robotState.getArea().get() == RobotState.Area.DEPOT_SIDE_NEUTRALZONE
+            || robotState.getArea().get() == RobotState.Area.OUTPOST_SIDE_NEUTRALZONE) && !robotState.getArea().isEmpty()) {
+      setState(ShooterState.FERRYING);
+    } else if (robotState.getArea().isPresent()
+        && robotState.getArea().get() == RobotState.Area.TRENCHES && !robotState.getArea().isEmpty()) {
+      setState(ShooterState.STOWED);
+    } else if (robotState.getArea().isEmpty()) {
+      return;
+    } else {
+      setState(ShooterState.IDLE);
+    }
+  }
+
   public Command defaultCommand() {
     return run(
         () -> {
@@ -221,8 +239,8 @@ public class Shooter extends SubsystemBase {
               idleCase();
               break;
             case STOWED:
-              hood.applyGoalCommand(HoodGoal.ZERO);
-              flywheel.applyGoalCommand(FlywheelGoal.IDLE);
+              hood.moveToAngleCommand(Rotation2d.fromDegrees(0));
+              flywheel.setSetpointVelocity(7.5);
               break;
             case SHOOTING:
               setAimingTarget(hoodMapAllainceZone, FieldConstants.Hub.hubCenter, true);
@@ -237,5 +255,8 @@ public class Shooter extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    setShooterState();
+    Logger.log(logprefix + "State", getState().toString());
+  }
 }
