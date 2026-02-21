@@ -1,14 +1,10 @@
-package frc2026.tars.subsystems.indexer;
+package frc2026.tars.subsystems.shooter.indexer;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.*;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemConfiguration;
 
 public class IndexerConstants {
-  private static final double SPINDEXER_REDUCTION = 0.0;
-
-  private static final double FEEDER_REDUCTION = 0.0;
-
   public static final TalonFXSubsystemConfiguration SPINDEXER_CONFIG =
       new TalonFXSubsystemConfiguration();
 
