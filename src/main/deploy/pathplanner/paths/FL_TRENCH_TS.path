@@ -45,7 +45,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "FL_TRENCH",
+  "folder": "DEPOT_TRENCH",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

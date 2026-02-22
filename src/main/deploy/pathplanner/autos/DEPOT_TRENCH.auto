@@ -19,12 +19,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "FL_TRENCH_SCOOP"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "FL_TRENCH_RETURN"
           }
         }

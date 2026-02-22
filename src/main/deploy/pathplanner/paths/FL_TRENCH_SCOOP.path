@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.95737841043891,
-        "y": 6.482716488730723
+        "x": 7.689003558718861,
+        "y": 5.9339976275207595
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.387746144721234,
-        "y": 6.3966429418742585
+        "x": 8.119371293001185,
+        "y": 5.847924080664295
       },
       "isLocked": false,
       "linkedName": "FL_TRENCH_TNZ_END"
@@ -45,10 +45,10 @@
     "rotation": 93.43363036245057
   },
   "reversed": false,
-  "folder": "FL_TRENCH",
+  "folder": "DEPOT_TRENCH",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 152.85031830221686
+    "rotation": 128.0470425323487
   },
   "useDefaultConstraints": true
 }
