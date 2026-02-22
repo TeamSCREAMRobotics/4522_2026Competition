@@ -8,6 +8,7 @@ import com.teamscreamrobotics.zones.RectangularPoseArea;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc2026.tars.RobotContainer.Subsystems;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
@@ -21,8 +22,8 @@ import java.util.function.Supplier;
 public class RobotState {
   private final Drivetrain drivetrain;
   private final IntakeWrist intakeWrist;
-  private static final RectangularPoseArea test =
-      new RectangularPoseArea(new Translation2d(1, 1), new Translation2d(5, 5));
+  private static final RectangularPoseArea test = new RectangularPoseArea(new Translation2d(1, 1),
+      new Translation2d(5, 5));
 
   public enum Mode {
     AUTO,
@@ -32,13 +33,16 @@ public class RobotState {
     CLIMBING,
     NOTHING
   }
-
+  
   @SuppressWarnings("unchecked")
   public enum Area {
+
     ALLIANCEZONE(
         () -> AllianceFlipUtil.get(FieldConstants.BLUEALLIANCE, FieldConstants.REDALLIANCE)),
+
     OTHERALLIANCEZONE(
         () -> AllianceFlipUtil.get(FieldConstants.REDALLIANCE, FieldConstants.BLUEALLIANCE)),
+
     BUMPS(
         () -> FieldConstants.LeftBump.leftBump,
         () -> FieldConstants.LeftBump.oppLeftBump,
@@ -50,15 +54,50 @@ public class RobotState {
         () -> FieldConstants.LeftTrench.oppLeftTrench,
         () -> FieldConstants.RightTrench.rightTrench,
         () -> FieldConstants.RightTrench.oppRightTrench),
+
     DEPOT_SIDE_NEUTRALZONE(
         () -> AllianceFlipUtil.get(FieldConstants.UPPER_NEUTRAL, FieldConstants.LOWER_NEUTRAL)),
+
     OUTPOST_SIDE_NEUTRALZONE(
         () -> AllianceFlipUtil.get(FieldConstants.LOWER_NEUTRAL, FieldConstants.UPPER_NEUTRAL));
 
-    public List<Supplier<RectangularPoseArea>> areas;
+    private final Supplier<RectangularPoseArea>[] suppliers;
+    private RectangularPoseArea[] resolved;
 
-    private Area(Supplier<RectangularPoseArea>... areas) {
-      this.areas = Arrays.asList(areas);
+    Area(Supplier<RectangularPoseArea>... suppliers) {
+      this.suppliers = suppliers;
+    }
+
+    void resolve() {
+
+      resolved = new RectangularPoseArea[suppliers.length];
+
+      for (int i = 0; i < suppliers.length; i++) {
+        resolved[i] = suppliers[i].get();
+      }
+    }
+
+    boolean contains(Pose2d pose) {
+
+      if (resolved == null)
+        return false;
+
+      double x = pose.getX();
+      double y = pose.getY();
+
+      for (RectangularPoseArea area : resolved) {
+
+        if (area != null
+            && x >= area.getMinX()
+            && x <= area.getMaxX()
+            && y >= area.getMinY()
+            && y <= area.getMaxY()) {
+
+          return true;
+        }
+      }
+
+      return false;
     }
   }
 
@@ -71,15 +110,15 @@ public class RobotState {
 
     // Build the corners in clockwise order (last point closes the loop)
     return new Pose2d[] {
-      new Pose2d(minX, minY, new Rotation2d()),
-      new Pose2d(maxX, minY, new Rotation2d()),
-      new Pose2d(maxX, maxY, new Rotation2d()),
-      new Pose2d(minX, maxY, new Rotation2d()),
-      new Pose2d(minX, minY, new Rotation2d())
+        new Pose2d(minX, minY, new Rotation2d()),
+        new Pose2d(maxX, minY, new Rotation2d()),
+        new Pose2d(maxX, maxY, new Rotation2d()),
+        new Pose2d(minX, maxY, new Rotation2d()),
+        new Pose2d(minX, minY, new Rotation2d())
     };
   }
 
-  public List<Area> areas = List.of(Area.values());
+  public static final Area[] AREA_VALUES = Area.values();
 
   public RobotState(Subsystems subsystems) {
     this.drivetrain = subsystems.drivetrain();
@@ -98,15 +137,40 @@ public class RobotState {
     return currentMode;
   }
 
-  public Optional<Area> getArea() {
-    return Arrays.stream(Area.values())
-        .filter(
-            a ->
-                a.areas != null
-                    && a.areas.stream()
-                        .anyMatch(
-                            r -> r != null && r.get().contains(drivetrain.getEstimatedPose())))
-        .findFirst();
+  private DriverStation.Alliance lastAlliance = null;
+
+  private void resolveAreasIfNeeded() {
+
+  var allianceOpt = DriverStation.getAlliance();
+
+  if (allianceOpt.isEmpty()) return;
+
+  var alliance = allianceOpt.get();
+
+  if (alliance != lastAlliance) {
+
+    lastAlliance = alliance;
+
+    for (Area area : AREA_VALUES) {
+      area.resolve();
+    }
+  }
+}
+
+  public Area getArea() {
+
+    resolveAreasIfNeeded();
+
+    Pose2d pose = drivetrain.getEstimatedPose();
+
+    for (Area area : AREA_VALUES) {
+
+      if (area.contains(pose)) {
+        return area;
+      }
+    }
+
+    return null;
   }
 
   public static DoubleSupplier getSpeedLimit() {
@@ -114,8 +178,7 @@ public class RobotState {
       boolean isLimited = false;
       if (isLimited) {
         return 0.5;
-      } else if (Controlboard.driveController.getLeftTriggerAxis()
-          > Controlboard.TRIGGER_DEADBAND) {
+      } else if (Controlboard.driveController.getLeftTriggerAxis() > Controlboard.TRIGGER_DEADBAND) {
         return 0.5;
       } else {
         return 1.0;
@@ -124,16 +187,20 @@ public class RobotState {
   }
 
   public void logArea() {
-    int index = 0;
-    for (Area area : Area.values()) {
-      for (RectangularPoseArea rect : area.areas.stream().map(Supplier::get).toList()) {
-        Logger.log("Field/Zones/" + area.name() + "_" + index++, rectangleToPolygon(rect));
-      }
-    }
+    for (Area area : AREA_VALUES) {
 
-    Logger.log("RobotState/Area Is Present", getArea().isPresent());
+  if (area.resolved == null) continue;
+
+  int index = 0;
+
+  for (RectangularPoseArea rect : area.resolved) {
+    Logger.log("Field/Zones/" + area.name() + "_" + index++, rectangleToPolygon(rect));
+  }
+}
+
+    Logger.log("RobotState/Area Is Present", getArea());
     // if (getArea().isPresent()) {
-    //   Logger.log("RobotState/Area", getArea().get().name());
+    // Logger.log("RobotState/Area", getArea().get().name());
     // }
   }
 }
