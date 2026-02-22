@@ -5,10 +5,7 @@ import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.physics.Trajectory;
 import com.teamscreamrobotics.physics.Trajectory.GamePiece;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
-import com.teamscreamrobotics.util.GeomUtil;
 import com.teamscreamrobotics.util.Logger;
-import com.teamscreamrobotics.util.RunnableUtil.RunOnce;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -16,7 +13,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,7 +27,6 @@ import frc2026.tars.subsystems.shooter.indexer.Spindexer;
 import frc2026.tars.subsystems.shooter.indexer.Spindexer.SpindexerGoal;
 import frc2026.tars.subsystems.shooter.turret.Turret;
 import frc2026.tars.subsystems.vision.VisionManager;
-import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,8 +40,10 @@ public class Shooter extends SubsystemBase {
   private final RobotState robotState;
   private Pose2d robotPose;
   private ChassisSpeeds robotSpeeds;
-  private static final InterpolatingDoubleTreeMap hoodMapAllianceZone = new InterpolatingDoubleTreeMap();
-  private static final InterpolatingDoubleTreeMap hoodMapNeutralZone = new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap hoodMapAllianceZone =
+      new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap hoodMapNeutralZone =
+      new InterpolatingDoubleTreeMap();
   private final String logPrefix = "Subsystems/Shooter/";
 
   @Getter @Setter private Translation2d target = new Translation2d();
@@ -119,7 +116,11 @@ public class Shooter extends SubsystemBase {
     return Length.fromMeters(getFieldToTurret().getDistance(target));
   }
 
-  private void applyAimingSetpoints(Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, InterpolatingDoubleTreeMap treeMap) {
+  private void applyAimingSetpoints(
+      Pose2d robotPose,
+      ChassisSpeeds robotSpeeds,
+      Translation2d target,
+      InterpolatingDoubleTreeMap treeMap) {
     setTarget(target);
     double distanceMeters = getShotDistance(target).getMeters();
     double hoodAngleDeg = treeMap.get(distanceMeters);
@@ -171,15 +172,18 @@ public class Shooter extends SubsystemBase {
 
     switch (area) {
       case ALLIANCEZONE:
-        applyAimingSetpoints(robotPose, robotSpeeds,
+        applyAimingSetpoints(
+            robotPose,
+            robotSpeeds,
             AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter),
             hoodMapAllianceZone);
         setIdleState(IdleState.IDLE_HUB);
         break;
       case DEPOT_SIDE_NEUTRALZONE:
         applyAimingSetpoints(
-          robotPose, robotSpeeds,
-          AllianceFlipUtil.get(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
                 FieldConstants.AllianceZones.leftAllianceZone,
                 FieldConstants.AllianceZones.oppRightAllianceZone),
             hoodMapNeutralZone);
@@ -187,8 +191,9 @@ public class Shooter extends SubsystemBase {
         break;
       case OUTPOST_SIDE_NEUTRALZONE:
         applyAimingSetpoints(
-          robotPose, robotSpeeds,
-          AllianceFlipUtil.get(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
                 FieldConstants.AllianceZones.rightAllianceZone,
                 FieldConstants.AllianceZones.oppLeftAllianceZone),
             hoodMapNeutralZone);
@@ -206,8 +211,9 @@ public class Shooter extends SubsystemBase {
     switch (area) {
       case DEPOT_SIDE_NEUTRALZONE:
         applyAimingSetpoints(
-          robotPose, robotSpeeds,
-          AllianceFlipUtil.get(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
                 FieldConstants.AllianceZones.leftAllianceZone,
                 FieldConstants.AllianceZones.oppRightAllianceZone),
             hoodMapNeutralZone);
@@ -215,8 +221,9 @@ public class Shooter extends SubsystemBase {
         break;
       case OUTPOST_SIDE_NEUTRALZONE:
         applyAimingSetpoints(
-          robotPose, robotSpeeds,
-          AllianceFlipUtil.get(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
                 FieldConstants.AllianceZones.rightAllianceZone,
                 FieldConstants.AllianceZones.oppLeftAllianceZone),
             hoodMapNeutralZone);
@@ -265,7 +272,8 @@ public class Shooter extends SubsystemBase {
               break;
 
             case SHOOTING:
-              applyAimingSetpoints(robotPose, robotSpeeds, FieldConstants.Hub.hubCenter, hoodMapAllianceZone);
+              applyAimingSetpoints(
+                  robotPose, robotSpeeds, FieldConstants.Hub.hubCenter, hoodMapAllianceZone);
               startFeedIfNotRunning();
               setIdleState(IdleState.NA);
               break;
@@ -290,9 +298,8 @@ public class Shooter extends SubsystemBase {
   public Translation2d getFieldToTurret() {
     Pose2d pose = robotPose;
 
-return
-    pose.getTranslation().plus(
-        transform3dTo2dXY(VisionManager.robotToTurretFixed).getTranslation());
+    return pose.getTranslation()
+        .plus(transform3dTo2dXY(VisionManager.robotToTurretFixed).getTranslation());
   }
 
   public double getTimeOfFlight() {
@@ -300,7 +307,8 @@ return
     double exitVelocity = 15.0; // Conversions.rpsToMPS(flywheel.getVelocity(),
     // FlywheelConstants.FLYWHEEL_CIRCUMFERENCE.getMeters(),
     // FlywheelConstants.FLYWHEEL_REDUCTION) * EXIT_VELOCITY_RETENTION;
-    double exitAngle = Math.toRadians(45.0); // ScreamMath.mapRange(hood.getPosition(), HoodConstants.MIN_UNITS,
+    double exitAngle =
+        Math.toRadians(45.0); // ScreamMath.mapRange(hood.getPosition(), HoodConstants.MIN_UNITS,
     // HoodConstants.MAX_UNITS, HoodConstants.HOOD_MIN_EXIT_ANGLE.getRadians(),
     // HoodConstants.HOOD_MAX_EXIT_ANGLE.getRadians());
     double horizontalVelocity = exitVelocity * Math.cos(exitAngle);
