@@ -218,8 +218,8 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
         .rotateBy(getHeading());
   }
 
-  public Twist2d getFieldVelocity() {
-    return new Twist2d(
+  public ChassisSpeeds getFieldVelocity() {
+    return new ChassisSpeeds(
         getLinearVelocity().getX(),
         getLinearVelocity().getY(),
         getState().Speeds.omegaRadiansPerSecond);

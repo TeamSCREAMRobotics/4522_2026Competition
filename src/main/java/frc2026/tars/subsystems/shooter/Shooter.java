@@ -1,16 +1,24 @@
 package frc2026.tars.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
+import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.gameutil.FieldConstants;
+import com.teamscreamrobotics.math.Conversions;
+import com.teamscreamrobotics.math.ScreamMath;
 import com.teamscreamrobotics.physics.Trajectory;
 import com.teamscreamrobotics.physics.Trajectory.GamePiece;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
+import com.teamscreamrobotics.util.GeomUtil;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Timer;
@@ -18,13 +26,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc2026.tars.RobotState;
 import frc2026.tars.controlboard.Controlboard;
+import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
+import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
+import frc2026.tars.subsystems.shooter.hood.HoodConstants;
 import frc2026.tars.subsystems.shooter.indexer.Feeder;
 import frc2026.tars.subsystems.shooter.indexer.Feeder.FeederGoal;
 import frc2026.tars.subsystems.shooter.indexer.Spindexer;
 import frc2026.tars.subsystems.shooter.indexer.Spindexer.SpindexerGoal;
 import frc2026.tars.subsystems.shooter.turret.Turret;
+import frc2026.tars.subsystems.vision.VisionManager;
+
 import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,15 +49,20 @@ public class Shooter extends SubsystemBase {
   private final Spindexer spindexer;
   private final Feeder feeder;
   private final RobotState robotState;
+  private final Supplier<Pose2d> robotPose;
+  private final Supplier<ChassisSpeeds> robotSpeeds;
   private final InterpolatingDoubleTreeMap hoodMapAllianceZone = new InterpolatingDoubleTreeMap();
   private final InterpolatingDoubleTreeMap hoodMapNeutralZone = new InterpolatingDoubleTreeMap();
-  private final Supplier<Pose2d> robotPose;
   private final String logPrefix = "Subsystems/Shooter/";
+
+  @Getter @Setter private Translation2d target = new Translation2d();
 
   // Feed state tracking — avoids spawning a new Command every loop
   private boolean isFeedActive = false;
   private final Timer feedTimer = new Timer();
   private static final double FEED_DURATION_SECONDS = 3.0;
+
+  private static final double EXIT_VELOCITY_RETENTION = 0.8;
 
   public void hoodMapPoints() {
     // TODO: Add tuned points to hood maps
@@ -65,7 +83,16 @@ public class Shooter extends SubsystemBase {
     FERRYING
   }
 
+  private enum IdleState {
+    NA,
+    IDLE_HUB,
+    IDLE_FERRY_DEPOT,
+    IDLE_FERRY_OUTPOST,
+
+  }
+
   @Getter @Setter private ShooterState state = ShooterState.IDLE;
+  @Getter @Setter private IdleState idleState = IdleState.NA;
 
   public Shooter(
       Flywheel flywheel,
@@ -73,43 +100,34 @@ public class Shooter extends SubsystemBase {
       Turret turret,
       Spindexer spindexer,
       Feeder feeder,
-      Supplier<Pose2d> robotPose,
+      Drivetrain drivetrain,
       RobotState robotState) {
     this.flywheel = flywheel;
     this.hood = hood;
     this.turret = turret;
     this.spindexer = spindexer;
     this.feeder = feeder;
-    this.robotPose = robotPose;
+    this.robotPose = () -> drivetrain.getEstimatedPose();
+    this.robotSpeeds = () -> drivetrain.getState().Speeds;
     this.robotState = robotState;
 
     hoodMapPoints();
   }
 
-  // ---------------------------------------------------------------------------
-  // Helpers
-  // ---------------------------------------------------------------------------
-
-  public Distance getShotDistance(Translation2d target) {
-    Pose2d pose = this.robotPose.get();
+  public Length getShotDistance(Translation2d target) {
+    /* Pose2d pose = this.robotPose.get();
     double centerToTarget = pose.getTranslation().getDistance(target);
     double centerToShooter = 0.146; // meters
     // Pythagorean offset so we measure from the shooter, not the robot center
     double shooterToTarget =
         Math.sqrt(Math.pow(centerToTarget, 2.0) - Math.pow(centerToShooter, 2.0));
-    return Units.Meters.of(shooterToTarget);
+    return Length.fromMeters(shooterToTarget); */
+    return Length.fromMeters(getFieldToTurret().getDistance(target));
   }
 
-  // ---------------------------------------------------------------------------
-  // Core aiming — called directly each loop, no Command wrappers
-  // ---------------------------------------------------------------------------
-
-  /**
-   * Configures the hood angle and flywheel velocity for a given target. Must be called from inside
-   * a periodic/run context, NOT used to produce a Command object.
-   */
   private void applyAimingSetpoints(InterpolatingDoubleTreeMap treeMap, Translation2d target) {
-    double distanceMeters = getShotDistance(target).in(Meters);
+    setTarget(target);
+    double distanceMeters = getShotDistance(target).getMeters();
 
     Trajectory.configure()
         .setGamePiece(GamePiece.FUEL)
@@ -119,9 +137,9 @@ public class Shooter extends SubsystemBase {
         .setShotAngle(treeMap.get(distanceMeters));
 
     double hoodAngleDeg = treeMap.get(distanceMeters);
-    // Trajectory.getRequiredVelocity() returns surface speed; divide by 4 for motor setpoint
     double flywheelSetpoint = Trajectory.getRequiredVelocity() / 4.0;
 
+    turret.aimOnTheFly(target, robotPose.get(), robotSpeeds.get(), getTimeOfFlight());
     hood.moveToAngleCommand(Rotation2d.fromDegrees(hoodAngleDeg));
     flywheel.setSetpointVelocity(flywheelSetpoint);
 
@@ -130,11 +148,6 @@ public class Shooter extends SubsystemBase {
     Logger.log(logPrefix + "Shot Distance", distanceMeters);
   }
 
-  // ---------------------------------------------------------------------------
-  // Feed management — timer-based, no repeated Command construction
-  // ---------------------------------------------------------------------------
-
-  /** Starts a timed feed cycle. Safe to call every loop; only arms once per press. */
   private void startFeedIfNotRunning() {
     if (!isFeedActive) {
       isFeedActive = true;
@@ -145,7 +158,6 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-  /** Stops feeding and resets state. */
   private void stopFeed() {
     isFeedActive = false;
     feedTimer.stop();
@@ -154,23 +166,19 @@ public class Shooter extends SubsystemBase {
     feeder.applyGoal(FeederGoal.STOP);
   }
 
-  /** Must be called each loop to time out the feed cycle. */
   private void updateFeed() {
     if (isFeedActive && feedTimer.hasElapsed(FEED_DURATION_SECONDS)) {
       stopFeed();
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // State cases
-  // ---------------------------------------------------------------------------
-
   private void idleCase() {
     if (robotState.getArea().isEmpty()) return;
 
     switch (robotState.getArea().get()) {
       case ALLIANCEZONE:
-        applyAimingSetpoints(hoodMapAllianceZone, FieldConstants.Hub.hubCenter);
+        applyAimingSetpoints(hoodMapAllianceZone, AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter));
+        setIdleState(IdleState.IDLE_HUB);
         break;
       case DEPOT_SIDE_NEUTRALZONE:
         applyAimingSetpoints(
@@ -178,6 +186,7 @@ public class Shooter extends SubsystemBase {
             AllianceFlipUtil.get(
                 FieldConstants.AllianceZones.leftAllianceZone,
                 FieldConstants.AllianceZones.oppRightAllianceZone));
+        setIdleState(IdleState.IDLE_FERRY_DEPOT);
         break;
       case OUTPOST_SIDE_NEUTRALZONE:
         applyAimingSetpoints(
@@ -185,8 +194,10 @@ public class Shooter extends SubsystemBase {
             AllianceFlipUtil.get(
                 FieldConstants.AllianceZones.rightAllianceZone,
                 FieldConstants.AllianceZones.oppLeftAllianceZone));
+        setIdleState(IdleState.IDLE_FERRY_OUTPOST);
         break;
       default:
+        setIdleState(IdleState.NA);
         break;
     }
   }
@@ -217,10 +228,6 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // State machine update
-  // ---------------------------------------------------------------------------
-
   private void updateShooterState() {
     if (robotState.getArea().isEmpty()) return;
 
@@ -239,15 +246,12 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Default command — one run() wrapper; all logic inside uses direct calls
-  // ---------------------------------------------------------------------------
 
   public Command defaultCommand() {
     return run(
         () -> {
           updateShooterState();
-          updateFeed(); // advance the feed timer every loop
+          updateFeed();
 
           switch (state) {
             case IDLE:
@@ -255,24 +259,49 @@ public class Shooter extends SubsystemBase {
               break;
 
             case STOWED:
-              // Park the hood flat and spin the flywheel at a slow keep-warm speed
               hood.moveToAngleCommand(Rotation2d.fromDegrees(0.0));
               flywheel.setSetpointVelocity(7.5);
               if (isFeedActive) stopFeed();
+              setIdleState(IdleState.NA);
               break;
 
             case SHOOTING:
               applyAimingSetpoints(hoodMapAllianceZone, FieldConstants.Hub.hubCenter);
               startFeedIfNotRunning();
+              setIdleState(IdleState.NA);
               break;
 
             case FERRYING:
               ferryCase();
+              setIdleState(IdleState.NA);
               break;
 
             default:
               break;
           }
         });
+  }
+
+  @Override
+  public void periodic() {
+      Logger.log("Shooter/Shooter State", getState().toString());
+      Logger.log("Shooter/Idle State", getIdleState().toString());
+  }
+
+  public Translation2d getFieldToTurret(){
+    return GeomUtil.poseToTransform(robotPose.get()).plus(transform3dTo2dXY(VisionManager.robotToTurretFixed)).getTranslation();
+  }
+
+  public double getTimeOfFlight(){
+    double distance = robotPose.get().getTranslation().getDistance(target);
+    double exitVelocity = 15.0;//Conversions.rpsToMPS(flywheel.getVelocity(), FlywheelConstants.FLYWHEEL_CIRCUMFERENCE.getMeters(), FlywheelConstants.FLYWHEEL_REDUCTION) * EXIT_VELOCITY_RETENTION;
+    double exitAngle = 45.0;//ScreamMath.mapRange(hood.getPosition(), HoodConstants.MIN_UNITS, HoodConstants.MAX_UNITS, HoodConstants.HOOD_MIN_EXIT_ANGLE.getRadians(), HoodConstants.HOOD_MAX_EXIT_ANGLE.getRadians());
+    double horizontalVelocity = exitVelocity * Math.cos(exitAngle);
+
+    return distance / horizontalVelocity;
+  }
+
+  public static Transform2d transform3dTo2dXY(Transform3d transform){
+    return new Transform2d(transform.getX(), transform.getY(), transform.getRotation().toRotation2d());
   }
 }

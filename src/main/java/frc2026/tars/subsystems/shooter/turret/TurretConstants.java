@@ -42,7 +42,7 @@ public class TurretConstants {
   public static final boolean ENABLE_SUPPLY_LIMIT = true;
   public static final int SUPPLY_CURRENT_LIMIT = 40;
 
-  public static final ScreamPIDConstants SIM_GAINS = new ScreamPIDConstants(30.0, 0.0, 0.0);
+  public static final ScreamPIDConstants SIM_GAINS = new ScreamPIDConstants(60.0, 0.0, 0.0);
 
   public static final DCMotorSim SIM = SimUtil.createDCMotorSim(DC_MOTOR, REDUCTION, 0.01);
 
@@ -62,9 +62,7 @@ public class TurretConstants {
         new TalonFXSubsystemSimConstants(
             new SimWrapper(SIM),
             REDUCTION,
-            SIM_GAINS.getProfiledPIDController(new Constraints(MAX_VEL, MAX_ACCEL)),
-            false,
-            false);
+            SIM_GAINS.getPIDController());
 
     TURRET_CONFIG.masterConstants =
         new TalonFXConstants(new CANDevice(CAN_ID), InvertedValue.CounterClockwise_Positive);

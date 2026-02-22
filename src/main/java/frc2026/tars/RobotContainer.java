@@ -68,16 +68,9 @@ public class RobotContainer {
 
   private final Shooter shooter =
       new Shooter(
-          flywheel, hood, turret, spindexer, feeder, drivetrain::getEstimatedPose, getRobotState());
+          flywheel, hood, turret, spindexer, feeder, drivetrain, getRobotState());
 
   private final VisionManager visionManager = new VisionManager(drivetrain, turret);
-
-  public Command aimCommand() {
-    return turret.aimOnTheFlyPosition(
-        () -> (AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter)),
-        () -> drivetrain.getEstimatedPose(),
-        () -> drivetrain.getState().Speeds);
-  }
 
   private final MechanismVisualizer mechVisualizer =
       new MechanismVisualizer(
@@ -142,11 +135,11 @@ public class RobotContainer {
 
   private void configureDefaultCommands() {
 
-    turret.setDefaultCommand(
+    /* turret.setDefaultCommand(
         turret.aimOnTheFlyPosition(
             () -> FieldConstants.Hub.oppHubCenter,
             () -> drivetrain.getState().Pose,
-            () -> drivetrain.getState().Speeds));
+            () -> drivetrain.getState().Speeds)); */
 
     drivetrain.setDefaultCommand(
         drivetrain
