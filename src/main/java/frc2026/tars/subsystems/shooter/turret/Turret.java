@@ -26,7 +26,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc2026.tars.Robot;
 import frc2026.tars.constants.Constants;
 import frc2026.tars.constants.Constants.RobotType;
+import frc2026.tars.subsystems.vision.VisionManager;
 import frc2026.tars.constants.SimConstants;
+
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class Turret extends TalonFXSubsystem {
@@ -232,52 +235,57 @@ public class Turret extends TalonFXSubsystem {
         .withName("PointAtHubCenter");
   }
 
-  public Command aimOnTheFlyPosition(
+  public Command aimOnTheFlyCommand(
       Supplier<Translation2d> targetPosition,
       Supplier<Pose2d> robotPose,
-      Supplier<ChassisSpeeds> robotSpeed) {
-    return run(() -> {
-          Translation2d robotVelRobotFrame =
-              new Translation2d(
-                  robotSpeed.get().vxMetersPerSecond, robotSpeed.get().vyMetersPerSecond);
-
-          Translation2d robotVelFieldFrame =
-              robotVelRobotFrame.rotateBy(robotPose.get().getRotation());
-
-          Translation2d futurePose =
-              robotPose
-                  .get()
-                  .getTranslation()
-                  .plus(robotVelFieldFrame.times(TurretConstants.LATENCY));
-
-          Translation2d targetVc = targetPosition.get().minus(futurePose);
-          double distance = targetVc.getNorm();
-
-          double idealHorizontalSpeed = 1.0;
-
-          Rotation2d turretAngle;
-
-          double translationalSpeed = robotVelFieldFrame.getNorm();
-          if (translationalSpeed < 0.05) {
-            turretAngle = targetVc.getAngle();
-          } else {
-
-            Translation2d shotVec =
-                targetVc.div(distance).times(idealHorizontalSpeed).minus(robotVelFieldFrame);
-            turretAngle = shotVec.getAngle();
-          }
-
-          Rotation2d robotRelativeAngle = turretAngle.minus(robotPose.get().getRotation());
-
-          Rotation2d safeTarget =
-              getSafeTargetAngle(
-                  robotRelativeAngle
-                      .times(TurretConstants.MAGNITUDE)
-                      .minus(
-                          (Rotation2d.fromRadians(robotSpeed.get().omegaRadiansPerSecond)
-                              .times(0.15))));
-          setSetpointPosition(safeTarget.getRotations());
-        })
+      Supplier<ChassisSpeeds> robotSpeed,
+      DoubleSupplier timeOfFlight) {
+    return run(() -> aimOnTheFly(targetPosition.get(), robotPose.get(), robotSpeed.get(), timeOfFlight.getAsDouble()))
         .withName("AimOnTheFly");
   }
+
+  public void aimOnTheFly(
+    Translation2d targetPosition,
+    Pose2d robotPose,
+    ChassisSpeeds robotSpeed,
+    double timeOfFlight)
+{
+    double predictionTime =
+        TurretConstants.LATENCY + timeOfFlight;
+
+    Translation2d fieldVelocity =
+        new Translation2d(
+            robotSpeed.vxMetersPerSecond,
+            robotSpeed.vyMetersPerSecond)
+            .rotateBy(robotPose.getRotation());
+
+    Translation2d futureRobotTranslation =
+        robotPose.getTranslation().plus(
+            fieldVelocity.times(predictionTime));
+
+    Rotation2d futureRotation =
+        robotPose.getRotation().plus(
+            Rotation2d.fromRadians(
+                robotSpeed.omegaRadiansPerSecond * predictionTime));
+
+    Translation2d futureTurretTranslation =
+        futureRobotTranslation.plus(
+            VisionManager.robotToTurretFixed.getTranslation().toTranslation2d().rotateBy(
+                futureRotation));
+
+    Translation2d futureTargetVector =
+        targetPosition.minus(futureTurretTranslation);
+
+    Rotation2d turretRobotRelativeAngle =
+        futureTargetVector.getAngle()
+            .minus(futureRotation);
+
+    Rotation2d safeTarget =
+        getSafeTargetAngle(
+            turretRobotRelativeAngle);
+
+    setSetpointPosition(safeTarget.getRotations());
+
+    Logger.log("AimOnTheFly/FutureTurretTranslation", new Pose2d(futureTurretTranslation, futureRotation));
+}
 }

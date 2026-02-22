@@ -9,11 +9,16 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
 public class HoodConstants {
-  // TODO: Put in actual values
   public static final double HOOD_REDUCTION = 2.0;
 
-  public static final Rotation2d HOOD_MAX_ANGLE = new Rotation2d(Units.degreesToRadians(42.786125));
-  public static final Rotation2d HOOD_MIN_ANGLE = new Rotation2d(Units.degreesToRadians(20.786125));
+  public static final Rotation2d HOOD_MAX_ANGLE = Rotation2d.fromDegrees(42.786125);
+  public static final Rotation2d HOOD_MIN_ANGLE = Rotation2d.fromDegrees(20.786125);
+
+  public static final Rotation2d HOOD_MAX_EXIT_ANGLE = Rotation2d.kCCW_90deg.minus(HOOD_MAX_ANGLE);
+  public static final Rotation2d HOOD_MIN_EXIT_ANGLE = Rotation2d.kCCW_90deg.minus(HOOD_MIN_ANGLE);
+
+  public static final double MIN_UNITS = 0.0;
+  public static final double MAX_UNITS = 0.01; //TODO: Measure
 
   public static final TalonFXSubsystemConfiguration HOOD_CONFIG =
       new TalonFXSubsystemConfiguration();

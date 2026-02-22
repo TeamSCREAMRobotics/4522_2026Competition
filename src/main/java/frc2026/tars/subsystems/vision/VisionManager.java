@@ -237,7 +237,7 @@ public class VisionManager {
               visionSim.getRobotToCamera(simCameras[i]).get().inverse());
         }
       }
-      Logger.log("Turret Camera Pose", GeomUtil.transform3dToPose3d(getRobotToTurretCamera()));
+      Logger.log("Turret Camera Pose", visionSim.getCameraPose(turretSim).get());
     }
   }
 
