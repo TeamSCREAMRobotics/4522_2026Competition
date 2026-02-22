@@ -138,13 +138,15 @@ public class RobotContainer {
             new SequentialCommandGroup(
                     intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.STOP))
                 .withName("Not Intake"));
-
-    
   }
 
   private void configureDefaultCommands() {
 
-    turret.setDefaultCommand(turret.aimOnTheFlyPosition(() -> FieldConstants.Hub.oppHubCenter, () -> drivetrain.getState().Pose, () -> drivetrain.getState().Speeds));
+    turret.setDefaultCommand(
+        turret.aimOnTheFlyPosition(
+            () -> FieldConstants.Hub.oppHubCenter,
+            () -> drivetrain.getState().Pose,
+            () -> drivetrain.getState().Speeds));
 
     drivetrain.setDefaultCommand(
         drivetrain
@@ -167,8 +169,6 @@ public class RobotContainer {
                                 Controlboard.getRotation().getAsDouble()))
             .beforeStarting(() -> drivetrain.getHelper().setLastAngle(drivetrain.getHeading()))
             .withName("Drivetrain: Default command"));
-
-    
 
     shooter.setDefaultCommand(shooter.defaultCommand());
   }
@@ -204,9 +204,16 @@ public class RobotContainer {
 
     Controlboard.zeroHood().whileTrue(hood.zero().andThen(() -> Dashboard.zeroHood.set(false)));
 
-    Controlboard.zeroTurret().whileTrue(turret.setZero().andThen(() -> Dashboard.zeroTurret.set(false)));
+    Controlboard.zeroTurret()
+        .whileTrue(turret.setZero().andThen(() -> Dashboard.zeroTurret.set(false)));
 
-    Controlboard.getManualMode().whileTrue(Commands.parallel(turret.moveToAngleCommandFR(() -> Rotation2d.fromDegrees(Dashboard.manualTurretAngle.get()), () -> drivetrain.getEstimatedPose().getRotation())).ignoringDisable(true));
+    Controlboard.getManualMode()
+        .whileTrue(
+            Commands.parallel(
+                    turret.moveToAngleCommandFR(
+                        () -> Rotation2d.fromDegrees(Dashboard.manualTurretAngle.get()),
+                        () -> drivetrain.getEstimatedPose().getRotation()))
+                .ignoringDisable(true));
   }
 
   public Command getAutonomousCommand() {

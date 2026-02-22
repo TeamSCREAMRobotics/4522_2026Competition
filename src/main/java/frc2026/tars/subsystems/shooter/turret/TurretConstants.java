@@ -75,7 +75,6 @@ public class TurretConstants {
     TURRET_CONFIG.supplyCurrentLimit = TurretConstants.SUPPLY_CURRENT_LIMIT;
     TURRET_CONFIG.enableSupplyCurrentLimit = TurretConstants.ENABLE_SUPPLY_LIMIT;
 
-
     // Set brake mode
     TURRET_CONFIG.neutralMode = NeutralModeValue.Coast;
 

@@ -25,9 +25,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc2026.tars.Robot;
 import frc2026.tars.constants.Constants;
-import frc2026.tars.constants.SimConstants;
 import frc2026.tars.constants.Constants.RobotType;
-
+import frc2026.tars.constants.SimConstants;
 import java.util.function.Supplier;
 
 public class Turret extends TalonFXSubsystem {
@@ -58,7 +57,6 @@ public class Turret extends TalonFXSubsystem {
   /** Creates a new Pivot Subsystem. */
   public Turret(TalonFXSubsystemConfiguration config) {
     super(config);
-
 
     // Initialize motor controller
     robotRoot.append(turret);
