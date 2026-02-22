@@ -1,12 +1,7 @@
 package frc2026.tars.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.gameutil.FieldConstants;
-import com.teamscreamrobotics.math.Conversions;
-import com.teamscreamrobotics.math.ScreamMath;
 import com.teamscreamrobotics.physics.Trajectory;
 import com.teamscreamrobotics.physics.Trajectory.GamePiece;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
@@ -19,8 +14,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,16 +21,13 @@ import frc2026.tars.RobotState;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
-import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
-import frc2026.tars.subsystems.shooter.hood.HoodConstants;
 import frc2026.tars.subsystems.shooter.indexer.Feeder;
 import frc2026.tars.subsystems.shooter.indexer.Feeder.FeederGoal;
 import frc2026.tars.subsystems.shooter.indexer.Spindexer;
 import frc2026.tars.subsystems.shooter.indexer.Spindexer.SpindexerGoal;
 import frc2026.tars.subsystems.shooter.turret.Turret;
 import frc2026.tars.subsystems.vision.VisionManager;
-
 import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.Setter;
@@ -88,7 +78,6 @@ public class Shooter extends SubsystemBase {
     IDLE_HUB,
     IDLE_FERRY_DEPOT,
     IDLE_FERRY_OUTPOST,
-
   }
 
   @Getter @Setter private ShooterState state = ShooterState.IDLE;
@@ -177,7 +166,9 @@ public class Shooter extends SubsystemBase {
 
     switch (robotState.getArea().get()) {
       case ALLIANCEZONE:
-        applyAimingSetpoints(hoodMapAllianceZone, AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter));
+        applyAimingSetpoints(
+            hoodMapAllianceZone,
+            AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter));
         setIdleState(IdleState.IDLE_HUB);
         break;
       case DEPOT_SIDE_NEUTRALZONE:
@@ -246,7 +237,6 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-
   public Command defaultCommand() {
     return run(
         () -> {
@@ -284,24 +274,31 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-      Logger.log("Shooter/Shooter State", getState().toString());
-      Logger.log("Shooter/Idle State", getIdleState().toString());
+    Logger.log("Shooter/Shooter State", getState().toString());
+    Logger.log("Shooter/Idle State", getIdleState().toString());
   }
 
-  public Translation2d getFieldToTurret(){
-    return GeomUtil.poseToTransform(robotPose.get()).plus(transform3dTo2dXY(VisionManager.robotToTurretFixed)).getTranslation();
+  public Translation2d getFieldToTurret() {
+    return GeomUtil.poseToTransform(robotPose.get())
+        .plus(transform3dTo2dXY(VisionManager.robotToTurretFixed))
+        .getTranslation();
   }
 
-  public double getTimeOfFlight(){
+  public double getTimeOfFlight() {
     double distance = robotPose.get().getTranslation().getDistance(target);
-    double exitVelocity = 15.0;//Conversions.rpsToMPS(flywheel.getVelocity(), FlywheelConstants.FLYWHEEL_CIRCUMFERENCE.getMeters(), FlywheelConstants.FLYWHEEL_REDUCTION) * EXIT_VELOCITY_RETENTION;
-    double exitAngle = 45.0;//ScreamMath.mapRange(hood.getPosition(), HoodConstants.MIN_UNITS, HoodConstants.MAX_UNITS, HoodConstants.HOOD_MIN_EXIT_ANGLE.getRadians(), HoodConstants.HOOD_MAX_EXIT_ANGLE.getRadians());
+    double exitVelocity = 15.0; // Conversions.rpsToMPS(flywheel.getVelocity(),
+    // FlywheelConstants.FLYWHEEL_CIRCUMFERENCE.getMeters(),
+    // FlywheelConstants.FLYWHEEL_REDUCTION) * EXIT_VELOCITY_RETENTION;
+    double exitAngle = 45.0; // ScreamMath.mapRange(hood.getPosition(), HoodConstants.MIN_UNITS,
+    // HoodConstants.MAX_UNITS, HoodConstants.HOOD_MIN_EXIT_ANGLE.getRadians(),
+    // HoodConstants.HOOD_MAX_EXIT_ANGLE.getRadians());
     double horizontalVelocity = exitVelocity * Math.cos(exitAngle);
 
     return distance / horizontalVelocity;
   }
 
-  public static Transform2d transform3dTo2dXY(Transform3d transform){
-    return new Transform2d(transform.getX(), transform.getY(), transform.getRotation().toRotation2d());
+  public static Transform2d transform3dTo2dXY(Transform3d transform) {
+    return new Transform2d(
+        transform.getX(), transform.getY(), transform.getRotation().toRotation2d());
   }
 }
