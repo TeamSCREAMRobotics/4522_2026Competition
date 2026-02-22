@@ -48,7 +48,7 @@ public class IntakeConstants {
 
     INTAKE_WRIST_CONFIG.codeEnabled = true;
     INTAKE_WRIST_CONFIG.logTelemetry = false;
-    INTAKE_WRIST_CONFIG.debugMode = true;
+    INTAKE_WRIST_CONFIG.debugMode = false;
 
     INTAKE_WRIST_CONFIG.simConstants =
         new TalonFXSubsystemSimConstants(

@@ -10,7 +10,7 @@ package frc2026.tars.constants;
 import edu.wpi.first.wpilibj.RobotBase;
 
 public final class Constants {
-  public static final RobotType robot = RobotType.COMPBOT;
+  public static final RobotType robot = RobotType.DEVBOT;
   public static final boolean tuningMode = false;
 
   public static final double loopPeriodSecs = 0.02;
@@ -18,7 +18,7 @@ public final class Constants {
 
   public static Mode getMode() {
     return switch (robot) {
-      case COMPBOT, ALPHABOT -> RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
+      case COMPBOT, DEVBOT -> RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
       case SIMBOT -> Mode.SIM;
     };
   }
@@ -36,7 +36,7 @@ public final class Constants {
 
   public enum RobotType {
     COMPBOT,
-    ALPHABOT,
+    DEVBOT,
     SIMBOT
   }
 

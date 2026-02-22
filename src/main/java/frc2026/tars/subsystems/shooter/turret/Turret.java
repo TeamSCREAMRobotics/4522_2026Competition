@@ -1,11 +1,8 @@
 package frc2026.tars.subsystems.shooter.turret;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.teamscreamrobotics.dashboard.Ligament;
 import com.teamscreamrobotics.dashboard.Mechanism;
 import com.teamscreamrobotics.data.Length;
@@ -27,16 +24,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc2026.tars.Robot;
+import frc2026.tars.constants.Constants;
 import frc2026.tars.constants.SimConstants;
+import frc2026.tars.constants.Constants.RobotType;
+
 import java.util.function.Supplier;
-import yams.units.EasyCRT;
-import yams.units.EasyCRTConfig;
 
 public class Turret extends TalonFXSubsystem {
-  private final CANcoder innerEncoder;
-  private final CANcoder outerEncoder;
-  private final EasyCRT easyCRT;
-
   private final Ligament turretTwo =
       new Ligament()
           .withStaticLength(Length.fromInches(5.0))
@@ -65,30 +59,9 @@ public class Turret extends TalonFXSubsystem {
   public Turret(TalonFXSubsystemConfiguration config) {
     super(config);
 
-    innerEncoder = new CANcoder(TurretConstants.CAN_INNER_ID);
-    outerEncoder = new CANcoder(TurretConstants.CAN_OUTER_ID);
-
-    EasyCRTConfig easyCRTConfig =
-        new EasyCRTConfig(
-                () -> Rotations.of(innerEncoder.getAbsolutePosition().getValueAsDouble()),
-                () -> Rotations.of(outerEncoder.getAbsolutePosition().getValueAsDouble()))
-            .withAbsoluteEncoder1Gearing(
-                TurretConstants.GEAR_0_TOOTH_COUNT, TurretConstants.GEAR_1_TOOTH_COUNT)
-            .withAbsoluteEncoder2Gearing(
-                TurretConstants.GEAR_0_TOOTH_COUNT,
-                TurretConstants.GEAR_1_TOOTH_COUNT,
-                TurretConstants.GEAR_2_TOOTH_COUNT)
-            .withMechanismRange(
-                Degrees.of(TurretConstants.MIN_ROT_DEG), Degrees.of(TurretConstants.MAX_ROT_DEG))
-            .withMatchTolerance(Rotations.of(TurretConstants.CRT_MATCH_TOLERANCE));
-
-    easyCRT = new EasyCRT(easyCRTConfig);
 
     // Initialize motor controller
     robotRoot.append(turret);
-
-    innerEncoder.getConfigurator().apply(TurretConstants.INNER_CANCODER_CONFIG);
-    outerEncoder.getConfigurator().apply(TurretConstants.OUTTER_CODER_CONFIG);
 
     routine =
         new SysIdRoutine(
@@ -105,23 +78,9 @@ public class Turret extends TalonFXSubsystem {
                 null,
                 this));
 
-    easyCRT
-        .getAngleOptional()
-        .ifPresentOrElse(
-            angle -> {
-              resetPosition(angle.in(Rotations));
-              System.out.println(
-                  "Turret initialized with CRT angle: "
-                      + (angle.in(Rotations) * 360.0)
-                      + " degrees");
-            },
-            () -> {
-              System.err.println(
-                  "WARNING: CRT failed to resolve turret angle! Status: "
-                      + easyCRT.getLastStatus());
-              // Fallback to old method if needed
-              resetPosition(0.0);
-            });
+    if (Constants.robot == RobotType.COMPBOT) {
+      resetPosition(0);
+    }
   }
 
   /** Update simulation and telemetry. */
@@ -137,15 +96,6 @@ public class Turret extends TalonFXSubsystem {
     Logger.log(logPrefix + "Motor Angle", getAngle().getDegrees());
 
     SmartDashboard.putNumber("Turret Velocity", getVelocity());
-    easyCRT
-        .getAngleOptional()
-        .ifPresent(angle -> SmartDashboard.putNumber("Turret Angle", angle.in(Degrees)));
-    SmartDashboard.putNumber(
-        "Turret Inner Encoder Angle",
-        Units.rotationsToDegrees(innerEncoder.getAbsolutePosition().getValueAsDouble()));
-    SmartDashboard.putNumber(
-        "Turret Outer Encoder Angle",
-        Units.rotationsToDegrees(outerEncoder.getAbsolutePosition().getValueAsDouble()));
   }
 
   // Does the actual check to ensure that angle is within bounds
@@ -251,12 +201,16 @@ public class Turret extends TalonFXSubsystem {
     return routine.dynamic(direction);
   }
 
+  public Command setZero() {
+    return runOnce(() -> resetPosition(0));
+  }
+
   public Command pointAtFieldPosition(
       Supplier<Translation2d> targetPosition, Supplier<Pose2d> robotPose) {
     return moveToAngleCommandFR(
         () ->
             ScreamMath.calculateAngleToPoint(
-                robotPose.get().getTranslation(), targetPosition.get()),
+                targetPosition.get(), robotPose.get().getTranslation()),
         () -> robotPose.get().getRotation());
   }
 

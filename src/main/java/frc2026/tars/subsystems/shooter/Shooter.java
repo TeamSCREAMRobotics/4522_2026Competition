@@ -25,8 +25,6 @@ import frc2026.tars.subsystems.shooter.indexer.Feeder.FeederGoal;
 import frc2026.tars.subsystems.shooter.indexer.Spindexer;
 import frc2026.tars.subsystems.shooter.indexer.Spindexer.SpindexerGoal;
 import frc2026.tars.subsystems.shooter.turret.Turret;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,20 +36,25 @@ public class Shooter extends SubsystemBase {
   private final Spindexer spindexer;
   private final Feeder feeder;
   private final RobotState robotState;
-  private final InterpolatingDoubleTreeMap hoodMapAllainceZone = new InterpolatingDoubleTreeMap();
+  private final InterpolatingDoubleTreeMap hoodMapAllianceZone = new InterpolatingDoubleTreeMap();
   private final InterpolatingDoubleTreeMap hoodMapNeutralZone = new InterpolatingDoubleTreeMap();
   private final Supplier<Pose2d> robotPose;
-  private final String logprefix = "Subsystems/Shooter/";
+  private final String logPrefix = "Subsystems/Shooter/";
+
+  // Feed state tracking — avoids spawning a new Command every loop
+  private boolean isFeedActive = false;
+  private final Timer feedTimer = new Timer();
+  private static final double FEED_DURATION_SECONDS = 3.0;
 
   public void hoodMapPoints() {
-    // TODO: Add points to hood maps
+    // TODO: Add tuned points to hood maps
 
-    hoodMapAllainceZone.put(0.0, 0.0);
-    hoodMapAllainceZone.put(5., 10.0);
-    hoodMapAllainceZone.put(11.0, 22.0);
+    hoodMapAllianceZone.put(0.0, 0.0);
+    hoodMapAllianceZone.put(5.0, 10.0);
+    hoodMapAllianceZone.put(11.0, 22.0);
 
     hoodMapNeutralZone.put(0.0, 0.0);
-    hoodMapNeutralZone.put(5., 10.0);
+    hoodMapNeutralZone.put(5.0, 10.0);
     hoodMapNeutralZone.put(11.0, 22.0);
   }
 
@@ -83,184 +86,193 @@ public class Shooter extends SubsystemBase {
     hoodMapPoints();
   }
 
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+
   public Distance getShotDistance(Translation2d target) {
-    Pose2d robotPose = this.robotPose.get();
-    double centerToTargetMeters = robotPose.getTranslation().getDistance(target);
-
-    double centerToShooterMeters = 0.146;
-
-    double shooterToTargetMeters =
-        Math.sqrt(Math.pow(centerToTargetMeters, 2.0) - Math.pow(centerToShooterMeters, 2.0));
-
-    return Units.Meters.of(shooterToTargetMeters);
+    Pose2d pose = this.robotPose.get();
+    double centerToTarget = pose.getTranslation().getDistance(target);
+    double centerToShooter = 0.146; // meters
+    // Pythagorean offset so we measure from the shooter, not the robot center
+    double shooterToTarget =
+        Math.sqrt(Math.pow(centerToTarget, 2.0) - Math.pow(centerToShooter, 2.0));
+    return Units.Meters.of(shooterToTarget);
   }
 
-  public Command aimAtPoint(InterpolatingDoubleTreeMap treeMap, double distance) {
-    return run(
-        () -> {
-          hood.moveToAngleCommand(Rotation2d.fromDegrees(treeMap.get(distance)));
-        });
-  }
+  // ---------------------------------------------------------------------------
+  // Core aiming — called directly each loop, no Command wrappers
+  // ---------------------------------------------------------------------------
 
-  public Command rampUpToVelocity(double velocity) {
-    return run(
-        () -> {
-          flywheel.setSetpointVelocity(velocity);
-        });
-  }
+  /**
+   * Configures the hood angle and flywheel velocity for a given target. Must be called from inside
+   * a periodic/run context, NOT used to produce a Command object.
+   */
+  private void applyAimingSetpoints(InterpolatingDoubleTreeMap treeMap, Translation2d target) {
+    double distanceMeters = getShotDistance(target).in(Meters);
 
-  public Command feed(BooleanSupplier end) {
-    return spindexer
-        .applyGoalCommand(SpindexerGoal.RUN)
-        .alongWith(feeder.applyGoalCommand(FeederGoal.RUN))
-        .until(end)
-        .andThen(
-            spindexer
-                .applyGoalCommand(SpindexerGoal.STOP)
-                .alongWith(feeder.applyGoalCommand(FeederGoal.STOP)));
-  }
-
-  public void setAimingTarget(InterpolatingDoubleTreeMap treeMap, Translation2d target) {
-    DoubleSupplier distance = () -> getShotDistance(target).in(Meters);
     Trajectory.configure()
         .setGamePiece(GamePiece.FUEL)
         .setInitialHeight(ShooterConstants.HEIGHT)
         .setTargetHeight(Trajectory.HUB_HEIGHT)
-        .setTargetDistance(distance.getAsDouble())
-        .setShotAngle(treeMap.get(distance.getAsDouble()));
+        .setTargetDistance(distanceMeters)
+        .setShotAngle(treeMap.get(distanceMeters));
 
-    aimAtPoint(treeMap, distance.getAsDouble());
-    rampUpToVelocity(Trajectory.getRequiredVelocity() / 4);
+    double hoodAngleDeg = treeMap.get(distanceMeters);
+    // Trajectory.getRequiredVelocity() returns surface speed; divide by 4 for motor setpoint
+    double flywheelSetpoint = Trajectory.getRequiredVelocity() / 4.0;
 
-    Logger.log(logprefix + "Hood Angle", treeMap.get(distance.getAsDouble()));
-    Logger.log(logprefix + "Flywheel Velocity", Trajectory.getRequiredVelocity() / 4);
+    hood.moveToAngleCommand(Rotation2d.fromDegrees(hoodAngleDeg));
+    flywheel.setSetpointVelocity(flywheelSetpoint);
+
+    Logger.log(logPrefix + "Hood Angle", hoodAngleDeg);
+    Logger.log(logPrefix + "Flywheel Velocity", flywheelSetpoint);
+    Logger.log(logPrefix + "Shot Distance", distanceMeters);
   }
 
-  public void setAimingTarget(
-      InterpolatingDoubleTreeMap treeMap, Translation2d target, boolean feed) {
-    DoubleSupplier distance = () -> getShotDistance(target).in(Meters);
-    Trajectory.configure()
-        .setGamePiece(GamePiece.FUEL)
-        .setInitialHeight(ShooterConstants.HEIGHT)
-        .setTargetHeight(Trajectory.HUB_HEIGHT)
-        .setTargetDistance(distance.getAsDouble())
-        .setShotAngle(treeMap.get(distance.getAsDouble()));
+  // ---------------------------------------------------------------------------
+  // Feed management — timer-based, no repeated Command construction
+  // ---------------------------------------------------------------------------
 
-    aimAtPoint(treeMap, distance.getAsDouble());
-    rampUpToVelocity(Trajectory.getRequiredVelocity() / 4);
-
-    Logger.log(logprefix + "Hood Angle", treeMap.get(distance.getAsDouble()));
-    Logger.log(logprefix + "Flywheel Velocity", Trajectory.getRequiredVelocity());
-    if (true) {
-      double time = Timer.getFPGATimestamp();
-      feed(() -> time >= 3.0);
-    } else return;
-  }
-
-  public void idleCase() {
-    if (robotState.getArea().isEmpty()) {
-      return;
-    } else {
-      switch (robotState.getArea().get()) {
-        case ALLIANCEZONE:
-          setAimingTarget(hoodMapAllainceZone, FieldConstants.Hub.hubCenter);
-          break;
-        case DEPOT_SIDE_NEUTRALZONE:
-          setAimingTarget(
-              hoodMapNeutralZone,
-              AllianceFlipUtil.get(
-                  FieldConstants.AllianceZones.leftAllianceZone,
-                  FieldConstants.AllianceZones.oppRightAllianceZone));
-          break;
-        case OUTPOST_SIDE_NEUTRALZONE:
-          setAimingTarget(
-              hoodMapNeutralZone,
-              AllianceFlipUtil.get(
-                  FieldConstants.AllianceZones.rightAllianceZone,
-                  FieldConstants.AllianceZones.oppLeftAllianceZone));
-          break;
-        case OTHERALLIANCEZONE:
-          break;
-        default:
-          break;
-      }
+  /** Starts a timed feed cycle. Safe to call every loop; only arms once per press. */
+  private void startFeedIfNotRunning() {
+    if (!isFeedActive) {
+      isFeedActive = true;
+      feedTimer.reset();
+      feedTimer.start();
+      spindexer.applyGoal(SpindexerGoal.RUN);
+      feeder.applyGoal(FeederGoal.RUN);
     }
   }
 
-  public void ferryCase() {
-    if (robotState.getArea().isEmpty()) {
-      return;
-    } else {
-      switch (robotState.getArea().get()) {
-        case DEPOT_SIDE_NEUTRALZONE:
-          setAimingTarget(
-              hoodMapNeutralZone,
-              AllianceFlipUtil.get(
-                  FieldConstants.AllianceZones.leftAllianceZone,
-                  FieldConstants.AllianceZones.oppRightAllianceZone),
-              true);
-          break;
-        case OUTPOST_SIDE_NEUTRALZONE:
-          setAimingTarget(
-              hoodMapNeutralZone,
-              AllianceFlipUtil.get(
-                  FieldConstants.AllianceZones.rightAllianceZone,
-                  FieldConstants.AllianceZones.oppLeftAllianceZone),
-              true);
-          break;
-        default:
-          break;
-      }
+  /** Stops feeding and resets state. */
+  private void stopFeed() {
+    isFeedActive = false;
+    feedTimer.stop();
+    feedTimer.reset();
+    spindexer.applyGoal(SpindexerGoal.STOP);
+    feeder.applyGoal(FeederGoal.STOP);
+  }
+
+  /** Must be called each loop to time out the feed cycle. */
+  private void updateFeed() {
+    if (isFeedActive && feedTimer.hasElapsed(FEED_DURATION_SECONDS)) {
+      stopFeed();
     }
   }
 
-  public void setShooterState() {
-    if (Controlboard.shoot().getAsBoolean()
-        && robotState.getArea().get() == RobotState.Area.ALLIANCEZONE
-        && !robotState.getArea().isEmpty()) {
+  // ---------------------------------------------------------------------------
+  // State cases
+  // ---------------------------------------------------------------------------
+
+  private void idleCase() {
+    if (robotState.getArea().isEmpty()) return;
+
+    switch (robotState.getArea().get()) {
+      case ALLIANCEZONE:
+        applyAimingSetpoints(hoodMapAllianceZone, FieldConstants.Hub.hubCenter);
+        break;
+      case DEPOT_SIDE_NEUTRALZONE:
+        applyAimingSetpoints(
+            hoodMapNeutralZone,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.leftAllianceZone,
+                FieldConstants.AllianceZones.oppRightAllianceZone));
+        break;
+      case OUTPOST_SIDE_NEUTRALZONE:
+        applyAimingSetpoints(
+            hoodMapNeutralZone,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.rightAllianceZone,
+                FieldConstants.AllianceZones.oppLeftAllianceZone));
+        break;
+      default:
+        break;
+    }
+  }
+
+  private void ferryCase() {
+    if (robotState.getArea().isEmpty()) return;
+
+    switch (robotState.getArea().get()) {
+      case DEPOT_SIDE_NEUTRALZONE:
+        applyAimingSetpoints(
+            hoodMapNeutralZone,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.leftAllianceZone,
+                FieldConstants.AllianceZones.oppRightAllianceZone));
+        startFeedIfNotRunning();
+        break;
+      case OUTPOST_SIDE_NEUTRALZONE:
+        applyAimingSetpoints(
+            hoodMapNeutralZone,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.rightAllianceZone,
+                FieldConstants.AllianceZones.oppLeftAllianceZone));
+        startFeedIfNotRunning();
+        break;
+      default:
+        stopFeed();
+        break;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // State machine update
+  // ---------------------------------------------------------------------------
+
+  private void updateShooterState() {
+    if (robotState.getArea().isEmpty()) return;
+
+    RobotState.Area area = robotState.getArea().get();
+
+    if (Controlboard.shoot().getAsBoolean() && area == RobotState.Area.ALLIANCEZONE) {
       setState(ShooterState.SHOOTING);
     } else if (Controlboard.shoot().getAsBoolean()
-        && (robotState.getArea().get() == RobotState.Area.DEPOT_SIDE_NEUTRALZONE
-            || robotState.getArea().get() == RobotState.Area.OUTPOST_SIDE_NEUTRALZONE)
-        && !robotState.getArea().isEmpty()) {
+        && (area == RobotState.Area.DEPOT_SIDE_NEUTRALZONE
+            || area == RobotState.Area.OUTPOST_SIDE_NEUTRALZONE)) {
       setState(ShooterState.FERRYING);
-    } else if (robotState.getArea().isPresent()
-        && robotState.getArea().get() == RobotState.Area.TRENCHES
-        && !robotState.getArea().isEmpty()) {
+    } else if (area == RobotState.Area.TRENCHES) {
       setState(ShooterState.STOWED);
-    } else if (robotState.getArea().isEmpty()) {
-      return;
     } else {
       setState(ShooterState.IDLE);
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // Default command — one run() wrapper; all logic inside uses direct calls
+  // ---------------------------------------------------------------------------
+
   public Command defaultCommand() {
     return run(
         () -> {
+          updateShooterState();
+          updateFeed(); // advance the feed timer every loop
+
           switch (state) {
             case IDLE:
               idleCase();
               break;
+
             case STOWED:
-              hood.moveToAngleCommand(Rotation2d.fromDegrees(0));
+              // Park the hood flat and spin the flywheel at a slow keep-warm speed
+              hood.moveToAngleCommand(Rotation2d.fromDegrees(0.0));
               flywheel.setSetpointVelocity(7.5);
+              if (isFeedActive) stopFeed();
               break;
+
             case SHOOTING:
-              setAimingTarget(hoodMapAllainceZone, FieldConstants.Hub.hubCenter, true);
+              applyAimingSetpoints(hoodMapAllianceZone, FieldConstants.Hub.hubCenter);
+              startFeedIfNotRunning();
               break;
+
             case FERRYING:
               ferryCase();
               break;
+
             default:
               break;
           }
         });
-  }
-
-  @Override
-  public void periodic() {
-    setShooterState();
-    Logger.log(logprefix + "State", getState().toString());
   }
 }

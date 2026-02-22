@@ -13,7 +13,6 @@ public class IndexerConstants {
 
     SPINDEXER_CONFIG.codeEnabled = true;
     SPINDEXER_CONFIG.logTelemetry = false;
-    SPINDEXER_CONFIG.logTelemetry = false;
     SPINDEXER_CONFIG.debugMode = false;
 
     SPINDEXER_CONFIG.masterConstants =
@@ -32,7 +31,6 @@ public class IndexerConstants {
     FEEDER_CONFIG.name = "Feeder";
 
     FEEDER_CONFIG.codeEnabled = true;
-    FEEDER_CONFIG.logTelemetry = false;
     FEEDER_CONFIG.logTelemetry = false;
     FEEDER_CONFIG.debugMode = false;
 
