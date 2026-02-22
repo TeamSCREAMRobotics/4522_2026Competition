@@ -29,7 +29,7 @@ public class Robot extends TimedRobot {
             .withCaptureNt(true)
             .withLogExtras(true)
             .withNtPublish(true)
-            .withLogEntryQueueCapacity(2000));
+            .withUseLogThread(true));
     Logger.setEnabled(true);
 
     CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());

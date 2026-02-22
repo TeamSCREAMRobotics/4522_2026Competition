@@ -90,12 +90,16 @@ public class Controlboard {
     return new Trigger(() -> Dashboard.zeroHood.get());
   }
 
+public static Trigger zeroTurret() {
+    return new Trigger(() -> Dashboard.zeroTurret.get());
+  }
+
   public static Trigger resetManuals() {
     return new Trigger(() -> Dashboard.resetManuals.get());
   }
 
   public static Trigger getManualMode() {
-    return new Trigger(() -> Dashboard.unClogFeeder.get());
+    return new Trigger(() -> Dashboard.manualMode.get());
   }
 
   public static Trigger resetFieldCentric() {

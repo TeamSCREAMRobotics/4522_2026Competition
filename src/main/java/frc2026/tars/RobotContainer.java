@@ -6,6 +6,7 @@ import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,8 +30,10 @@ import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
 import frc2026.tars.subsystems.shooter.hood.HoodConstants;
 import frc2026.tars.subsystems.shooter.indexer.Feeder;
+import frc2026.tars.subsystems.shooter.indexer.Feeder.FeederGoal;
 import frc2026.tars.subsystems.shooter.indexer.IndexerConstants;
 import frc2026.tars.subsystems.shooter.indexer.Spindexer;
+import frc2026.tars.subsystems.shooter.indexer.Spindexer.SpindexerGoal;
 import frc2026.tars.subsystems.shooter.turret.Turret;
 import frc2026.tars.subsystems.shooter.turret.TurretConstants;
 import frc2026.tars.subsystems.vision.VisionManager;
@@ -116,15 +119,15 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    // Controlboard.makeThingWork()
-    //     .whileTrue(
-    //         Commands.parallel(
-    //             spindexer.applyGoalCommand(SpindexerGoal.RUN),
-    //             feeder.applyGoalCommand(FeederGoal.RUN)))
-    //     .whileFalse(
-    //         Commands.parallel(
-    //             spindexer.applyGoalCommand(SpindexerGoal.STOP),
-    //             feeder.applyGoalCommand(FeederGoal.STOP)));
+    Controlboard.makeThingWork()
+        .whileTrue(
+            Commands.parallel(
+                spindexer.applyGoalCommand(SpindexerGoal.RUN),
+                feeder.applyGoalCommand(FeederGoal.RUN)))
+        .whileFalse(
+            Commands.parallel(
+                spindexer.applyGoalCommand(SpindexerGoal.STOP),
+                feeder.applyGoalCommand(FeederGoal.STOP)));
 
     Controlboard.intake()
         .onTrue(
@@ -135,9 +138,13 @@ public class RobotContainer {
             new SequentialCommandGroup(
                     intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.STOP))
                 .withName("Not Intake"));
+
+    
   }
 
   private void configureDefaultCommands() {
+
+    turret.setDefaultCommand(turret.aimOnTheFlyPosition(() -> FieldConstants.Hub.oppHubCenter, () -> drivetrain.getState().Pose, () -> drivetrain.getState().Speeds));
 
     drivetrain.setDefaultCommand(
         drivetrain
@@ -161,10 +168,7 @@ public class RobotContainer {
             .beforeStarting(() -> drivetrain.getHelper().setLastAngle(drivetrain.getHeading()))
             .withName("Drivetrain: Default command"));
 
-    turret.setDefaultCommand(
-        turret
-            .pointAtHubCenter(() -> drivetrain.getEstimatedPose())
-            .withName("Turret: Point at hub center"));
+    
 
     shooter.setDefaultCommand(shooter.defaultCommand());
   }
@@ -199,6 +203,10 @@ public class RobotContainer {
         .whileTrue(climber.zero().andThen(() -> Dashboard.zeroClimber.set(false)));
 
     Controlboard.zeroHood().whileTrue(hood.zero().andThen(() -> Dashboard.zeroHood.set(false)));
+
+    Controlboard.zeroTurret().whileTrue(turret.setZero().andThen(() -> Dashboard.zeroTurret.set(false)));
+
+    Controlboard.getManualMode().whileTrue(Commands.parallel(turret.moveToAngleCommandFR(() -> Rotation2d.fromDegrees(Dashboard.manualTurretAngle.get()), () -> drivetrain.getEstimatedPose().getRotation())).ignoringDisable(true));
   }
 
   public Command getAutonomousCommand() {
@@ -212,7 +220,7 @@ public class RobotContainer {
 
   public void periodic() {
     visionManager.periodic();
-    robotState.logArea();
+    // robotState.logArea();
 
     /*
     Tell this to jackson dummy future me, turret looked correct in sim, so that means that our values or calculations for CRT are prob wrong.
