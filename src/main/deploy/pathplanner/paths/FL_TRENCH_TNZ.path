@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 6.95737841043891,
-        "y": 6.482716488730723
+        "x": 7.689003558718861,
+        "y": 5.9339976275207595
       },
       "prevControl": {
-        "x": 6.301067615658363,
-        "y": 6.988398576512456
+        "x": 7.172562277580072,
+        "y": 6.762455516014235
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,10 +58,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 152.85031830221686
+    "rotation": 128.0470425323487
   },
   "reversed": false,
-  "folder": "FL_TRENCH",
+  "folder": "DEPOT_TRENCH",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

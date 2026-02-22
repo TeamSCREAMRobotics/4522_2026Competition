@@ -3,8 +3,10 @@
   "robotLength": 0.763,
   "holonomicMode": true,
   "pathFolders": [
-    "FL_TRENCH",
-    "FR_TRENCH"
+    "DEPOT_BUMP",
+    "DEPOT_TRENCH",
+    "OUTPOST_BUMP",
+    "OUTPOST_TRENCH"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,
