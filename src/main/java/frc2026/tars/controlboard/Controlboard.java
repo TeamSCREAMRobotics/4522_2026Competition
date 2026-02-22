@@ -90,7 +90,7 @@ public class Controlboard {
     return new Trigger(() -> Dashboard.zeroHood.get());
   }
 
-public static Trigger zeroTurret() {
+  public static Trigger zeroTurret() {
     return new Trigger(() -> Dashboard.zeroTurret.get());
   }
 
