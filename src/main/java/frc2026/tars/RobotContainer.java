@@ -2,7 +2,6 @@ package frc2026.tars;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
-import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -67,8 +66,7 @@ public class RobotContainer {
   @Getter private final RobotState robotState = new RobotState(subsystems);
 
   private final Shooter shooter =
-      new Shooter(
-          flywheel, hood, turret, spindexer, feeder, drivetrain, getRobotState());
+      new Shooter(flywheel, hood, turret, spindexer, feeder, drivetrain, getRobotState());
 
   private final VisionManager visionManager = new VisionManager(drivetrain, turret);
 
@@ -136,10 +134,10 @@ public class RobotContainer {
   private void configureDefaultCommands() {
 
     /* turret.setDefaultCommand(
-        turret.aimOnTheFlyPosition(
-            () -> FieldConstants.Hub.oppHubCenter,
-            () -> drivetrain.getState().Pose,
-            () -> drivetrain.getState().Speeds)); */
+    turret.aimOnTheFlyPosition(
+        () -> FieldConstants.Hub.oppHubCenter,
+        () -> drivetrain.getState().Pose,
+        () -> drivetrain.getState().Speeds)); */
 
     drivetrain.setDefaultCommand(
         drivetrain

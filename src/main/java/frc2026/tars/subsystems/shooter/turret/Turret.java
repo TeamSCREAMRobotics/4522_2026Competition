@@ -26,9 +26,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc2026.tars.Robot;
 import frc2026.tars.constants.Constants;
 import frc2026.tars.constants.Constants.RobotType;
-import frc2026.tars.subsystems.vision.VisionManager;
 import frc2026.tars.constants.SimConstants;
-
+import frc2026.tars.subsystems.vision.VisionManager;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -240,52 +239,50 @@ public class Turret extends TalonFXSubsystem {
       Supplier<Pose2d> robotPose,
       Supplier<ChassisSpeeds> robotSpeed,
       DoubleSupplier timeOfFlight) {
-    return run(() -> aimOnTheFly(targetPosition.get(), robotPose.get(), robotSpeed.get(), timeOfFlight.getAsDouble()))
+    return run(() ->
+            aimOnTheFly(
+                targetPosition.get(),
+                robotPose.get(),
+                robotSpeed.get(),
+                timeOfFlight.getAsDouble()))
         .withName("AimOnTheFly");
   }
 
   public void aimOnTheFly(
-    Translation2d targetPosition,
-    Pose2d robotPose,
-    ChassisSpeeds robotSpeed,
-    double timeOfFlight)
-{
-    double predictionTime =
-        TurretConstants.LATENCY + timeOfFlight;
+      Translation2d targetPosition,
+      Pose2d robotPose,
+      ChassisSpeeds robotSpeed,
+      double timeOfFlight) {
+    double predictionTime = TurretConstants.LATENCY + timeOfFlight;
 
     Translation2d fieldVelocity =
-        new Translation2d(
-            robotSpeed.vxMetersPerSecond,
-            robotSpeed.vyMetersPerSecond)
+        new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond)
             .rotateBy(robotPose.getRotation());
 
     Translation2d futureRobotTranslation =
-        robotPose.getTranslation().plus(
-            fieldVelocity.times(predictionTime));
+        robotPose.getTranslation().plus(fieldVelocity.times(predictionTime));
 
     Rotation2d futureRotation =
-        robotPose.getRotation().plus(
-            Rotation2d.fromRadians(
-                robotSpeed.omegaRadiansPerSecond * predictionTime));
+        robotPose
+            .getRotation()
+            .plus(Rotation2d.fromRadians(robotSpeed.omegaRadiansPerSecond * predictionTime));
 
     Translation2d futureTurretTranslation =
         futureRobotTranslation.plus(
-            VisionManager.robotToTurretFixed.getTranslation().toTranslation2d().rotateBy(
-                futureRotation));
+            VisionManager.robotToTurretFixed
+                .getTranslation()
+                .toTranslation2d()
+                .rotateBy(futureRotation));
 
-    Translation2d futureTargetVector =
-        targetPosition.minus(futureTurretTranslation);
+    Translation2d futureTargetVector = targetPosition.minus(futureTurretTranslation);
 
-    Rotation2d turretRobotRelativeAngle =
-        futureTargetVector.getAngle()
-            .minus(futureRotation);
+    Rotation2d turretRobotRelativeAngle = futureTargetVector.getAngle().minus(futureRotation);
 
-    Rotation2d safeTarget =
-        getSafeTargetAngle(
-            turretRobotRelativeAngle);
+    Rotation2d safeTarget = getSafeTargetAngle(turretRobotRelativeAngle);
 
     setSetpointPosition(safeTarget.getRotations());
 
-    Logger.log("AimOnTheFly/FutureTurretTranslation", new Pose2d(futureTurretTranslation, futureRotation));
-}
+    Logger.log(
+        "AimOnTheFly/FutureTurretTranslation", new Pose2d(futureTurretTranslation, futureRotation));
+  }
 }

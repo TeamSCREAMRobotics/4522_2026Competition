@@ -11,7 +11,6 @@ import com.teamscreamrobotics.pid.ScreamPIDConstants.FeedforwardConstants;
 import com.teamscreamrobotics.sim.SimWrapper;
 import com.teamscreamrobotics.util.SimUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class TurretConstants {
@@ -60,9 +59,7 @@ public class TurretConstants {
 
     TURRET_CONFIG.simConstants =
         new TalonFXSubsystemSimConstants(
-            new SimWrapper(SIM),
-            REDUCTION,
-            SIM_GAINS.getPIDController());
+            new SimWrapper(SIM), REDUCTION, SIM_GAINS.getPIDController());
 
     TURRET_CONFIG.masterConstants =
         new TalonFXConstants(new CANDevice(CAN_ID), InvertedValue.CounterClockwise_Positive);
