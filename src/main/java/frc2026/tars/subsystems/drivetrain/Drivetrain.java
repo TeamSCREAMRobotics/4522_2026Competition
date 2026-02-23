@@ -274,6 +274,8 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     Logger.log("Subsystems/Drivetrain/MeasuredStates", state.ModuleStates);
     Logger.log("Subsystems/Drivetrain/SetpointStates", state.ModuleTargets);
 
+    Logger.log("Subsystems/Drivetrain/Heading", getEstimatedPose().getRotation().getDegrees());
+
     // Dashboard.publishPose(getEstimatedPose());
   }
 

@@ -1,6 +1,7 @@
 package frc2026.tars;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import com.team6328.FeedForwardCharacterization;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
@@ -110,15 +111,19 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    Controlboard.makeThingWork()
-        .whileTrue(
-            Commands.parallel(
-                spindexer.applyGoalCommand(SpindexerGoal.RUN),
-                feeder.applyGoalCommand(FeederGoal.RUN)))
-        .whileFalse(
-            Commands.parallel(
-                spindexer.applyGoalCommand(SpindexerGoal.STOP),
-                feeder.applyGoalCommand(FeederGoal.STOP)));
+
+
+    // Controlboard.makeThingWork()
+    //     .whileTrue(
+    //         Commands.parallel(
+    //             spindexer.applyGoalCommand(SpindexerGoal.RUN),
+    //             feeder.applyGoalCommand(FeederGoal.RUN)))
+    //     .whileFalse(
+    //         Commands.parallel(
+    //             spindexer.applyGoalCommand(SpindexerGoal.STOP),
+    //             feeder.applyGoalCommand(FeederGoal.STOP)));
+
+    // Controlboard.makeThingWork().whileTrue(new FeedForwardCharacterization(feeder, feeder::setVoltage, feeder::getVelocity));
 
     Controlboard.intake()
         .onTrue(
@@ -196,7 +201,7 @@ public class RobotContainer {
     Controlboard.zeroHood().whileTrue(hood.zero().andThen(() -> Dashboard.zeroHood.set(false)));
 
     Controlboard.zeroTurret()
-        .whileTrue(turret.setZero().andThen(() -> Dashboard.zeroTurret.set(false)));
+        .onTrue(turret.setZero().andThen(() -> Dashboard.zeroTurret.set(false)).ignoringDisable(true));
 
     Controlboard.getManualMode()
         .whileTrue(
@@ -243,7 +248,7 @@ public class RobotContainer {
                 0,
                 0,
                 drivetrain.getEstimatedPose().getRotation().getRadians()
-                    + turret.getAngle().getRadians())));
+                    - turret.getAngle().getRadians())));
 
     // Logger.log("Subsystems/Turret/Angle Setpoint",
     // ScreamMath.calculateAngleToPoint(drivetrain.getEstimatedPose().getTranslation(),

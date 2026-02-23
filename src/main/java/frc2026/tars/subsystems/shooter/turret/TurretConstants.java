@@ -16,8 +16,10 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 public class TurretConstants {
 
   public static final double REDUCTION = 45.0;
-  public static final double MIN_ROT_DEG = -178.0;
-  public static final double MAX_ROT_DEG = 238.0;
+  public static final double MIN_ROT_DEG = -50.0;
+  public static final double MAX_ROT_DEG = 350.0;
+  // public static final double MIN_ROT_DEG = -178.0;
+  // public static final double MAX_ROT_DEG = 238.0;
 
   public static final boolean ENABLE_SOFTWARE_LIMIT = true;
   public static final double FORWARD_SOFTWARE_LIMIT = MAX_ROT_DEG / 360.0;
@@ -27,21 +29,21 @@ public class TurretConstants {
 
   public static final DCMotor DC_MOTOR = DCMotor.getKrakenX60(1);
   public static final int CAN_ID = 8;
-  public static final double kP = 47.5;
+  public static final double kP = 20.0; //47.5;
   public static final double kI = 0.0;
   public static final double kD = 0.0;
   public static final double kS = 0.25;
   public static final double kV = 0.0;
   public static final double kA = 0.0;
-  public static final double MAX_VEL = 30.0; // rot/s
-  public static final double MAX_ACCEL = 10.0;
+  public static final double MAX_VEL = 0.01; // rot/s was 30.0
+  public static final double MAX_ACCEL = 0.0; // was 10.0, changed to keep chain from breaking
   public static final boolean BRAKE_MODE = true;
   public static final boolean ENABLE_STATOR_LIMIT = true;
   public static final int STATOR_CURRENT_LIMIT = 40;
   public static final boolean ENABLE_SUPPLY_LIMIT = true;
   public static final int SUPPLY_CURRENT_LIMIT = 40;
 
-  public static final ScreamPIDConstants SIM_GAINS = new ScreamPIDConstants(60.0, 0.0, 0.0);
+  public static final ScreamPIDConstants SIM_GAINS = new ScreamPIDConstants(40.0, 0.0, 0.0);
 
   public static final DCMotorSim SIM = SimUtil.createDCMotorSim(DC_MOTOR, REDUCTION, 0.01);
 
