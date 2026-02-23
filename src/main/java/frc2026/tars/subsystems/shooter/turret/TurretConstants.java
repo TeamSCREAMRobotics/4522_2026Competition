@@ -17,7 +17,7 @@ public class TurretConstants {
 
   public static final double REDUCTION = 45.0;
   public static final double MIN_ROT_DEG = -50.0;
-  public static final double MAX_ROT_DEG = 350.0;
+  public static final double MAX_ROT_DEG = 250.0;
   // public static final double MIN_ROT_DEG = -178.0;
   // public static final double MAX_ROT_DEG = 238.0;
 
@@ -35,8 +35,8 @@ public class TurretConstants {
   public static final double kS = 0.25;
   public static final double kV = 0.0;
   public static final double kA = 0.0;
-  public static final double MAX_VEL = 0.01; // rot/s was 30.0
-  public static final double MAX_ACCEL = 0.0; // was 10.0, changed to keep chain from breaking
+  public static final double MAX_VEL = 20.0; // rot/s was 30.0
+  public static final double MAX_ACCEL = 15.0; // was 10.0, changed to keep chain from breaking
   public static final boolean BRAKE_MODE = true;
   public static final boolean ENABLE_STATOR_LIMIT = true;
   public static final int STATOR_CURRENT_LIMIT = 40;
