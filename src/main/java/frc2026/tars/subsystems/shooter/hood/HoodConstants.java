@@ -32,10 +32,11 @@ public class HoodConstants {
     HOOD_CONFIG.debugMode = false;
 
     HOOD_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(9), InvertedValue.Clockwise_Positive);
+        new TalonFXConstants(new CANDevice(9), InvertedValue.CounterClockwise_Positive);
 
     HOOD_CONFIG.slot0 =
-        new ScreamPIDConstants(0.5, 0, 0).getSlot0Configs(new FeedforwardConstants(0, 0, 0.0, 0));
+        new ScreamPIDConstants(10.5, 0, 0)
+            .getSlot0Configs(new FeedforwardConstants(0, 0.5, 0.0, 0));
 
     HOOD_CONFIG.neutralMode = NeutralModeValue.Brake;
     HOOD_CONFIG.sensorToMechRatio = HOOD_REDUCTION;

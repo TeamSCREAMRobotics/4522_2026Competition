@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc2026.tars.constants.SimConstants;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
-import frc2026.tars.subsystems.climber.Climber;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.drivetrain.generated.TunerConstants;
 import frc2026.tars.subsystems.intake.IntakeConstants;
@@ -53,7 +52,6 @@ public class RobotContainer {
   private final Turret turret = new Turret(TurretConstants.TURRET_CONFIG);
   private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
   private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
-  private final Climber climber = new Climber(HoodConstants.HOOD_CONFIG);
   private final Spindexer spindexer = new Spindexer(IndexerConstants.SPINDEXER_CONFIG);
   private final Feeder feeder = new Feeder(IndexerConstants.FEEDER_CONFIG);
 
@@ -192,9 +190,6 @@ public class RobotContainer {
     Controlboard.zeroIntake()
         .whileTrue(intakeWrist.zero().andThen(() -> Dashboard.zeroIntake.set(false)));
 
-    Controlboard.zeroClimber()
-        .whileTrue(climber.zero().andThen(() -> Dashboard.zeroClimber.set(false)));
-
     Controlboard.zeroHood().whileTrue(hood.zero().andThen(() -> Dashboard.zeroHood.set(false)));
 
     Controlboard.zeroTurret()
@@ -206,7 +201,9 @@ public class RobotContainer {
             Commands.parallel(
                     turret.moveToAngleCommandFR(
                         () -> Rotation2d.fromDegrees(Dashboard.manualTurretAngle.get()),
-                        () -> drivetrain.getEstimatedPose().getRotation()))
+                        () -> drivetrain.getEstimatedPose().getRotation()),
+                    hood.moveToAngleCommand(
+                        Rotation2d.fromDegrees(Dashboard.manualHoodAngle.get())))
                 .ignoringDisable(true));
   }
 

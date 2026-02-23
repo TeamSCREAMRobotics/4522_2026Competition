@@ -120,7 +120,8 @@ public class Shooter extends SubsystemBase {
       Pose2d robotPose,
       ChassisSpeeds robotSpeeds,
       Translation2d target,
-      InterpolatingDoubleTreeMap treeMap) {
+      InterpolatingDoubleTreeMap treeMap,
+      boolean... shooting) {
     setTarget(target);
     double distanceMeters = getShotDistance(target).getMeters();
     double hoodAngleDeg = treeMap.get(distanceMeters);
@@ -132,7 +133,8 @@ public class Shooter extends SubsystemBase {
         .setTargetDistance(distanceMeters)
         .setShotAngle(hoodAngleDeg);
 
-    double flywheelSetpoint = Trajectory.getRequiredVelocity() / 4.0;
+    double flywheelSetpoint =
+        Trajectory.getRequiredVelocity() / (shooting == null ? 4 : (shooting != null ? 1 : 4));
 
     turret.aimOnTheFly(target, robotPose, robotSpeeds, getTimeOfFlight());
     hood.moveToAngleCommand(Rotation2d.fromDegrees(hoodAngleDeg));
