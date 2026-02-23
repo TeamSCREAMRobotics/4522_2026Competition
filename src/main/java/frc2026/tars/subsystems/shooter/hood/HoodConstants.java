@@ -5,6 +5,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.CANDevice;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXConstants;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemConfiguration;
+import com.teamscreamrobotics.pid.ScreamPIDConstants;
+import com.teamscreamrobotics.pid.ScreamPIDConstants.FeedforwardConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class HoodConstants {
@@ -32,11 +34,15 @@ public class HoodConstants {
     HOOD_CONFIG.masterConstants =
         new TalonFXConstants(new CANDevice(9), InvertedValue.Clockwise_Positive);
 
+    HOOD_CONFIG.slot0 =
+        new ScreamPIDConstants(0.5, 0, 0).getSlot0Configs(new FeedforwardConstants(0, 0, 0.0, 0));
+
     HOOD_CONFIG.neutralMode = NeutralModeValue.Brake;
-    HOOD_CONFIG.rotorToSensorRatio = HOOD_REDUCTION;
+    HOOD_CONFIG.sensorToMechRatio = HOOD_REDUCTION;
     HOOD_CONFIG.enableSupplyCurrentLimit = true;
     HOOD_CONFIG.supplyCurrentLimit = 35;
 
     HOOD_CONFIG.acceleration = 120.0;
+    HOOD_CONFIG.cruiseVelocity = 30.0;
   }
 }

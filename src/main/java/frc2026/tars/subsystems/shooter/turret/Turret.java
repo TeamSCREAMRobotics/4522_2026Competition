@@ -94,8 +94,6 @@ public class Turret extends TalonFXSubsystem {
     }
 
     Logger.log(logPrefix + "Motor Angle", getAngle().getDegrees());
-
-    SmartDashboard.putNumber("Turret Velocity", getVelocity());
   }
 
   // Does the actual check to ensure that angle is within bounds
@@ -157,7 +155,7 @@ public class Turret extends TalonFXSubsystem {
     return run(
         () -> {
           Rotation2d safeTarget = getSafeTargetAngle(angle.get());
-          setSetpointPosition(safeTarget.getRotations());
+          setSetpointMotionMagicPosition(safeTarget.getRotations());
         });
   }
 
@@ -280,9 +278,12 @@ public class Turret extends TalonFXSubsystem {
 
     Rotation2d safeTarget = getSafeTargetAngle(turretRobotRelativeAngle);
 
-    setSetpointPosition(safeTarget.getRotations());
+    setSetpointMotionMagicPosition(safeTarget.getRotations());
+
+    Logger.log(logPrefix + "Safe Target", safeTarget.getDegrees());
 
     Logger.log(
         "AimOnTheFly/FutureTurretTranslation", new Pose2d(futureTurretTranslation, futureRotation));
   }
 }
+

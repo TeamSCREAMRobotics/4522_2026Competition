@@ -36,7 +36,7 @@ public class Hood extends TalonFXSubsystem {
                 new WaitUntilCommand(
                     () ->
                         ((Timer.getFPGATimestamp() - startTime) > 0.5)
-                            && master.getSupplyCurrent().getValueAsDouble() > .1)),
+                            && master.getSupplyCurrent().getValueAsDouble() > .0006)),
         new InstantCommand(() -> resetPosition(0)));
   }
 

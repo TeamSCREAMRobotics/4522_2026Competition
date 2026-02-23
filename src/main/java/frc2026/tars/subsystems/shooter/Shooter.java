@@ -136,7 +136,7 @@ public class Shooter extends SubsystemBase {
 
     turret.aimOnTheFly(target, robotPose, robotSpeeds, getTimeOfFlight());
     hood.moveToAngleCommand(Rotation2d.fromDegrees(hoodAngleDeg));
-    flywheel.setSetpointVelocity(flywheelSetpoint);
+    flywheel.setSetpointVelocity(flywheelSetpoint * 2);
 
     Logger.log(logPrefix + "Hood Angle", hoodAngleDeg);
     Logger.log(logPrefix + "Flywheel Velocity", flywheelSetpoint);
