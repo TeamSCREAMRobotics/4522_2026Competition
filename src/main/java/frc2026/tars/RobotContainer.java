@@ -1,7 +1,6 @@
 package frc2026.tars;
 
 import com.pathplanner.lib.auto.NamedCommands;
-import com.team6328.FeedForwardCharacterization;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
@@ -30,10 +29,8 @@ import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
 import frc2026.tars.subsystems.shooter.hood.HoodConstants;
 import frc2026.tars.subsystems.shooter.indexer.Feeder;
-import frc2026.tars.subsystems.shooter.indexer.Feeder.FeederGoal;
 import frc2026.tars.subsystems.shooter.indexer.IndexerConstants;
 import frc2026.tars.subsystems.shooter.indexer.Spindexer;
-import frc2026.tars.subsystems.shooter.indexer.Spindexer.SpindexerGoal;
 import frc2026.tars.subsystems.shooter.turret.Turret;
 import frc2026.tars.subsystems.shooter.turret.TurretConstants;
 import frc2026.tars.subsystems.vision.VisionManager;
@@ -112,7 +109,6 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-
     // Controlboard.makeThingWork()
     //     .whileTrue(
     //         Commands.parallel(
@@ -123,7 +119,8 @@ public class RobotContainer {
     //             spindexer.applyGoalCommand(SpindexerGoal.STOP),
     //             feeder.applyGoalCommand(FeederGoal.STOP)));
 
-    // Controlboard.makeThingWork().whileTrue(new FeedForwardCharacterization(feeder, feeder::setVoltage, feeder::getVelocity));
+    // Controlboard.makeThingWork().whileTrue(new FeedForwardCharacterization(feeder,
+    // feeder::setVoltage, feeder::getVelocity));
 
     Controlboard.intake()
         .onTrue(
@@ -201,7 +198,8 @@ public class RobotContainer {
     Controlboard.zeroHood().whileTrue(hood.zero().andThen(() -> Dashboard.zeroHood.set(false)));
 
     Controlboard.zeroTurret()
-        .onTrue(turret.setZero().andThen(() -> Dashboard.zeroTurret.set(false)).ignoringDisable(true));
+        .onTrue(
+            turret.setZero().andThen(() -> Dashboard.zeroTurret.set(false)).ignoringDisable(true));
 
     Controlboard.getManualMode()
         .whileTrue(

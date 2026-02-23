@@ -286,4 +286,3 @@ public class Turret extends TalonFXSubsystem {
         "AimOnTheFly/FutureTurretTranslation", new Pose2d(futureTurretTranslation, futureRotation));
   }
 }
-
