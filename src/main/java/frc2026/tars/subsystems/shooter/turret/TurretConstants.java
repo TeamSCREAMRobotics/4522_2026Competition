@@ -29,7 +29,7 @@ public class TurretConstants {
 
   public static final DCMotor DC_MOTOR = DCMotor.getKrakenX60(1);
   public static final int CAN_ID = 8;
-  public static final double kP = 20.0; //47.5;
+  public static final double kP = 20.0; // 47.5;
   public static final double kI = 0.0;
   public static final double kD = 0.0;
   public static final double kS = 0.25;
