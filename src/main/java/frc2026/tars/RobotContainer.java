@@ -120,6 +120,8 @@ public class RobotContainer {
     // Controlboard.makeThingWork().whileTrue(new FeedForwardCharacterization(feeder,
     // feeder::setVoltage, feeder::getVelocity));
 
+    // Controlboard.makeThingWork().whileTrue(hood.moveToAngleCommand(Rotation2d.fromDegrees(12)));
+
     Controlboard.intake()
         .onTrue(
             new SequentialCommandGroup(
@@ -202,8 +204,8 @@ public class RobotContainer {
                     turret.moveToAngleCommandFR(
                         () -> Rotation2d.fromDegrees(Dashboard.manualTurretAngle.get()),
                         () -> drivetrain.getEstimatedPose().getRotation()),
-                    hood.moveToAngleCommand(
-                        Rotation2d.fromDegrees(Dashboard.manualHoodAngle.get())))
+                    Commands.run(() -> hood.moveToAngleCommand(Rotation2d.fromDegrees(Dashboard.manualHoodAngle.get())), hood)
+            )
                 .ignoringDisable(true));
   }
 
