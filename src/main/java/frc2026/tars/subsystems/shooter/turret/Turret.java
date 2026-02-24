@@ -286,15 +286,15 @@ public class Turret extends TalonFXSubsystem {
         "AimOnTheFly/FutureTurretTranslation", new Pose2d(futureTurretTranslation, futureRotation));
   }
 
-  public void aimAtHub(Supplier<Pose2d> pose) {
-    moveToAngleCommandFR(
-            () ->
-                ScreamMath.calculateAngleToPoint(
-                    (AllianceFlipUtil.get(
-                        FieldConstants.Hub.innerCenterPoint.toTranslation2d(),
-                        FieldConstants.Hub.oppTopCenterPoint.toTranslation2d())),
-                    pose.get().getTranslation()),
-            () -> pose.get().getRotation())
-        .schedule();
+  public void pointToTargetFR(Supplier<Translation2d> targetPosition, Supplier<Pose2d> robotPose) {
+
+    Rotation2d fieldAngle =
+        ScreamMath.calculateAngleToPoint(robotPose.get().getTranslation(), targetPosition.get());
+
+    Rotation2d robotRelativeAngle = fieldAngle.minus(robotPose.get().getRotation());
+
+    Rotation2d safeTarget = getSafeTargetAngle(robotRelativeAngle);
+
+    setSetpointMotionMagicPosition(safeTarget.getRotations());
   }
 }

@@ -13,6 +13,9 @@ public class FlywheelConstants {
 
   public static final Length FLYWHEEL_CIRCUMFERENCE = Length.fromInches(4.0 * Math.PI);
 
+  public static final Length FLYWHEEL_DIAMETER = Length.fromInches(4.0);
+  public static final Length FLYWHEEL_RADIUS = Length.fromInches(FLYWHEEL_DIAMETER.getInches() / 2);
+
   public static final TalonFXSubsystemConfiguration FLYWHEEL_CONFIG =
       new TalonFXSubsystemConfiguration();
 
