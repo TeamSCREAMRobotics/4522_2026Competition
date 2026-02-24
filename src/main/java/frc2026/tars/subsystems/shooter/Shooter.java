@@ -2,6 +2,7 @@ package frc2026.tars.subsystems.shooter;
 
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.gameutil.FieldConstants;
+import com.teamscreamrobotics.math.Conversions;
 import com.teamscreamrobotics.physics.Trajectory;
 import com.teamscreamrobotics.physics.Trajectory.GamePiece;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
@@ -20,6 +21,7 @@ import frc2026.tars.RobotState;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
+import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
 import frc2026.tars.subsystems.shooter.hood.HoodConstants;
 import frc2026.tars.subsystems.shooter.indexer.Feeder;
@@ -54,9 +56,7 @@ public class Shooter extends SubsystemBase {
   // Feed state tracking — avoids spawning a new Command every loop
   private boolean isFeedActive = false;
   private final Timer feedTimer = new Timer();
-  private static final double FEED_DURATION_SECONDS = 3.0;
-
-  private static final double EXIT_VELOCITY_RETENTION = 0.8;
+  private static final double FEED_DURATION_SECONDS = 1.0;
 
   public void hoodMapPoints() {
     // TODO: Add tuned points to hood maps
@@ -134,14 +134,21 @@ public class Shooter extends SubsystemBase {
         .setTargetDistance(distanceMeters)
         .setShotAngle((hoodAngleDeg + HoodConstants.HOOD_OFFSET.getDegrees()));
 
+    boolean isShooting = shooting.length > 0 && shooting[0];
+    double multiplier = isShooting ? 1.0 : 4.0;
+
     double flywheelSetpoint =
-        Trajectory.getRequiredVelocity() / (shooting == null ? 4 : (shooting != null ? 1 : 4));
+        Conversions.mpsToRPS(
+                Trajectory.getRequiredVelocity(),
+                FlywheelConstants.FLYWHEEL_RADIUS.getMeters(),
+                FlywheelConstants.FLYWHEEL_REDUCTION)
+            * multiplier;
 
     turret.aimOnTheFly(target, robotPose, robotSpeeds, Trajectory.getTimeOfFlight());
-    // turret.aimAtHub(() -> robotPose);
+    // turret.pointToTargetFR(() -> target, () -> robotPose);
 
     hood.moveToAngleCommand(Rotation2d.fromDegrees(hoodAngleDeg));
-    flywheel.setSetpointVelocity(flywheelSetpoint * 4);
+    flywheel.setSetpointVelocity(flywheelSetpoint);
 
     Logger.log(logPrefix + "Hood Angle", hoodAngleDeg);
     Logger.log(logPrefix + "Flywheel Velocity", flywheelSetpoint);
@@ -149,7 +156,7 @@ public class Shooter extends SubsystemBase {
   }
 
   private void startFeedIfNotRunning() {
-    if (!isFeedActive) {
+    if (!isFeedActive && flywheel.atVel()) {
       isFeedActive = true;
       feedTimer.reset();
       feedTimer.start();
@@ -278,7 +285,11 @@ public class Shooter extends SubsystemBase {
 
             case SHOOTING:
               applyAimingSetpoints(
-                  robotPose, robotSpeeds, FieldConstants.Hub.hubCenter, hoodMapAllianceZone, true);
+                  robotPose,
+                  robotSpeeds,
+                  AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.hubCenter),
+                  hoodMapAllianceZone,
+                  true);
               startFeedIfNotRunning();
               setIdleState(IdleState.NA);
               break;

@@ -14,4 +14,8 @@ public class Flywheel extends TalonFXSubsystem {
   public void periodic() {
     super.periodic();
   }
+
+  public boolean atVel() {
+    return Math.abs(getVelocity() - getSetpoint()) <= 1.0;
+  }
 }
