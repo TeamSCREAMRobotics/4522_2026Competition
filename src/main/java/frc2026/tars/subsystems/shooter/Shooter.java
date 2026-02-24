@@ -21,6 +21,7 @@ import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.hood.Hood;
+import frc2026.tars.subsystems.shooter.hood.HoodConstants;
 import frc2026.tars.subsystems.shooter.indexer.Feeder;
 import frc2026.tars.subsystems.shooter.indexer.Feeder.FeederGoal;
 import frc2026.tars.subsystems.shooter.indexer.Spindexer;
@@ -131,14 +132,16 @@ public class Shooter extends SubsystemBase {
         .setInitialHeight(ShooterConstants.HEIGHT)
         .setTargetHeight(Trajectory.HUB_HEIGHT)
         .setTargetDistance(distanceMeters)
-        .setShotAngle(hoodAngleDeg);
+        .setShotAngle((hoodAngleDeg + HoodConstants.HOOD_OFFSET.getDegrees()));
 
     double flywheelSetpoint =
         Trajectory.getRequiredVelocity() / (shooting == null ? 4 : (shooting != null ? 1 : 4));
 
-    turret.aimOnTheFly(target, robotPose, robotSpeeds, getTimeOfFlight());
+    turret.aimOnTheFly(target, robotPose, robotSpeeds, Trajectory.getTimeOfFlight());
+    // turret.aimAtHub(() -> robotPose);
+
     hood.moveToAngleCommand(Rotation2d.fromDegrees(hoodAngleDeg));
-    flywheel.setSetpointVelocity(flywheelSetpoint * 2);
+    flywheel.setSetpointVelocity(flywheelSetpoint * 4);
 
     Logger.log(logPrefix + "Hood Angle", hoodAngleDeg);
     Logger.log(logPrefix + "Flywheel Velocity", flywheelSetpoint);
@@ -275,7 +278,7 @@ public class Shooter extends SubsystemBase {
 
             case SHOOTING:
               applyAimingSetpoints(
-                  robotPose, robotSpeeds, FieldConstants.Hub.hubCenter, hoodMapAllianceZone);
+                  robotPose, robotSpeeds, FieldConstants.Hub.hubCenter, hoodMapAllianceZone, true);
               startFeedIfNotRunning();
               setIdleState(IdleState.NA);
               break;
@@ -304,9 +307,9 @@ public class Shooter extends SubsystemBase {
         .plus(transform3dTo2dXY(VisionManager.robotToTurretFixed).getTranslation());
   }
 
-  public double getTimeOfFlight() {
+  public double getTimeOfFlight(double velocity) {
     double distance = robotPose.getTranslation().getDistance(target);
-    double exitVelocity = 15.0; // Conversions.rpsToMPS(flywheel.getVelocity(),
+    double exitVelocity = velocity; // Conversions.rpsToMPS(flywheel.getVelocity(),
     // FlywheelConstants.FLYWHEEL_CIRCUMFERENCE.getMeters(),
     // FlywheelConstants.FLYWHEEL_REDUCTION) * EXIT_VELOCITY_RETENTION;
     double exitAngle =
