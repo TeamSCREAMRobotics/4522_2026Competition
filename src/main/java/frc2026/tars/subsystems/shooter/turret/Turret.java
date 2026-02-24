@@ -288,11 +288,13 @@ public class Turret extends TalonFXSubsystem {
 
   public void aimAtHub(Supplier<Pose2d> pose) {
     moveToAngleCommandFR(
-        () ->
-            ScreamMath.calculateAngleToPoint(
-                (AllianceFlipUtil.get(
-                    FieldConstants.Hub.innerCenterPoint.toTranslation2d(),
-                    FieldConstants.Hub.oppTopCenterPoint.toTranslation2d())), pose.get().getTranslation()),
-        () -> pose.get().getRotation()).schedule();
+            () ->
+                ScreamMath.calculateAngleToPoint(
+                    (AllianceFlipUtil.get(
+                        FieldConstants.Hub.innerCenterPoint.toTranslation2d(),
+                        FieldConstants.Hub.oppTopCenterPoint.toTranslation2d())),
+                    pose.get().getTranslation()),
+            () -> pose.get().getRotation())
+        .schedule();
   }
 }
