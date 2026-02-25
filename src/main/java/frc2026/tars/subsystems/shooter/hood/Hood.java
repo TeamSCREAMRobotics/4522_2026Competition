@@ -2,7 +2,6 @@ package frc2026.tars.subsystems.shooter.hood;
 
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import com.teamscreamrobotics.util.Logger;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,7 +14,6 @@ public class Hood extends TalonFXSubsystem {
     super(config);
     resetPosition(0);
   }
-
 
   // public Command moveToAngleCommand(Rotation2d targetAngle) {
   //   return run(

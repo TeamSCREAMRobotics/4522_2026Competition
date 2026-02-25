@@ -17,7 +17,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.vision.VisionThread;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import frc2026.tars.Robot;
@@ -256,16 +255,14 @@ public class VisionManager {
     addPoseEstimate(poseEstimate, limelight);
   }
 
-  public void stop(){
+  public void stop() {
     visionThread.stop();
   }
 
-  public void start(){
+  public void start() {
     visionThread.startPeriodic(0.02);
     //  runs every 20 ms.
-}
-
-
+  }
 
   private void addPoseEstimate(PoseEstimate estimate, Limelight limelight) {
     boolean shouldUseMt2 = !rejectEstimate(estimate, limelight);

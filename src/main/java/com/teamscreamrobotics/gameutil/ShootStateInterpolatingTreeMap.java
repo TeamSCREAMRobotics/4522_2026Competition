@@ -14,9 +14,7 @@ public class ShootStateInterpolatingTreeMap {
   }
 
   public ShootState get(double distance) {
-    return new ShootState(
-        angleInterpolator.get(distance),
-        velocityInterpolator.get(distance));
+    return new ShootState(angleInterpolator.get(distance), velocityInterpolator.get(distance));
   }
 
   public static class ShootState {

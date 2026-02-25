@@ -64,8 +64,7 @@ public class RobotContainer {
   private final Shooter shooter =
       new Shooter(flywheel, hood, turret, spindexer, feeder, drivetrain, getRobotState());
 
-  @Getter
-  private final VisionManager visionManager = new VisionManager(drivetrain, turret);
+  @Getter private final VisionManager visionManager = new VisionManager(drivetrain, turret);
 
   private final MechanismVisualizer mechVisualizer =
       new MechanismVisualizer(
@@ -164,7 +163,7 @@ public class RobotContainer {
             .beforeStarting(() -> drivetrain.getHelper().setLastAngle(drivetrain.getHeading()))
             .withName("Drivetrain: Default command"));
 
-   // shooter.setDefaultCommand(shooter.defaultCommand());
+    // shooter.setDefaultCommand(shooter.defaultCommand());
   }
 
   private void configureAutoCommands() {
