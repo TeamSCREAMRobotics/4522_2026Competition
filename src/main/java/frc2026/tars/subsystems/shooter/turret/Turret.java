@@ -3,9 +3,6 @@ package frc2026.tars.subsystems.shooter.turret;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.teamscreamrobotics.dashboard.Ligament;
-import com.teamscreamrobotics.dashboard.Mechanism;
-import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.math.ScreamMath;
@@ -15,53 +12,20 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc2026.tars.Robot;
 import frc2026.tars.constants.Constants;
 import frc2026.tars.constants.Constants.RobotType;
-import frc2026.tars.constants.SimConstants;
-import frc2026.tars.subsystems.vision.VisionManager;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class Turret extends TalonFXSubsystem {
-  private final Ligament turretTwo =
-      new Ligament()
-          .withStaticLength(Length.fromInches(5.0))
-          .withDynamicAngle(() -> Rotation2d.fromDegrees(getAngle().getDegrees()));
 
-  private final Ligament turretOne =
-      new Ligament()
-          .withStaticLength(Length.fromInches(5.0))
-          .withStaticAngle(Rotation2d.fromDegrees(90));
-
-  public final Mechanism turretMech =
-      new Mechanism("Turret Mech", turretOne, turretTwo)
-          .withStaticPosition(
-              new Translation2d(
-                  (SimConstants.MECH_WIDTH / 2.0) + Units.inchesToMeters(12.125),
-                  Units.inchesToMeters(15)));
-
-  public final Mechanism2d robotTest = new Mechanism2d(1, 1);
-
-  public final MechanismRoot2d robotRoot = robotTest.getRoot(getName(), 0.5, 0.5);
-
-  public final MechanismLigament2d turret = new MechanismLigament2d("turret", 0.4, 0.0);
   private final SysIdRoutine routine;
 
   /** Creates a new Pivot Subsystem. */
   public Turret(TalonFXSubsystemConfiguration config) {
     super(config);
-
-    // Initialize motor controller
-    robotRoot.append(turret);
 
     routine =
         new SysIdRoutine(
@@ -87,11 +51,6 @@ public class Turret extends TalonFXSubsystem {
   @Override
   public void periodic() {
     super.periodic();
-    if (Robot.isSimulation()) {
-      turret.setAngle(getAngle().getDegrees());
-
-      SmartDashboard.putData("turret mech", robotTest);
-    }
 
     Logger.log(logPrefix + "Motor Angle", getAngle().getDegrees());
   }
@@ -230,60 +189,6 @@ public class Turret extends TalonFXSubsystem {
                     FieldConstants.Hub.oppTopCenterPoint.toTranslation2d()),
             robotPose)
         .withName("PointAtHubCenter");
-  }
-
-  public Command aimOnTheFlyCommand(
-      Supplier<Translation2d> targetPosition,
-      Supplier<Pose2d> robotPose,
-      Supplier<ChassisSpeeds> robotSpeed,
-      DoubleSupplier timeOfFlight) {
-    return run(() ->
-            aimOnTheFly(
-                targetPosition.get(),
-                robotPose.get(),
-                robotSpeed.get(),
-                timeOfFlight.getAsDouble()))
-        .withName("AimOnTheFly");
-  }
-
-  public void aimOnTheFly(
-      Translation2d targetPosition,
-      Pose2d robotPose,
-      ChassisSpeeds robotSpeed,
-      double timeOfFlight) {
-    double predictionTime = TurretConstants.LATENCY + timeOfFlight;
-
-    Translation2d fieldVelocity =
-        new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond)
-            .rotateBy(robotPose.getRotation());
-
-    Translation2d futureRobotTranslation =
-        robotPose.getTranslation().plus(fieldVelocity.times(predictionTime));
-
-    Rotation2d futureRotation =
-        robotPose
-            .getRotation()
-            .plus(Rotation2d.fromRadians(robotSpeed.omegaRadiansPerSecond * predictionTime));
-
-    Translation2d futureTurretTranslation =
-        futureRobotTranslation.plus(
-            VisionManager.robotToTurretFixed
-                .getTranslation()
-                .toTranslation2d()
-                .rotateBy(futureRotation));
-
-    Translation2d futureTargetVector = targetPosition.minus(futureTurretTranslation);
-
-    Rotation2d turretRobotRelativeAngle = futureTargetVector.getAngle().minus(futureRotation);
-
-    Rotation2d safeTarget = getSafeTargetAngle(turretRobotRelativeAngle);
-
-    setSetpointMotionMagicPosition(safeTarget.getRotations());
-
-    Logger.log(logPrefix + "Safe Target", safeTarget.getDegrees());
-
-    Logger.log(
-        "AimOnTheFly/FutureTurretTranslation", new Pose2d(futureTurretTranslation, futureRotation));
   }
 
   public void pointToTargetFR(Supplier<Translation2d> targetPosition, Supplier<Pose2d> robotPose) {

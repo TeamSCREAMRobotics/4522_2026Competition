@@ -28,6 +28,7 @@ public class HoodConstants {
 
   static {
     HOOD_CONFIG.name = "Hood";
+    HOOD_CONFIG.logPrefix = "Hood/";
 
     HOOD_CONFIG.codeEnabled = true;
     HOOD_CONFIG.logTelemetry = false;

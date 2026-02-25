@@ -23,6 +23,7 @@ import java.util.function.DoubleSupplier;
 /** Add your docs here. */
 public class IntakeWrist extends TalonFXSubsystem {
 
+  // Simulation Mechanism Creation.
   private final Ligament intakeOne =
       new Ligament()
           .withStaticLength(Length.fromInches(9.58))
