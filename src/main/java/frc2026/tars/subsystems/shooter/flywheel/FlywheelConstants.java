@@ -1,6 +1,7 @@
 package frc2026.tars.subsystems.shooter.flywheel;
 
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.CANDevice;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXConstants;
@@ -33,11 +34,16 @@ public class FlywheelConstants {
           new TalonFXConstants(new CANDevice(11), InvertedValue.Clockwise_Positive)
         };
     FLYWHEEL_CONFIG.slot0 =
-        new ScreamPIDConstants(0.1, 0.0, 0.0)
-            .getSlot0Configs(new FeedforwardConstants(0.11404, 0.16925, 0.0, 0.0));
+        new ScreamPIDConstants(4.5, 0.0, 0.0)
+            .getSlot0Configs(new FeedforwardConstants(0.15, 0.17, 0.0, 0.0));
+
+    FLYWHEEL_CONFIG.neutralMode = NeutralModeValue.Coast;
 
     FLYWHEEL_CONFIG.enableSupplyCurrentLimit = true;
     FLYWHEEL_CONFIG.supplyCurrentLimit = 20;
     FLYWHEEL_CONFIG.sensorToMechRatio = FLYWHEEL_REDUCTION;
+
+    FLYWHEEL_CONFIG.peakForwardTorqueCurrent = 40.0;
+    FLYWHEEL_CONFIG.peakReverseTorqueCurrent = 0.0;
   }
 }
