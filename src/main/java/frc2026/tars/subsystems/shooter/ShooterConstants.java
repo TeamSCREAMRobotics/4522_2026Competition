@@ -10,7 +10,7 @@ public class ShooterConstants {
   public static final double FUNCTION_CURVE = 0.01;
   public static final double FUNCTION_SCALAR = 12.5;
 
-  static{
+  static {
     // Put in distance in meters, gets out Flywheel RPS
     FLYWHEEL_MAP.put(1.472, 40.5);
     FLYWHEEL_MAP.put(1.806, 44.0);
@@ -31,6 +31,5 @@ public class ShooterConstants {
     FLYWHEEL_MAP.put(5.277, 57.0);
     FLYWHEEL_MAP.put(5.426, 57.1);
     FLYWHEEL_MAP.put(5.617, 57.2);
-
   }
 }

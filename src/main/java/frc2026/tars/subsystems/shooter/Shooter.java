@@ -347,14 +347,16 @@ public class Shooter extends SubsystemBase {
     return distance / horizontalVelocity;
   }
 
-  public double getHoodAngleFromDistance(double distance){
-    //return Dashboard.saturationLevel.get() * (1 - Math.pow(Math.E, -(Dashboard.functionROA.get() * distance))) + (Dashboard.functionLRG.get() * Math.pow(distance, 3));
-    if(distance < 2.0){
+  public double getHoodAngleFromDistance(double distance) {
+    // return Dashboard.saturationLevel.get() * (1 - Math.pow(Math.E, -(Dashboard.functionROA.get()
+    // * distance))) + (Dashboard.functionLRG.get() * Math.pow(distance, 3));
+    if (distance < 2.0) {
       return 0.0;
-    } else if(distance > 6.0){
+    } else if (distance > 6.0) {
       return 20.0;
     } else {
-      return (Dashboard.functionCurve.get() * Math.pow(distance, 3)) * Dashboard.functionScalar.get();
+      return (Dashboard.functionCurve.get() * Math.pow(distance, 3))
+          * Dashboard.functionScalar.get();
     }
   }
 }
