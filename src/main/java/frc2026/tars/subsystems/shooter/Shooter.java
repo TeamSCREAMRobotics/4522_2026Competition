@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc2026.tars.RobotState;
 import frc2026.tars.controlboard.Controlboard;
+import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.hood.Hood;
@@ -54,7 +55,8 @@ public class Shooter extends SubsystemBase {
   // Feed state tracking — avoids spawning a new Command every loop
   private boolean isFeedActive = false;
   private final Timer feedTimer = new Timer();
-  private static final double FEED_DURATION_SECONDS = 1.0;
+  // TODO: Change back to 1.0s.
+  private static final double FEED_DURATION_SECONDS = 0.1;
 
   public void hoodMapPoints() {
     // TODO: Add tuned points to hood maps
@@ -125,7 +127,7 @@ public class Shooter extends SubsystemBase {
       boolean wantShoot) {
     setTarget(target);
     double distanceMeters = getShotDistance(target).getMeters();
-    double hoodAngleDeg = treeMap.get(distanceMeters);
+    double hoodAngleDeg = getHoodAngleFromDistance(distanceMeters);
 
     /* Trajectory.configure()
         .setGamePiece(GamePiece.FUEL)
@@ -142,7 +144,7 @@ public class Shooter extends SubsystemBase {
                 FlywheelConstants.FLYWHEEL_CIRCUMFERENCE.getMeters(),
                 FlywheelConstants.FLYWHEEL_REDUCTION)) * 2.0; */
 
-    double flywheelSetpoint = distanceMeters * SmartDashboard.getNumber("Distance Coeff", 1.0);
+    double flywheelSetpoint = ShooterConstants.FLYWHEEL_MAP.get(distanceMeters);
 
     // turret.aimOnTheFly(target, robotPose, robotSpeeds, Trajectory.getTimeOfFlight());
     turret.pointToTargetFR(() -> target, () -> robotPose);
@@ -343,5 +345,16 @@ public class Shooter extends SubsystemBase {
     double horizontalVelocity = exitVelocity * Math.cos(exitAngle);
 
     return distance / horizontalVelocity;
+  }
+
+  public double getHoodAngleFromDistance(double distance){
+    //return Dashboard.saturationLevel.get() * (1 - Math.pow(Math.E, -(Dashboard.functionROA.get() * distance))) + (Dashboard.functionLRG.get() * Math.pow(distance, 3));
+    if(distance < 2.0){
+      return 0.0;
+    } else if(distance > 6.0){
+      return 20.0;
+    } else {
+      return (Dashboard.functionCurve.get() * Math.pow(distance, 3)) * Dashboard.functionScalar.get();
+    }
   }
 }

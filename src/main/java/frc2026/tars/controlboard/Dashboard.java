@@ -3,6 +3,8 @@ package frc2026.tars.controlboard;
 import com.teamscreamrobotics.dashboard.DashboardBoolean;
 import com.teamscreamrobotics.dashboard.DashboardNumber;
 
+import frc2026.tars.subsystems.shooter.ShooterConstants;
+
 public class Dashboard {
 
   private static final String overrides = "Overrides";
@@ -46,6 +48,9 @@ public class Dashboard {
   public static DashboardNumber hoodAngle;
   public static DashboardNumber flywheelVelocity;
 
+  public static DashboardNumber functionCurve;
+  public static DashboardNumber functionScalar;
+
   static {
     initialize();
   }
@@ -80,6 +85,10 @@ public class Dashboard {
     tuningMode = new DashboardBoolean(tuning, "Tuning Mode", false);
     hoodAngle = new DashboardNumber(tuning, "Hood Angle", 0.0);
     flywheelVelocity = new DashboardNumber(tuning, "Flywheel Velocity", 0.0);
+
+    functionCurve = new DashboardNumber(tuning, "Function Curve", ShooterConstants.FUNCTION_CURVE);
+    functionScalar = new DashboardNumber(tuning, "Function Scalar", ShooterConstants.FUNCTION_SCALAR);
+
   }
 
   public static void resetManuals() {

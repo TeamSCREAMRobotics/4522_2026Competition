@@ -37,8 +37,8 @@ public class HoodConstants {
         new TalonFXConstants(new CANDevice(9), InvertedValue.Clockwise_Positive);
 
     HOOD_CONFIG.slot0 =
-        new ScreamPIDConstants(23.0, 0, 0)
-            .getSlot0Configs(new FeedforwardConstants(0, 0.75, 0.0, 0));
+        new ScreamPIDConstants(55.0, 0, 0)
+            .getSlot0Configs(new FeedforwardConstants(0, 0.8, 0.0, 0));
 
     HOOD_CONFIG.neutralMode = NeutralModeValue.Brake;
     HOOD_CONFIG.sensorToMechRatio = HOOD_REDUCTION;
