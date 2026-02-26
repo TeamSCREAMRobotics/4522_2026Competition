@@ -29,14 +29,14 @@ public class TurretConstants {
 
   public static final DCMotor DC_MOTOR = DCMotor.getKrakenX60(1);
   public static final int CAN_ID = 8;
-  public static final double kP = 20.0; // 47.5;
+  public static final double kP = 45.0; // 47.5;
   public static final double kI = 0.0;
   public static final double kD = 0.0;
   public static final double kS = 0.25;
   public static final double kV = 0.0;
   public static final double kA = 0.0;
-  public static final double MAX_VEL = 20.0; // rot/s was 30.0
-  public static final double MAX_ACCEL = 15.0; // was 10.0, changed to keep chain from breaking
+  public static final double MAX_VEL = 0.5; // rot/s was 20.0
+  public static final double MAX_ACCEL = 1.0; // was 15.0, changed to keep chain from breaking
   public static final boolean BRAKE_MODE = true;
   public static final boolean ENABLE_STATOR_LIMIT = true;
   public static final int STATOR_CURRENT_LIMIT = 40;

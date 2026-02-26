@@ -25,11 +25,12 @@ public class Robot extends TimedRobot {
 
     Logger.setOptions(
         new DogLogOptions()
-            .withCaptureDs(true)
-            .withCaptureNt(true)
+            .withCaptureDs(false)
+            .withCaptureNt(false)
             .withLogExtras(true)
             .withNtPublish(true)
-            .withUseLogThread(true));
+            .withUseLogThread(false)
+            .withLogEntryQueueCapacity(2000));
     Logger.setEnabled(true);
 
     CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
