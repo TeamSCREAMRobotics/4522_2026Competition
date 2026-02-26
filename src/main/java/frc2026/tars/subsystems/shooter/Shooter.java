@@ -2,9 +2,6 @@ package frc2026.tars.subsystems.shooter;
 
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.gameutil.FieldConstants;
-import com.teamscreamrobotics.math.Conversions;
-import com.teamscreamrobotics.physics.Trajectory;
-import com.teamscreamrobotics.physics.Trajectory.GamePiece;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.GeomUtil;
 import com.teamscreamrobotics.util.Logger;
@@ -12,8 +9,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -25,9 +20,7 @@ import frc2026.tars.RobotState;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
-import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
-import frc2026.tars.subsystems.shooter.hood.HoodConstants;
 import frc2026.tars.subsystems.shooter.indexer.Feeder;
 import frc2026.tars.subsystems.shooter.indexer.Feeder.FeederGoal;
 import frc2026.tars.subsystems.shooter.indexer.Spindexer;
@@ -151,7 +144,7 @@ public class Shooter extends SubsystemBase {
 
     double flywheelSetpoint = distanceMeters * SmartDashboard.getNumber("Distance Coeff", 1.0);
 
-    //turret.aimOnTheFly(target, robotPose, robotSpeeds, Trajectory.getTimeOfFlight());
+    // turret.aimOnTheFly(target, robotPose, robotSpeeds, Trajectory.getTimeOfFlight());
     turret.pointToTargetFR(() -> target, () -> robotPose);
 
     hood.moveToAngle(Rotation2d.fromDegrees(hoodAngleDeg));
@@ -227,7 +220,8 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-  private void ferryCase(RobotState.Area area, Pose2d robotPose, ChassisSpeeds robotSpeeds, boolean wantShoot) {
+  private void ferryCase(
+      RobotState.Area area, Pose2d robotPose, ChassisSpeeds robotSpeeds, boolean wantShoot) {
     if (area == null) return;
 
     switch (area) {
@@ -274,8 +268,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command defaultCommand() {
-    return run(
-        () -> {
+    return run(() -> {
           RobotState.Area area = robotState.getArea();
           robotPose = drivetrain.getEstimatedPose();
           robotSpeeds = drivetrain.getState().Speeds;
@@ -299,7 +292,8 @@ public class Shooter extends SubsystemBase {
               applyAimingSetpoints(
                   robotPose,
                   robotSpeeds,
-                  AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter),
+                  AllianceFlipUtil.get(
+                      FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter),
                   hoodMapAllianceZone,
                   true);
               startFeedIfNotRunning();
@@ -314,23 +308,27 @@ public class Shooter extends SubsystemBase {
             default:
               break;
           }
-        }).withName("Shooter Default Command");
+        })
+        .withName("Shooter Default Command");
   }
 
   @Override
   public void periodic() {
     Logger.log("Shooter/Shooter State", getState().toString());
     Logger.log("Shooter/Idle State", getIdleState().toString());
-    if(robotPose != null){
-      Logger.log("Shooter/Field To Turret", new Pose3d(getFieldToTurret().getX(), getFieldToTurret().getY(), 0.5, Rotation3d.kZero));
+    if (robotPose != null) {
+      Logger.log(
+          "Shooter/Field To Turret",
+          new Pose3d(getFieldToTurret().getX(), getFieldToTurret().getY(), 0.5, Rotation3d.kZero));
     }
   }
 
   public Pose2d getFieldToTurret() {
     Pose2d pose = robotPose;
 
-    return GeomUtil.transformToPose(GeomUtil.poseToTransform(pose)
-        .plus(Util.transform3dTo2dXY(VisionManager.robotToTurretFixed)));
+    return GeomUtil.transformToPose(
+        GeomUtil.poseToTransform(pose)
+            .plus(Util.transform3dTo2dXY(VisionManager.robotToTurretFixed)));
   }
 
   public double getTimeOfFlight(double velocity) {

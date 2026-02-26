@@ -204,8 +204,13 @@ public class RobotContainer {
                     turret.moveToAngleCommandFR(
                         () -> Rotation2d.fromDegrees(Dashboard.manualTurretAngle.get()),
                         () -> drivetrain.getEstimatedPose().getRotation()),
-                    hood.moveToAngleCommand(Rotation2d.fromDegrees(Dashboard.manualHoodAngle.get())),
-                    Commands.run(() -> flywheel.setTargetVelocityTorqueCurrent(Dashboard.manualFlywheelVelocity.get(), 0), flywheel))
+                    hood.moveToAngleCommand(
+                        Rotation2d.fromDegrees(Dashboard.manualHoodAngle.get())),
+                    Commands.run(
+                        () ->
+                            flywheel.setTargetVelocityTorqueCurrent(
+                                Dashboard.manualFlywheelVelocity.get(), 0),
+                        flywheel))
                 .ignoringDisable(true));
   }
 

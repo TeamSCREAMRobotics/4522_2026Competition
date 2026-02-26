@@ -24,7 +24,6 @@ import frc2026.tars.Robot;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.shooter.turret.Turret;
 import frc2026.tars.util.Util;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -179,25 +178,23 @@ public class VisionManager {
 
     Pose2d fieldToTurret = estimate.pose;
 
-    //Transform2d fieldToRobot = GeomUtil.poseToTransform(fieldToTurret).plus(GeomUtil.rotationToTransform(turret.getAngle().unaryMinus())).plus(Util.transform3dTo2dXY(robotToTurretFixed.inverse()));
-// 1. Start with robot → turret fixed offset
-Transform2d robotToTurret2d =
-    Util.transform3dTo2dXY(robotToTurretFixed);
+    // Transform2d fieldToRobot =
+    // GeomUtil.poseToTransform(fieldToTurret).plus(GeomUtil.rotationToTransform(turret.getAngle().unaryMinus())).plus(Util.transform3dTo2dXY(robotToTurretFixed.inverse()));
+    // 1. Start with robot → turret fixed offset
+    Transform2d robotToTurret2d = Util.transform3dTo2dXY(robotToTurretFixed);
 
-// 2. Rotate that offset by current turret angle
-Transform2d robotToTurretRotated =
-    new Transform2d(
-        robotToTurret2d.getTranslation(),
-        turret.getAngle()
-    );
+    // 2. Rotate that offset by current turret angle
+    Transform2d robotToTurretRotated =
+        new Transform2d(robotToTurret2d.getTranslation(), turret.getAngle());
 
-// 3. Invert to get turret → robot
-Transform2d turretToRobot = robotToTurretRotated.inverse();
+    // 3. Invert to get turret → robot
+    Transform2d turretToRobot = robotToTurretRotated.inverse();
 
-// 4. Apply to fieldToTurret
-Pose2d fieldToRobot = fieldToTurret.transformBy(turretToRobot);
+    // 4. Apply to fieldToTurret
+    Pose2d fieldToRobot = fieldToTurret.transformBy(turretToRobot);
 
-    estimate.pose = fieldToRobot;//GeomUtil.transformToPose(fieldToRobot).plus(GeomUtil.rotationToTransform(turret.getAngle().unaryMinus()));
+    estimate.pose =
+        fieldToRobot; // GeomUtil.transformToPose(fieldToRobot).plus(GeomUtil.rotationToTransform(turret.getAngle().unaryMinus()));
 
     addPoseEstimate(estimate, turretCam, false);
   }
@@ -212,10 +209,12 @@ Pose2d fieldToRobot = fieldToTurret.transformBy(turretToRobot);
         0,
         0);
 
-    if(DriverStation.isDisabled()){
-      addPoseEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight.name()), limelight, true);
+    if (DriverStation.isDisabled()) {
+      addPoseEstimate(
+          LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight.name()), limelight, true);
     } else {
-      addPoseEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.name()), limelight, false);
+      addPoseEstimate(
+          LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.name()), limelight, false);
     }
   }
 
@@ -224,8 +223,10 @@ Pose2d fieldToRobot = fieldToTurret.transformBy(turretToRobot);
 
     if (shouldUseMt2) {
       double stdFactor = Math.pow(estimate.avgTagDist, 2.75) / (estimate.tagCount * 0.5);
-      double xyStds = VisionConstants.xyStdBaseline * stdFactor * (mt1 ? 1.0 : VisionConstants.xyMt2StdFactor);
-      double thetaStds = DriverStation.isDisabled() ? 0.5 : VisionConstants.thetaStdBaseline * stdFactor;
+      double xyStds =
+          VisionConstants.xyStdBaseline * stdFactor * (mt1 ? 1.0 : VisionConstants.xyMt2StdFactor);
+      double thetaStds =
+          DriverStation.isDisabled() ? 0.5 : VisionConstants.thetaStdBaseline * stdFactor;
       drivetrain.addVisionMeasurement(
           estimate.pose,
           estimate.timestampSeconds,
