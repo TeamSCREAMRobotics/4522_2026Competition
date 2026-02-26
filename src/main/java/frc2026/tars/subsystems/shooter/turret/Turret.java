@@ -194,7 +194,12 @@ public class Turret extends TalonFXSubsystem {
   public void pointToTargetFR(Supplier<Translation2d> targetPosition, Supplier<Pose2d> robotPose) {
 
     Rotation2d fieldAngle =
-        ScreamMath.calculateAngleToPoint(robotPose.get().getTranslation(), targetPosition.get());
+        ScreamMath.calculateAngleToPoint(
+            robotPose
+                .get()
+                .getTranslation()
+                .plus(VisionManager.robotToTurretFixed.getTranslation().toTranslation2d()),
+            targetPosition.get());
 
     Rotation2d robotRelativeAngle = fieldAngle.minus(robotPose.get().getRotation());
 

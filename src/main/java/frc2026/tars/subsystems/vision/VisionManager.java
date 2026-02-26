@@ -13,19 +13,20 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc2026.tars.Robot;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.shooter.turret.Turret;
+import frc2026.tars.util.Util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
@@ -73,29 +74,6 @@ public class VisionManager {
                     0.0, Units.degreesToRadians(24.832735), Units.degreesToRadians(-135.47249))));
   }
 
-  private static class VisionUpdate {
-    public final Pose2d pose;
-    public final double timestamp;
-    public final double xyStd;
-    public final double thetaStd;
-    public final String name;
-
-    public VisionUpdate(Pose2d pose, double timestamp, double xyStd, double thetaStd, String name) {
-      this.pose = pose;
-      this.timestamp = timestamp;
-      this.xyStd = xyStd;
-      this.thetaStd = thetaStd;
-      this.name = name;
-    }
-  }
-
-  private void backgroundVisionUpdate() {
-
-    processLimelight(Limelights.swerveLeft);
-    processLimelight(Limelights.swerveRight);
-    // processTurret(); // add later if desired
-  }
-
   private PhotonCamera swerveLeft;
   private PhotonCamera swerveRight;
   // private PhotonCamera intake;
@@ -116,41 +94,10 @@ public class VisionManager {
     MT2;
   }
 
-  private void processLimelight(Limelight limelight) {
-
-    LimelightHelpers.SetRobotOrientation(
-        limelight.name(),
-        drivetrain.getHeading().getDegrees(),
-        drivetrain.getYawRate().getDegrees(),
-        0,
-        0,
-        0,
-        0);
-
-    PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.name());
-
-    if (rejectEstimate(estimate, limelight)) {
-      return;
-    }
-
-    double stdFactor = Math.pow(estimate.avgTagDist, 2.75) / (estimate.tagCount * 0.5);
-
-    double xyStds = VisionConstants.xyStdBaseline * stdFactor * VisionConstants.xyMt2StdFactor;
-
-    double thetaStds = VisionConstants.thetaStdBaseline * stdFactor;
-
-    pendingUpdates.add(
-        new VisionUpdate(
-            estimate.pose, estimate.timestampSeconds, xyStds, thetaStds, limelight.name()));
-  }
-
   private final Drivetrain drivetrain;
   private final Turret turret;
   private final Limelight[] limelights =
       new Limelight[] {Limelights.swerveLeft, Limelights.swerveRight, Limelights.turret};
-
-  private final Notifier visionThread;
-  private final ConcurrentLinkedQueue<VisionUpdate> pendingUpdates = new ConcurrentLinkedQueue<>();
 
   public static final Transform3d turretToCameraFixed =
       new Transform3d(
@@ -168,8 +115,6 @@ public class VisionManager {
   public VisionManager(Drivetrain drivetrain, Turret turret) {
     this.drivetrain = drivetrain;
     this.turret = turret;
-
-    visionThread = new Notifier(this::backgroundVisionUpdate);
 
     if (Robot.isSimulation()) {
       swerveLeft = new PhotonCamera("limelight-left");
@@ -219,7 +164,7 @@ public class VisionManager {
 
     LimelightHelpers.SetRobotOrientation(
         turretCam.name(),
-        drivetrain.getHeading().plus(turret.getAngle()).getDegrees(),
+        drivetrain.getHeading().rotateBy(turret.getAngle()).getDegrees(),
         drivetrain.getYawRate().plus(Rotation2d.fromRotations(turret.getVelocity())).getDegrees(),
         0,
         0,
@@ -231,13 +176,27 @@ public class VisionManager {
       return;
     }
 
-    Pose3d fieldToTurret = new Pose3d(estimate.pose);
+    Pose2d fieldToTurret = estimate.pose;
 
-    Pose3d fieldToRobot = fieldToTurret.transformBy(robotToTurretFixed.inverse());
+    // Transform2d fieldToRobot =
+    // GeomUtil.poseToTransform(fieldToTurret).plus(GeomUtil.rotationToTransform(turret.getAngle().unaryMinus())).plus(Util.transform3dTo2dXY(robotToTurretFixed.inverse()));
+    // 1. Start with robot → turret fixed offset
+    Transform2d robotToTurret2d = Util.transform3dTo2dXY(robotToTurretFixed);
 
-    estimate.pose = fieldToRobot.toPose2d();
+    // 2. Rotate that offset by current turret angle
+    Transform2d robotToTurretRotated =
+        new Transform2d(robotToTurret2d.getTranslation(), turret.getAngle());
 
-    addPoseEstimate(estimate, turretCam);
+    // 3. Invert to get turret → robot
+    Transform2d turretToRobot = robotToTurretRotated.inverse();
+
+    // 4. Apply to fieldToTurret
+    Pose2d fieldToRobot = fieldToTurret.transformBy(turretToRobot);
+
+    estimate.pose =
+        fieldToRobot; // GeomUtil.transformToPose(fieldToRobot).plus(GeomUtil.rotationToTransform(turret.getAngle().unaryMinus()));
+
+    addPoseEstimate(estimate, turretCam, false);
   }
 
   private void addStaticEstimate(Limelight limelight) {
@@ -250,32 +209,29 @@ public class VisionManager {
         0,
         0);
 
-    PoseEstimate poseEstimate =
-        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.name());
-    addPoseEstimate(poseEstimate, limelight);
+    if (DriverStation.isDisabled()) {
+      addPoseEstimate(
+          LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight.name()), limelight, true);
+    } else {
+      addPoseEstimate(
+          LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.name()), limelight, false);
+    }
   }
 
-  public void stop() {
-    visionThread.stop();
-  }
-
-  public void start() {
-    visionThread.startPeriodic(0.02);
-    //  runs every 20 ms.
-  }
-
-  private void addPoseEstimate(PoseEstimate estimate, Limelight limelight) {
+  private void addPoseEstimate(PoseEstimate estimate, Limelight limelight, boolean mt1) {
     boolean shouldUseMt2 = !rejectEstimate(estimate, limelight);
 
     if (shouldUseMt2) {
       double stdFactor = Math.pow(estimate.avgTagDist, 2.75) / (estimate.tagCount * 0.5);
-      double xyStds = VisionConstants.xyStdBaseline * stdFactor * VisionConstants.xyMt2StdFactor;
-      double thetaStds = VisionConstants.thetaStdBaseline * stdFactor;
+      double xyStds =
+          VisionConstants.xyStdBaseline * stdFactor * (mt1 ? 1.0 : VisionConstants.xyMt2StdFactor);
+      double thetaStds =
+          DriverStation.isDisabled() ? 0.5 : VisionConstants.thetaStdBaseline * stdFactor;
       drivetrain.addVisionMeasurement(
           estimate.pose,
           estimate.timestampSeconds,
-          VecBuilder.fill(xyStds, xyStds, 999999999999.0),
-          true);
+          VecBuilder.fill(xyStds, xyStds, mt1 ? thetaStds : 999999999999.0),
+          !mt1);
 
       Logger.log("Vision/" + limelight.name() + "/VisionType", VisionType.MT2);
       Logger.log("Vision/" + limelight.name() + "/PoseEstimate", estimate.pose);
@@ -289,25 +245,9 @@ public class VisionManager {
   }
 
   public void periodic() {
-    VisionUpdate update;
-
-    if ((update = pendingUpdates.poll()) != null) {
-
-      drivetrain.addVisionMeasurement(
-          update.pose,
-          update.timestamp,
-          VecBuilder.fill(update.xyStd, update.xyStd, 999999999999.0),
-          true);
-
-      Logger.log("Vision/" + update.name + "/VisionType", VisionType.MT2);
-      Logger.log("Vision/" + update.name + "/PoseEstimate", update.pose);
-      Logger.log("Vision/" + update.name + "/XyStds", update.xyStd);
-      Logger.log("Vision/" + update.name + "/ThetaStds", update.thetaStd);
-      System.out.println("Vision thread is running.");
-    }
-    // addStaticEstimate(Limelights.swerveLeft);
-    // addStaticEstimate(Limelights.swerveRight);
-    // addTurretEstimate();
+    addStaticEstimate(Limelights.swerveLeft);
+    addStaticEstimate(Limelights.swerveRight);
+    addTurretEstimate();
 
     if (Robot.isSimulation() && visionSim != null) {
       visionSim.update(drivetrain.getEstimatedPose());

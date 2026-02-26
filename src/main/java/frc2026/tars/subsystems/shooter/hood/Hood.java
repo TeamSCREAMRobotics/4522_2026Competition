@@ -15,14 +15,14 @@ public class Hood extends TalonFXSubsystem {
     resetPosition(0);
   }
 
-  // public Command moveToAngleCommand(Rotation2d targetAngle) {
-  //   return run(
-  //       () -> {
-  //         setSetpointMotionMagicPosition(targetAngle.getRotations());
-  //       });
-  // }
+  public Command moveToAngleCommand(Rotation2d targetAngle) {
+    return run(
+        () -> {
+          setSetpointMotionMagicPosition(targetAngle.getRotations());
+        });
+  }
 
-  public void moveToAngleCommand(Rotation2d targetAngle) {
+  public void moveToAngle(Rotation2d targetAngle) {
     setSetpointMotionMagicPosition(targetAngle.getRotations());
   }
 
@@ -32,20 +32,9 @@ public class Hood extends TalonFXSubsystem {
 
     return new SequentialCommandGroup(
         new InstantCommand(() -> startTime = Timer.getFPGATimestamp()),
-        applyVoltageCommand(() -> .5)
+        applyVoltageCommand(() -> -1.0)
             .withDeadline(
-                new WaitUntilCommand(
-                    () ->
-                        ((Timer.getFPGATimestamp() - startTime) > 0.5)
-                            && master.getSupplyCurrent().getValueAsDouble() > .01)),
-        new InstantCommand(() -> startTime = 0),
-        new InstantCommand(() -> startTime = Timer.getFPGATimestamp()),
-        applyVoltageCommand(() -> -.5)
-            .withDeadline(
-                new WaitUntilCommand(
-                    () ->
-                        ((Timer.getFPGATimestamp() - startTime) > 0.5)
-                            && master.getSupplyCurrent().getValueAsDouble() > .01)),
+                new WaitUntilCommand(() -> ((Timer.getFPGATimestamp() - startTime) > 1.0))),
         new InstantCommand(() -> resetPosition(0)));
   }
 
