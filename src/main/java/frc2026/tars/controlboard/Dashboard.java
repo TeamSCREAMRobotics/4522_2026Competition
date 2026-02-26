@@ -2,7 +2,6 @@ package frc2026.tars.controlboard;
 
 import com.teamscreamrobotics.dashboard.DashboardBoolean;
 import com.teamscreamrobotics.dashboard.DashboardNumber;
-
 import frc2026.tars.subsystems.shooter.ShooterConstants;
 
 public class Dashboard {
@@ -87,8 +86,8 @@ public class Dashboard {
     flywheelVelocity = new DashboardNumber(tuning, "Flywheel Velocity", 0.0);
 
     functionCurve = new DashboardNumber(tuning, "Function Curve", ShooterConstants.FUNCTION_CURVE);
-    functionScalar = new DashboardNumber(tuning, "Function Scalar", ShooterConstants.FUNCTION_SCALAR);
-
+    functionScalar =
+        new DashboardNumber(tuning, "Function Scalar", ShooterConstants.FUNCTION_SCALAR);
   }
 
   public static void resetManuals() {
