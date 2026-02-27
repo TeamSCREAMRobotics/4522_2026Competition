@@ -1,5 +1,7 @@
 package frc2026.tars.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Rotation;
+
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
@@ -12,10 +14,13 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc2026.tars.RobotState;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
@@ -72,7 +77,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Distance Coeff", 1.0);
   }
 
-  private enum ShooterState {
+  public enum ShooterState {
     IDLE,
     STOWED,
     SHOOTING,
@@ -86,7 +91,7 @@ public class Shooter extends SubsystemBase {
     IDLE_FERRY_OUTPOST,
   }
 
-  @Getter @Setter private ShooterState state = ShooterState.IDLE;
+  @Getter @Setter public ShooterState state = ShooterState.IDLE;
   @Getter @Setter private IdleState idleState = IdleState.NA;
 
   public Shooter(
@@ -136,25 +141,43 @@ public class Shooter extends SubsystemBase {
         .setTargetDistance(distanceMeters)
         .setShotAngle(90.0 - (hoodAngleDeg + HoodConstants.HOOD_OFFSET.getDegrees()));
 
-    double multiplier = wantShoot ? 1.0 : 4.0;
-
     double flywheelSetpoint =
         (Conversions.mpsToRPS(
                 Trajectory.getRequiredVelocity(),
                 FlywheelConstants.FLYWHEEL_CIRCUMFERENCE.getMeters(),
                 FlywheelConstants.FLYWHEEL_REDUCTION)) * 2.0; */
 
-    double flywheelSetpoint = ShooterConstants.FLYWHEEL_MAP.get(distanceMeters);
+    double multiplier = wantShoot ? 1.0 : 8.0;
+    double flywheelMap = ShooterConstants.FLYWHEEL_MAP.get(distanceMeters / multiplier);
+
+    double flywheelSetpoint = flywheelMap;
+
+    if(distanceMeters <= 2.0){
+      flywheelSetpoint = flywheelMap * Dashboard.closeMapNudge.get();
+    }
+    else if(distanceMeters <= 4.0 && distanceMeters > 2.0){
+      flywheelSetpoint = flywheelMap * Dashboard.midMapNudge.get();
+    }
+    else flywheelSetpoint = flywheelMap * Dashboard.farMapNudge.get();
 
     // turret.aimOnTheFly(target, robotPose, robotSpeeds, Trajectory.getTimeOfFlight());
+
     turret.pointToTargetFR(() -> target, () -> robotPose);
 
     hood.moveToAngle(Rotation2d.fromDegrees(hoodAngleDeg));
     flywheel.setTargetVelocityTorqueCurrent(flywheelSetpoint, 0.0);
+    //flywheel.setTargetVelocityTorqueCurrent(Dashboard.flywheelVelocity.get(), 0.0);
 
     Logger.log(logPrefix + "Hood Angle", hoodAngleDeg);
     Logger.log(logPrefix + "Flywheel Velocity", flywheelSetpoint);
     Logger.log(logPrefix + "Shot Distance", distanceMeters);
+
+  }
+
+  public Command autoShoot(double time) {
+   return Commands.run(() -> {
+    wantShoot = true;
+   }).withTimeout(time).finallyDo(()-> wantShoot = false);
   }
 
   private void startFeedIfNotRunning() {
@@ -274,7 +297,10 @@ public class Shooter extends SubsystemBase {
           RobotState.Area area = robotState.getArea();
           robotPose = drivetrain.getEstimatedPose();
           robotSpeeds = drivetrain.getState().Speeds;
+          if(!DriverStation.isAutonomous()){
           wantShoot = Controlboard.shoot().getAsBoolean();
+    }
+
           updateShooterState(area, wantShoot);
           updateFeed();
 
@@ -284,7 +310,7 @@ public class Shooter extends SubsystemBase {
               break;
 
             case STOWED:
-              hood.moveToAngle(Rotation2d.fromDegrees(0.0));
+              hood.setVoltage(-2.0);
               flywheel.setTargetVelocityTorqueCurrent(7.5, 0);
               if (isFeedActive) stopFeed();
               setIdleState(IdleState.NA);

@@ -4,6 +4,7 @@
 
 package frc2026.tars;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.teamscreamrobotics.util.Logger;
 import dev.doglog.DogLogOptions;
@@ -32,6 +33,9 @@ public class Robot extends TimedRobot {
             .withUseLogThread(false)
             .withLogEntryQueueCapacity(2000));
     Logger.setEnabled(true);
+
+    SignalLogger.setPath("/media/sda1");
+    SignalLogger.start();
 
     CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
 

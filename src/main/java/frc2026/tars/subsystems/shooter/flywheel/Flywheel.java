@@ -2,6 +2,9 @@ package frc2026.tars.subsystems.shooter.flywheel;
 
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
+
+import edu.wpi.first.wpilibj2.command.Command;
+
 import java.util.function.DoubleSupplier;
 
 public class Flywheel extends TalonFXSubsystem {
@@ -30,5 +33,12 @@ public class Flywheel extends TalonFXSubsystem {
       simulationThread.setSimVoltage(
           () -> simController.calculate(getVelocity(), velocity) + torqueFeedForward);
     }
+  }
+
+  public Command setTargetVelocityTorqueCurrentCommand(double velocity, double torqueFeedForward){
+    return run(()-> 
+    {
+      setTargetVelocityTorqueCurrentCommand(velocity, torqueFeedForward);
+    });
   }
 }

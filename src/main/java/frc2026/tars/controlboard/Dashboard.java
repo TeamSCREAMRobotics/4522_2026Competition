@@ -26,6 +26,7 @@ public class Dashboard {
   public static DashboardNumber manualTurretAngle;
   public static DashboardNumber manualHoodAngle;
   public static DashboardNumber manualFlywheelVelocity;
+  public static DashboardBoolean manualFeeder;
   public static DashboardNumber manualCLimber;
   public static DashboardNumber manualIntakeRollers;
   public static DashboardNumber manualIntakeWrist;
@@ -47,6 +48,12 @@ public class Dashboard {
   public static DashboardNumber hoodAngle;
   public static DashboardNumber flywheelVelocity;
 
+  public static DashboardNumber closeMapNudge;
+  public static DashboardNumber midMapNudge;
+  public static DashboardNumber farMapNudge;
+
+  public static DashboardBoolean hailMaryMode;
+
   public static DashboardNumber functionCurve;
   public static DashboardNumber functionScalar;
 
@@ -57,9 +64,6 @@ public class Dashboard {
   public static void initialize() {
     disableAmbiguityRejection = new DashboardBoolean(vision, "Disable Ambiguity Rejection", false);
     disableAllVisionUpdates = new DashboardBoolean(vision, "Disable All Vision Updates", false);
-    useGlobalEstimateForAutoAlign =
-        new DashboardBoolean(vision, "Use Global Estimate For Auto Align", false);
-    disableVisionRequirement = new DashboardBoolean(vision, "Disable Coral Requirement", false);
 
     ferryMode = new DashboardBoolean(overrides, "Manual Ferry Mode", false);
     zeroIntake = new DashboardBoolean(overrides, "Zero Intake", false);
@@ -78,13 +82,21 @@ public class Dashboard {
     manualIntakeRollers = new DashboardNumber(overrides, "Manual Intake Rollers", 0.0);
     manualIntakeWrist = new DashboardNumber(overrides, "Manual Intake Wrist", 0.0);
     manualIndexer = new DashboardNumber(overrides, "Manual Indexer", 0.0);
+    manualFeeder = new DashboardBoolean(overrides, "Manual Feeder", false);
     autoShoot = new DashboardBoolean(overrides, "Auto Shoot", false);
     bumperShoot = new DashboardBoolean(overrides, "Bumper Shoot", false);
+    
+    closeMapNudge = new DashboardNumber(overrides, "Close Tree Map Nudge", ShooterConstants.CLOSE_MAP_NUDGE);
+    midMapNudge = new DashboardNumber(overrides, "Middle Tree Map Nudge", ShooterConstants.MID_MAP_NUDGE);
+    farMapNudge = new DashboardNumber(overrides, "Far Tree Map Nudge", ShooterConstants.FAR_MAP_NUDGE);
+
+    hailMaryMode = new DashboardBoolean(overrides, "Hail Mary Mode", false);
+    
+
 
     tuningMode = new DashboardBoolean(tuning, "Tuning Mode", false);
     hoodAngle = new DashboardNumber(tuning, "Hood Angle", 0.0);
     flywheelVelocity = new DashboardNumber(tuning, "Flywheel Velocity", 0.0);
-
     functionCurve = new DashboardNumber(tuning, "Function Curve", ShooterConstants.FUNCTION_CURVE);
     functionScalar =
         new DashboardNumber(tuning, "Function Scalar", ShooterConstants.FUNCTION_SCALAR);
