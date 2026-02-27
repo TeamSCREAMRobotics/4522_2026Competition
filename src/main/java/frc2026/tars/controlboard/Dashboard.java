@@ -85,14 +85,15 @@ public class Dashboard {
     manualFeeder = new DashboardBoolean(overrides, "Manual Feeder", false);
     autoShoot = new DashboardBoolean(overrides, "Auto Shoot", false);
     bumperShoot = new DashboardBoolean(overrides, "Bumper Shoot", false);
-    
-    closeMapNudge = new DashboardNumber(overrides, "Close Tree Map Nudge", ShooterConstants.CLOSE_MAP_NUDGE);
-    midMapNudge = new DashboardNumber(overrides, "Middle Tree Map Nudge", ShooterConstants.MID_MAP_NUDGE);
-    farMapNudge = new DashboardNumber(overrides, "Far Tree Map Nudge", ShooterConstants.FAR_MAP_NUDGE);
+
+    closeMapNudge =
+        new DashboardNumber(overrides, "Close Tree Map Nudge", ShooterConstants.CLOSE_MAP_NUDGE);
+    midMapNudge =
+        new DashboardNumber(overrides, "Middle Tree Map Nudge", ShooterConstants.MID_MAP_NUDGE);
+    farMapNudge =
+        new DashboardNumber(overrides, "Far Tree Map Nudge", ShooterConstants.FAR_MAP_NUDGE);
 
     hailMaryMode = new DashboardBoolean(overrides, "Hail Mary Mode", false);
-    
-
 
     tuningMode = new DashboardBoolean(tuning, "Tuning Mode", false);
     hoodAngle = new DashboardNumber(tuning, "Hood Angle", 0.0);

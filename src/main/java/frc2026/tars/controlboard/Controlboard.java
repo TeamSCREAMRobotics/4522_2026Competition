@@ -106,7 +106,7 @@ public class Controlboard {
     return new Trigger(() -> Dashboard.manualMode.get());
   }
 
-  public static Trigger hailMaryMode(){
+  public static Trigger hailMaryMode() {
     return new Trigger(() -> Dashboard.hailMaryMode.get());
   }
 
@@ -122,7 +122,7 @@ public class Controlboard {
     return driveController.leftBumper();
   }
 
-  public static Trigger lockSwerve(){
+  public static Trigger lockSwerve() {
     return driveController.povDown();
   }
 }

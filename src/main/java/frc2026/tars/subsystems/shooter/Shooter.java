@@ -1,7 +1,5 @@
 package frc2026.tars.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Rotation;
-
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
@@ -20,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc2026.tars.RobotState;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
@@ -152,13 +149,11 @@ public class Shooter extends SubsystemBase {
 
     double flywheelSetpoint = flywheelMap;
 
-    if(distanceMeters <= 2.0){
+    if (distanceMeters <= 2.0) {
       flywheelSetpoint = flywheelMap * Dashboard.closeMapNudge.get();
-    }
-    else if(distanceMeters <= 4.0 && distanceMeters > 2.0){
+    } else if (distanceMeters <= 4.0 && distanceMeters > 2.0) {
       flywheelSetpoint = flywheelMap * Dashboard.midMapNudge.get();
-    }
-    else flywheelSetpoint = flywheelMap * Dashboard.farMapNudge.get();
+    } else flywheelSetpoint = flywheelMap * Dashboard.farMapNudge.get();
 
     // turret.aimOnTheFly(target, robotPose, robotSpeeds, Trajectory.getTimeOfFlight());
 
@@ -166,18 +161,20 @@ public class Shooter extends SubsystemBase {
 
     hood.moveToAngle(Rotation2d.fromDegrees(hoodAngleDeg));
     flywheel.setTargetVelocityTorqueCurrent(flywheelSetpoint, 0.0);
-    //flywheel.setTargetVelocityTorqueCurrent(Dashboard.flywheelVelocity.get(), 0.0);
+    // flywheel.setTargetVelocityTorqueCurrent(Dashboard.flywheelVelocity.get(), 0.0);
 
     Logger.log(logPrefix + "Hood Angle", hoodAngleDeg);
     Logger.log(logPrefix + "Flywheel Velocity", flywheelSetpoint);
     Logger.log(logPrefix + "Shot Distance", distanceMeters);
-
   }
 
   public Command autoShoot(double time) {
-   return Commands.run(() -> {
-    wantShoot = true;
-   }).withTimeout(time).finallyDo(()-> wantShoot = false);
+    return Commands.run(
+            () -> {
+              wantShoot = true;
+            })
+        .withTimeout(time)
+        .finallyDo(() -> wantShoot = false);
   }
 
   private void startFeedIfNotRunning() {
@@ -297,9 +294,9 @@ public class Shooter extends SubsystemBase {
           RobotState.Area area = robotState.getArea();
           robotPose = drivetrain.getEstimatedPose();
           robotSpeeds = drivetrain.getState().Speeds;
-          if(!DriverStation.isAutonomous()){
-          wantShoot = Controlboard.shoot().getAsBoolean();
-    }
+          if (!DriverStation.isAutonomous()) {
+            wantShoot = Controlboard.shoot().getAsBoolean();
+          }
 
           updateShooterState(area, wantShoot);
           updateFeed();
