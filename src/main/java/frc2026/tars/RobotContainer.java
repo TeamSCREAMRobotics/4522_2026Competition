@@ -1,7 +1,5 @@
 package frc2026.tars;
 
-import static edu.wpi.first.units.Units.Rotation;
-
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -30,7 +28,6 @@ import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
 import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
 import frc2026.tars.subsystems.shooter.Shooter;
-import frc2026.tars.subsystems.shooter.Shooter.ShooterState;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
@@ -73,7 +70,7 @@ public class RobotContainer {
       new Shooter(flywheel, hood, turret, spindexer, feeder, drivetrain, getRobotState());
 
   private final VisionManager visionManager = new VisionManager(drivetrain, turret);
-  
+
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveDriveBrake();
 
   private final MechanismVisualizer mechVisualizer =
@@ -138,12 +135,13 @@ public class RobotContainer {
         .toggleOnTrue(intakeWrist.applyGoalCommand(IntakeWristGoal.STOW))
         .toggleOnFalse(intakeWrist.applyGoalCommand(IntakeWristGoal.EXTENDED));
 
-    Controlboard.lockSwerve().whileTrue(drivetrain.applyRequest(()-> brake));
+    Controlboard.lockSwerve().whileTrue(drivetrain.applyRequest(() -> brake));
 
-    Controlboard.hailMaryMode().whileTrue(new SequentialCommandGroup(turret.moveToAngleCommandRR(Rotation2d.fromDegrees(0.0)))
-        .alongWith(hood.moveToAngleCommand(Rotation2d.fromDegrees(0.0)))
-        .alongWith(flywheel.setTargetVelocityTorqueCurrentCommand(40.5, 0.0)));
-
+    Controlboard.hailMaryMode()
+        .whileTrue(
+            new SequentialCommandGroup(turret.moveToAngleCommandRR(Rotation2d.fromDegrees(0.0)))
+                .alongWith(hood.moveToAngleCommand(Rotation2d.fromDegrees(0.0)))
+                .alongWith(flywheel.setTargetVelocityTorqueCurrentCommand(40.5, 0.0)));
   }
 
   private void configureDefaultCommands() {
@@ -182,8 +180,7 @@ public class RobotContainer {
   private void configureAutoCommands() {
 
     NamedCommands.registerCommand(
-        "Run Intake",
-        intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE).withTimeout(2.0));
+        "Run Intake", intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE).withTimeout(2.0));
 
     NamedCommands.registerCommand(
         "Intake In",
@@ -192,11 +189,11 @@ public class RobotContainer {
                     .applyGoalCommand(IntakeWristGoal.STOW)
                     .alongWith(intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP)))
             .withName("Auto Intake In"));
-    
-    NamedCommands.registerCommand("Stop Intakeing", intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP).withTimeout(0.1));
 
     NamedCommands.registerCommand(
-        "Short Shoot", shooter.autoShoot(5.0));
+        "Stop Intakeing", intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP).withTimeout(0.1));
+
+    NamedCommands.registerCommand("Short Shoot", shooter.autoShoot(5.0));
   }
 
   private void configureManualOverrides() {
