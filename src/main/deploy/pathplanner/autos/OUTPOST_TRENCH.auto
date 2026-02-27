@@ -11,15 +11,46 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "FR_TRENCH_SCOOP"
+            "name": "Short Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "FR_TRENCH_SCOOP"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake In"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Intakeing"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "FR_TRENCH_RETURN"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Short Shoot"
           }
         }
       ]

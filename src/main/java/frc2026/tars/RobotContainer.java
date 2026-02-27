@@ -1,6 +1,12 @@
 package frc2026.tars;
 
+import static edu.wpi.first.units.Units.Rotation;
+
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
@@ -8,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -23,6 +30,7 @@ import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
 import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
 import frc2026.tars.subsystems.shooter.Shooter;
+import frc2026.tars.subsystems.shooter.Shooter.ShooterState;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
@@ -65,6 +73,8 @@ public class RobotContainer {
       new Shooter(flywheel, hood, turret, spindexer, feeder, drivetrain, getRobotState());
 
   private final VisionManager visionManager = new VisionManager(drivetrain, turret);
+  
+  private final SwerveRequest.SwerveDriveBrake brake = new SwerveDriveBrake();
 
   private final MechanismVisualizer mechVisualizer =
       new MechanismVisualizer(
@@ -94,6 +104,8 @@ public class RobotContainer {
   //               drivetrain.getState().Speeds.omegaRadiansPerSecond));
   // }
 
+  private final SendableChooser<Command> auto;
+
   public RobotContainer() {
     configureBindings();
     configureManualOverrides();
@@ -102,35 +114,36 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("test", 1);
 
+    auto = AutoBuilder.buildAutoChooser();
+    auto.setDefaultOption("Do Nothing", new PathPlannerAuto("command"));
+    auto.setDefaultOption("command testing", getAutonomousCommand());
+    SmartDashboard.putData(auto);
+
     mechVisualizer.setEnabled(true);
   }
 
   private void configureBindings() {
 
-    // Controlboard.makeThingWork()
-    //     .whileTrue(
-    //         Commands.parallel(
-    //             spindexer.applyGoalCommand(SpindexerGoal.RUN),
-    //             feeder.applyGoalCommand(FeederGoal.RUN)))
-    //     .whileFalse(
-    //         Commands.parallel(
-    //             spindexer.applyGoalCommand(SpindexerGoal.STOP),
-    //             feeder.applyGoalCommand(FeederGoal.STOP)));
-
-    // Controlboard.makeThingWork().whileTrue(new FeedForwardCharacterization(feeder,
-    // feeder::setVoltage, feeder::getVelocity));
-
-    // Controlboard.makeThingWork().whileTrue(hood.moveToAngleCommand(Rotation2d.fromDegrees(12)));
-
     Controlboard.intake()
         .onTrue(
             new SequentialCommandGroup(
                     intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.INTAKE))
-                .withName("Intakeing"))
+                .withName("Intake Running"))
         .onFalse(
             new SequentialCommandGroup(
                     intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.STOP))
-                .withName("Not Intake"));
+                .withName("Intake Stopped"));
+
+    Controlboard.moveIntakeWrist()
+        .toggleOnTrue(intakeWrist.applyGoalCommand(IntakeWristGoal.STOW))
+        .toggleOnFalse(intakeWrist.applyGoalCommand(IntakeWristGoal.EXTENDED));
+
+    Controlboard.lockSwerve().whileTrue(drivetrain.applyRequest(()-> brake));
+
+    Controlboard.hailMaryMode().whileTrue(new SequentialCommandGroup(turret.moveToAngleCommandRR(Rotation2d.fromDegrees(0.0)))
+        .alongWith(hood.moveToAngleCommand(Rotation2d.fromDegrees(0.0)))
+        .alongWith(flywheel.setTargetVelocityTorqueCurrentCommand(40.5, 0.0)));
+
   }
 
   private void configureDefaultCommands() {
@@ -169,20 +182,21 @@ public class RobotContainer {
   private void configureAutoCommands() {
 
     NamedCommands.registerCommand(
-        "Intake Out",
-        new SequentialCommandGroup(
-                intakeWrist
-                    .applyGoalCommand(IntakeWristGoal.STOW)
-                    .alongWith(intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE)))
-            .withName("Auto Intake Out"));
+        "Run Intake",
+        intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE).withTimeout(2.0));
 
     NamedCommands.registerCommand(
         "Intake In",
         new SequentialCommandGroup(
                 intakeWrist
                     .applyGoalCommand(IntakeWristGoal.STOW)
-                    .alongWith(intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE)))
-            .withName("Auto Intake Out"));
+                    .alongWith(intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP)))
+            .withName("Auto Intake In"));
+    
+    NamedCommands.registerCommand("Stop Intakeing", intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP).withTimeout(0.1));
+
+    NamedCommands.registerCommand(
+        "Short Shoot", shooter.autoShoot(5.0));
   }
 
   private void configureManualOverrides() {
@@ -215,7 +229,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return auto.getSelected();
   }
 
   public static void telemeterizeMechanisms(Mechanism2d measured, Mechanism2d setpoint) {
@@ -226,19 +240,6 @@ public class RobotContainer {
   public void periodic() {
     visionManager.periodic();
     // robotState.logArea();
-
-    /*
-    Tell this to jackson dummy future me, turret looked correct in sim, so that means that our values or calculations for CRT are prob wrong.
-    Things that we need to check:
-    - Are we using the correct gear ratio for the turret?
-    - is the calculation for CRT correct?
-    - Is zeroing right? (I guess this is connected to CRT)
-    - Pose?
-    - Pigeon bad?
-    - Some weird issue with the DogLog stuff?
-    - Rio issue?
-    - Sensor Direction Value?
-    */
 
     Logger.log(
         "Turret Pose",

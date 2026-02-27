@@ -3,53 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.52761565836299,
-        "y": 1.7701897983392634
+        "x": 2.456954545454545,
+        "y": 1.5665170454545456
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.323190984578885,
-        "y": 1.0816014234875444
-      },
-      "isLocked": false,
-      "linkedName": "FR_TRENCH_SCOOP_END"
-    },
-    {
-      "anchor": {
-        "x": 4.751743772241993,
-        "y": 0.6081969157769855
-      },
-      "prevControl": {
-        "x": 5.203641266729409,
-        "y": 0.6184673133789717
-      },
-      "nextControl": {
-        "x": 4.278339264531436,
-        "y": 0.5974377224199282
+        "x": 2.706954545454545,
+        "y": 1.5665170454545456
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.5783867141162524,
-        "y": 0.8018623962040328
+        "x": 2.456954545454545,
+        "y": 1.5665170454545456
       },
       "prevControl": {
-        "x": 3.0517912218268095,
-        "y": 0.6081969157769854
+        "x": 2.706954545454545,
+        "y": 1.5665170454545456
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 21.808245290485694
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -69,7 +48,7 @@
   "folder": "OUTPOST_TRENCH",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 54.55129371286192
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

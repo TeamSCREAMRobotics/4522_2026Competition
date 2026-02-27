@@ -10,6 +10,10 @@ public class ShooterConstants {
   public static final double FUNCTION_CURVE = 0.01;
   public static final double FUNCTION_SCALAR = 12.5;
 
+  public static final double CLOSE_MAP_NUDGE = 1;
+  public static final double MID_MAP_NUDGE = 1;
+  public static final double FAR_MAP_NUDGE = 1;
+
   static {
     // Put in distance in meters, gets out Flywheel RPS
     FLYWHEEL_MAP.put(1.472, 40.5);

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.3201660735468574,
-        "y": 0.8126215895610915
+        "x": 2.12141875038186,
+        "y": 0.6467856527904314
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3201660735468574,
-        "y": 0.8126215895610915
+        "x": 3.12141875038186,
+        "y": 0.6467856527904314
       },
       "isLocked": false,
       "linkedName": "FR_TRENCH_TS_END"
     },
     {
       "anchor": {
-        "x": 5.6662752075919345,
-        "y": 0.5974377224199281
+        "x": 5.781678029227244,
+        "y": 0.5316969677759231
       },
       "prevControl": {
-        "x": 4.666275207591933,
-        "y": 0.5974377224199282
+        "x": 4.781678029227242,
+        "y": 0.5316969677759232
       },
       "nextControl": {
-        "x": 6.397900355871887,
-        "y": 0.5974377224199281
+        "x": 6.513303177507197,
+        "y": 0.5316969677759231
       },
       "isLocked": false,
       "linkedName": null
@@ -47,11 +47,11 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.8809946714031933,
-      "rotationDegrees": 180.0
+      "rotationDegrees": 1.1368458318189152
     },
     {
       "waypointRelativePos": 1.60213143872115,
-      "rotationDegrees": -113.0
+      "rotationDegrees": 57.11406180437046
     }
   ],
   "constraintZones": [],
@@ -67,13 +67,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -113.96248897457816
+    "rotation": 54.55129371286192
   },
   "reversed": false,
   "folder": "OUTPOST_TRENCH",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

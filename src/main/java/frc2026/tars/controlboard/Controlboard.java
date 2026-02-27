@@ -74,6 +74,10 @@ public class Controlboard {
     return driveController.leftTrigger(TRIGGER_DEADBAND);
   }
 
+  public static Trigger intakeUp() {
+    return driveController.leftBumper();
+  }
+
   public static Trigger shoot() {
     return driveController.rightTrigger(TRIGGER_DEADBAND);
   }
@@ -102,11 +106,23 @@ public class Controlboard {
     return new Trigger(() -> Dashboard.manualMode.get());
   }
 
+  public static Trigger hailMaryMode(){
+    return new Trigger(() -> Dashboard.hailMaryMode.get());
+  }
+
   public static Trigger resetFieldCentric() {
     return driveController.back();
   }
 
   public static Trigger makeThingWork() {
     return driveController.b();
+  }
+
+  public static Trigger moveIntakeWrist() {
+    return driveController.leftBumper();
+  }
+
+  public static Trigger lockSwerve(){
+    return driveController.povDown();
   }
 }
