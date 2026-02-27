@@ -1,0 +1,103 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.1910557532621597,
+        "y": 1.3290628706998815
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.7074970344009497,
+        "y": 0.6835112692763936
+      },
+      "isLocked": false,
+      "linkedName": "OTO_TO_SHOOT"
+    },
+    {
+      "anchor": {
+        "x": 3.697342823250297,
+        "y": 0.47908659549228905
+      },
+      "prevControl": {
+        "x": 2.697342823250297,
+        "y": 0.47908659549228905
+      },
+      "nextControl": {
+        "x": 4.697342823250297,
+        "y": 0.47908659549228905
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.6124792408066435,
+        "y": 0.5113641755634626
+      },
+      "prevControl": {
+        "x": 4.31061684460261,
+        "y": 0.4252906287069972
+      },
+      "nextControl": {
+        "x": 6.914341637010677,
+        "y": 0.597437722419928
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.259240806642943,
+        "y": 2.3296678529062866
+      },
+      "prevControl": {
+        "x": 8.291518386714117,
+        "y": 0.6297153024911029
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "OTO_TNZ_END"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2.0888099467140218,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Run Intake",
+      "waypointRelativePos": 2.2677165354330793,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Run Intake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "OUTPOST_TRENCH_OUTPOST",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

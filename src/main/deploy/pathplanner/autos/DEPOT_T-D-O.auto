@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "FR_TRENCH_TS"
+            "pathName": "DEPOT_T-D-O_TO_SHOOT"
           }
         },
         {
@@ -17,22 +17,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "FR_TRENCH_SCOOP"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake In"
-                }
-              }
-            ]
+            "pathName": "DEPOT_T-D-O_T-DEP"
           }
         },
         {
@@ -42,9 +29,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Short Shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "FR_TRENCH_RETURN"
+            "pathName": "DEPOT_T-D-O_T-OUT"
           }
         },
         {
@@ -57,6 +50,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "OUTPOST Autos",
+  "folder": "DEPOT Autos",
   "choreoAuto": false
 }

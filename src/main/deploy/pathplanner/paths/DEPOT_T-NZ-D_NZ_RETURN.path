@@ -1,0 +1,91 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.756033333333333,
+        "y": 6.000166666666667
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.2723,
+        "y": 7.007944444444445
+      },
+      "isLocked": false,
+      "linkedName": "DEPOT_T-NZ-O_NZ_END"
+    },
+    {
+      "anchor": {
+        "x": 5.9118,
+        "y": 7.501755555555555
+      },
+      "prevControl": {
+        "x": 6.476515361493003,
+        "y": 7.501755555555555
+      },
+      "nextControl": {
+        "x": 4.8484631071114945,
+        "y": 7.501755555555555
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.007099999999999,
+        "y": 7.511833333333334
+      },
+      "prevControl": {
+        "x": 4.581621728091622,
+        "y": 7.511833333333334
+      },
+      "nextControl": {
+        "x": 3.432578271908377,
+        "y": 7.511833333333334
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.7272222222222218,
+        "y": 7.038177777777778
+      },
+      "prevControl": {
+        "x": 3.0497111111111117,
+        "y": 7.451366666666667
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "DEPOT_T-NZ-O_NZ_RETURN_END"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8631578947368415,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "DEPOT_T-NZ-DEP",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}

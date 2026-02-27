@@ -1,0 +1,103 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.6365222222222218,
+        "y": 6.725766666666666
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.3016555555555556,
+        "y": 7.25988888888889
+      },
+      "isLocked": false,
+      "linkedName": "DEPOT_T-NZ-O"
+    },
+    {
+      "anchor": {
+        "x": 3.9063222222222223,
+        "y": 7.501755555555555
+      },
+      "prevControl": {
+        "x": 3.2311111111111113,
+        "y": 7.491677777777777
+      },
+      "nextControl": {
+        "x": 4.9062108574465535,
+        "y": 7.516679266529051
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.032733333333333,
+        "y": 7.491677777777777
+      },
+      "prevControl": {
+        "x": 5.579121371845391,
+        "y": 7.491677777777777
+      },
+      "nextControl": {
+        "x": 6.567710531647477,
+        "y": 7.491677777777777
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.756033333333333,
+        "y": 6.000166666666667
+      },
+      "prevControl": {
+        "x": 7.6350999999999996,
+        "y": 7.290122222222222
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "DEPOT_T-NZ-O_NZ_END"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2.18421052631581,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Run Intake",
+      "waypointRelativePos": 2.617940199335547,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Run Intake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "DEPOT_T-NZ-DEP",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

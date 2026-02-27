@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "FR_TRENCH_TS"
+            "pathName": "DEPOT_T-NZ-D_SHOOT"
           }
         },
         {
@@ -17,19 +17,25 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "DEPOT_T-NZ-D_NZ"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "FR_TRENCH_SCOOP"
+                  "name": "Stop Intakeing"
                 }
               },
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Intake In"
+                  "pathName": "DEPOT_T-NZ-D_NZ_RETURN"
                 }
               }
             ]
@@ -38,13 +44,19 @@
         {
           "type": "named",
           "data": {
-            "name": "Stop Intakeing"
+            "name": "Short Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FR_TRENCH_RETURN"
+            "pathName": "DEPOT_T-NZ-D_DEPOT"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Intakeing"
           }
         },
         {
@@ -57,6 +69,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "OUTPOST Autos",
+  "folder": "DEPOT Autos",
   "choreoAuto": false
 }

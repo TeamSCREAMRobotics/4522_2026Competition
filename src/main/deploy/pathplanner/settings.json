@@ -5,10 +5,16 @@
   "pathFolders": [
     "DEPOT_BUMP",
     "DEPOT_TRENCH",
+    "DEPOT_T_D_O",
+    "DEPOT_T-NZ-DEP",
     "OUTPOST_BUMP",
-    "OUTPOST_TRENCH"
+    "OUTPOST_TRENCH",
+    "OUTPOST_TRENCH_OUTPOST"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "DEPOT Autos",
+    "OUTPOST Autos"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,

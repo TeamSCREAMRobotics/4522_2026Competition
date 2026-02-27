@@ -1,0 +1,75 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.47987777777777785,
+        "y": 4.780755555555555
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 0.5000333333333333,
+        "y": 3.742744444444444
+      },
+      "isLocked": false,
+      "linkedName": "DEPOT_TDO_T-DEP_END"
+    },
+    {
+      "anchor": {
+        "x": 0.5101111111111112,
+        "y": 2.674499999999999
+      },
+      "prevControl": {
+        "x": 0.5101111111111112,
+        "y": 3.2945086085623
+      },
+      "nextControl": {
+        "x": 0.5101111111111112,
+        "y": 2.009499999999999
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.47987777777777785,
+        "y": 0.6488666666666665
+      },
+      "prevControl": {
+        "x": 1.2860999999999994,
+        "y": 1.0721333333333336
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.9719298245614046,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "DEPOT_T_D_O",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}
