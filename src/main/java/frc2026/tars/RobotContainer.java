@@ -6,6 +6,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
+import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemGoal;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.geometry.Pose3d;
