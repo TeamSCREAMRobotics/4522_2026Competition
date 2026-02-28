@@ -7,7 +7,6 @@ import com.teamscreamrobotics.util.Logger;
 import com.teamscreamrobotics.zones.RectangularPoseArea;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc2026.tars.RobotContainer.Subsystems;
 import frc2026.tars.controlboard.Controlboard;
@@ -19,7 +18,6 @@ import java.util.function.Supplier;
 public class RobotState {
   private final Drivetrain drivetrain;
   private final IntakeWrist intakeWrist;
-
 
   public enum Mode {
     AUTO,
@@ -193,7 +191,7 @@ public class RobotState {
       }
     }
 
-    /* 
+    /*
     Logger.log("RobotState/Area Is Present", getArea());
     if (getArea().isPresent()) {
     Logger.log("RobotState/Area", getArea().get().name());
