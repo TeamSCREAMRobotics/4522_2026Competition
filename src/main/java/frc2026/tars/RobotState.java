@@ -19,8 +19,7 @@ import java.util.function.Supplier;
 public class RobotState {
   private final Drivetrain drivetrain;
   private final IntakeWrist intakeWrist;
-  private static final RectangularPoseArea test =
-      new RectangularPoseArea(new Translation2d(1, 1), new Translation2d(5, 5));
+
 
   public enum Mode {
     AUTO,
@@ -194,9 +193,11 @@ public class RobotState {
       }
     }
 
+    /* 
     Logger.log("RobotState/Area Is Present", getArea());
-    // if (getArea().isPresent()) {
-    // Logger.log("RobotState/Area", getArea().get().name());
-    // }
+    if (getArea().isPresent()) {
+    Logger.log("RobotState/Area", getArea().get().name());
+    }
+    */
   }
 }

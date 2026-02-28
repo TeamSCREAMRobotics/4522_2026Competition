@@ -21,7 +21,7 @@ public class HoodConstants {
   public static final Rotation2d HOOD_OFFSET = Rotation2d.fromDegrees(20.786125);
 
   public static final double MIN_UNITS = 0.0;
-  public static final double MAX_UNITS = 0.01; // TODO: Measure
+  public static final double MAX_UNITS = 0.062;
 
   public static final TalonFXSubsystemConfiguration HOOD_CONFIG =
       new TalonFXSubsystemConfiguration();
@@ -44,6 +44,8 @@ public class HoodConstants {
     HOOD_CONFIG.sensorToMechRatio = HOOD_REDUCTION;
     HOOD_CONFIG.enableSupplyCurrentLimit = true;
     HOOD_CONFIG.supplyCurrentLimit = 35;
+
+    HOOD_CONFIG.maxUnitsLimit = MAX_UNITS;
 
     HOOD_CONFIG.acceleration = 120.0;
     HOOD_CONFIG.cruiseVelocity = 30.0;

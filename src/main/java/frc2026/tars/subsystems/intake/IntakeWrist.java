@@ -18,6 +18,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc2026.tars.constants.SimConstants;
+import lombok.Getter;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 /** Add your docs here. */
@@ -78,6 +81,8 @@ public class IntakeWrist extends TalonFXSubsystem {
   public synchronized Command applyGoalCommand(TalonFXSubsystemGoal goal) {
     return super.applyGoalCommand(goal).beforeStarting(() -> super.goal = goal);
   }
+
+  @Getter public TalonFXSubsystemGoal goal = getGoal();
 
   @Override
   public void periodic() {

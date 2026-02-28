@@ -1,6 +1,7 @@
 package frc2026.tars.subsystems.shooter;
 
 import com.teamscreamrobotics.data.Length;
+import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemGoal;
 import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.GeomUtil;
@@ -22,6 +23,8 @@ import frc2026.tars.RobotState;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
+import frc2026.tars.subsystems.intake.IntakeWrist;
+import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.hood.Hood;
 import frc2026.tars.subsystems.shooter.indexer.Feeder;
@@ -40,6 +43,7 @@ public class Shooter extends SubsystemBase {
   private final Turret turret;
   private final Spindexer spindexer;
   private final Feeder feeder;
+  private final IntakeWrist intakeWrist;
   private final Drivetrain drivetrain;
   private final RobotState robotState;
   private Pose2d robotPose;
@@ -75,10 +79,12 @@ public class Shooter extends SubsystemBase {
   }
 
   public enum ShooterState {
+    NA,
     IDLE,
     STOWED,
     SHOOTING,
-    FERRYING
+    FERRYING,
+    INTAKE_UP
   }
 
   private enum IdleState {
@@ -97,6 +103,7 @@ public class Shooter extends SubsystemBase {
       Turret turret,
       Spindexer spindexer,
       Feeder feeder,
+      IntakeWrist intakeWrist,
       Drivetrain drivetrain,
       RobotState robotState) {
     this.flywheel = flywheel;
@@ -104,6 +111,7 @@ public class Shooter extends SubsystemBase {
     this.turret = turret;
     this.spindexer = spindexer;
     this.feeder = feeder;
+    this.intakeWrist = intakeWrist;
     this.drivetrain = drivetrain;
     this.robotState = robotState;
 
@@ -276,14 +284,19 @@ public class Shooter extends SubsystemBase {
   }
 
   private void updateShooterState(RobotState.Area area, boolean wantShoot) {
-    if (wantShoot && area == RobotState.Area.ALLIANCEZONE) {
+    if (Controlboard.moveIntakeWrist().getAsBoolean()) {
+      setState(ShooterState.INTAKE_UP);
+    } else if (wantShoot && area == RobotState.Area.ALLIANCEZONE) {
       setState(ShooterState.SHOOTING);
     } else if (wantShoot
         && (area == RobotState.Area.DEPOT_SIDE_NEUTRALZONE
-            || area == RobotState.Area.OUTPOST_SIDE_NEUTRALZONE)) {
+            || area == RobotState.Area.OUTPOST_SIDE_NEUTRALZONE
+            || area == RobotState.Area.OTHERALLIANCEZONE)) {
       setState(ShooterState.FERRYING);
     } else if (area == RobotState.Area.TRENCHES) {
       setState(ShooterState.STOWED);
+    } else if (Dashboard.manualMode.get()) {
+      setState(ShooterState.NA);
     } else {
       setState(ShooterState.IDLE);
     }
@@ -328,6 +341,14 @@ public class Shooter extends SubsystemBase {
             case FERRYING:
               ferryCase(area, robotPose, robotSpeeds, wantShoot);
               setIdleState(IdleState.NA);
+              break;
+
+            case INTAKE_UP:
+              turret.moveToAngleRR(Rotation2d.fromDegrees(90.0));
+              hood.moveToAngle(Rotation2d.fromDegrees(0.0));
+              flywheel.setTargetVelocityTorqueCurrent(ShooterConstants.FLYWHEEL_MAP.get(getShotDistance(AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter)).getMeters()), 0.0);
+              break;
+            case NA:
               break;
 
             default:

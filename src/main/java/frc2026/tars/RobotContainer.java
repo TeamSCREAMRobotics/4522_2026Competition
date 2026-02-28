@@ -21,6 +21,7 @@ import frc2026.tars.constants.SimConstants;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
+import frc2026.tars.subsystems.drivetrain.DrivetrainConstants;
 import frc2026.tars.subsystems.drivetrain.generated.TunerConstants;
 import frc2026.tars.subsystems.intake.IntakeConstants;
 import frc2026.tars.subsystems.intake.IntakeRollers;
@@ -67,7 +68,7 @@ public class RobotContainer {
   @Getter private final RobotState robotState = new RobotState(subsystems);
 
   private final Shooter shooter =
-      new Shooter(flywheel, hood, turret, spindexer, feeder, drivetrain, getRobotState());
+      new Shooter(flywheel, hood, turret, spindexer, feeder, intakeWrist, drivetrain, getRobotState());
 
   private final VisionManager visionManager = new VisionManager(drivetrain, turret);
 
@@ -113,7 +114,6 @@ public class RobotContainer {
 
     auto = AutoBuilder.buildAutoChooser();
     auto.setDefaultOption("Do Nothing", new PathPlannerAuto("command"));
-    auto.setDefaultOption("command testing", getAutonomousCommand());
     SmartDashboard.putData(auto);
 
     mechVisualizer.setEnabled(true);
@@ -136,6 +136,27 @@ public class RobotContainer {
         .toggleOnFalse(intakeWrist.applyGoalCommand(IntakeWristGoal.EXTENDED));
 
     Controlboard.lockSwerve().whileTrue(drivetrain.applyRequest(() -> brake));
+
+    Controlboard.rotate90Degres()
+        .whileTrue(
+            drivetrain.applyRequest(
+                () ->
+                    drivetrain
+                        .getHelper()
+                        .getFacingAngleProfiled(
+                            Controlboard.getTranslation().get(),
+                            Rotation2d.fromDegrees(90),
+                            DrivetrainConstants.headingControllerProfiled)));
+    Controlboard.rotateNegative90Degrees()
+        .whileTrue(
+            drivetrain.applyRequest(
+                () ->
+                    drivetrain
+                        .getHelper()
+                        .getFacingAngleProfiled(
+                            Controlboard.getTranslation().get(),
+                            Rotation2d.fromDegrees(-90),
+                            DrivetrainConstants.headingControllerProfiled)));
 
     Controlboard.hailMaryMode()
         .whileTrue(
