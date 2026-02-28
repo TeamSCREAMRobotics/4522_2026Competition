@@ -151,6 +151,12 @@ public class Turret extends TalonFXSubsystem {
    * @return A command that moves the pivot to the specified angle
    */
   // This is the robot relative verion of this command.
+  public void moveToAngleRR(Rotation2d angle) {
+    Rotation2d safeTarget = getSafeTargetAngle(angle);
+    setSetpointMotionMagicPosition(safeTarget.getRotations());
+  }
+
+
   public Command moveToAngleCommandRR(Supplier<Rotation2d> angle) {
     return run(
         () -> {

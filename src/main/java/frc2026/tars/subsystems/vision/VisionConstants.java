@@ -8,4 +8,6 @@ public class VisionConstants {
   public static final double thetaStdBaseline = 12.5;
 
   public static final double xyMt2StdFactor = 0.3;
+
+  public static final double xyTurretFactor = 0.7;
 }

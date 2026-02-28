@@ -125,4 +125,12 @@ public class Controlboard {
   public static Trigger lockSwerve() {
     return driveController.povDown();
   }
+
+  public static Trigger rotate90Degres() {
+    return driveController.x();
+  }
+
+  public static Trigger rotateNegative90Degrees() {
+    return driveController.b();
+  }
 }

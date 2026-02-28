@@ -196,7 +196,7 @@ public class VisionManager {
     estimate.pose =
         fieldToRobot; // GeomUtil.transformToPose(fieldToRobot).plus(GeomUtil.rotationToTransform(turret.getAngle().unaryMinus()));
 
-    addPoseEstimate(estimate, turretCam, false);
+    addPoseEstimate(estimate, turretCam, false, true);
   }
 
   private void addStaticEstimate(Limelight limelight) {
@@ -211,20 +211,27 @@ public class VisionManager {
 
     if (DriverStation.isDisabled()) {
       addPoseEstimate(
-          LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight.name()), limelight, true);
+          LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight.name()), limelight, true, false);
     } else {
       addPoseEstimate(
-          LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.name()), limelight, false);
+          LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.name()),
+          limelight,
+          false,
+          false);
     }
   }
 
-  private void addPoseEstimate(PoseEstimate estimate, Limelight limelight, boolean mt1) {
+  private void addPoseEstimate(
+      PoseEstimate estimate, Limelight limelight, boolean mt1, boolean isTurret) {
     boolean shouldUseMt2 = !rejectEstimate(estimate, limelight);
 
     if (shouldUseMt2) {
       double stdFactor = Math.pow(estimate.avgTagDist, 2.75) / (estimate.tagCount * 0.5);
       double xyStds =
-          VisionConstants.xyStdBaseline * stdFactor * (mt1 ? 1.0 : VisionConstants.xyMt2StdFactor);
+          VisionConstants.xyStdBaseline
+              * stdFactor
+              * (mt1 ? 1.0 : VisionConstants.xyMt2StdFactor)
+              * (isTurret ? VisionConstants.xyTurretFactor * estimate.avgTagDist : 1.0);
       double thetaStds =
           DriverStation.isDisabled() ? 0.5 : VisionConstants.thetaStdBaseline * stdFactor;
       drivetrain.addVisionMeasurement(
