@@ -18,10 +18,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc2026.tars.constants.SimConstants;
-import lombok.Getter;
-
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import lombok.Getter;
 
 /** Add your docs here. */
 public class IntakeWrist extends TalonFXSubsystem {

@@ -1,7 +1,6 @@
 package frc2026.tars.subsystems.shooter;
 
 import com.teamscreamrobotics.data.Length;
-import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemGoal;
 import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.GeomUtil;
@@ -24,7 +23,6 @@ import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.intake.IntakeWrist;
-import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.hood.Hood;
 import frc2026.tars.subsystems.shooter.indexer.Feeder;
@@ -346,7 +344,13 @@ public class Shooter extends SubsystemBase {
             case INTAKE_UP:
               turret.moveToAngleRR(Rotation2d.fromDegrees(90.0));
               hood.moveToAngle(Rotation2d.fromDegrees(0.0));
-              flywheel.setTargetVelocityTorqueCurrent(ShooterConstants.FLYWHEEL_MAP.get(getShotDistance(AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter)).getMeters()), 0.0);
+              flywheel.setTargetVelocityTorqueCurrent(
+                  ShooterConstants.FLYWHEEL_MAP.get(
+                      getShotDistance(
+                              AllianceFlipUtil.get(
+                                  FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter))
+                          .getMeters()),
+                  0.0);
               break;
             case NA:
               break;

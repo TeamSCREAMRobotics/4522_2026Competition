@@ -156,7 +156,6 @@ public class Turret extends TalonFXSubsystem {
     setSetpointMotionMagicPosition(safeTarget.getRotations());
   }
 
-
   public Command moveToAngleCommandRR(Supplier<Rotation2d> angle) {
     return run(
         () -> {

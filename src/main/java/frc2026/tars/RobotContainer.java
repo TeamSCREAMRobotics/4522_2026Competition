@@ -6,7 +6,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
-import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemGoal;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -69,7 +68,8 @@ public class RobotContainer {
   @Getter private final RobotState robotState = new RobotState(subsystems);
 
   private final Shooter shooter =
-      new Shooter(flywheel, hood, turret, spindexer, feeder, intakeWrist, drivetrain, getRobotState());
+      new Shooter(
+          flywheel, hood, turret, spindexer, feeder, intakeWrist, drivetrain, getRobotState());
 
   private final VisionManager visionManager = new VisionManager(drivetrain, turret);
 
