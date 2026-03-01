@@ -313,8 +313,8 @@ public class Turret extends TalonFXSubsystem {
     setSetpointMotionMagicPosition(safeTarget.getRotations());
   }
 
-  public boolean isAimingAtTarget(/* 
-      Supplier<Translation2d> targetPosition, Supplier<Pose2d> robotPose */) {
+  public boolean isAimingAtTarget(/*
+      Supplier<Translation2d> targetPosition, Supplier<Pose2d> robotPose */ ) {
     /* Rotation2d fieldAngle =
         ScreamMath.calculateAngleToPoint(
             robotPose
@@ -341,7 +341,7 @@ public class Turret extends TalonFXSubsystem {
                 MathUtil.angleModulus(getAngle().minus(safeTarget).getRadians())));
 
     return aimError <= TurretConstants.AIM_TOLERANCE_DEG; */
-    if(!targetOutOfBounds){
+    if (!targetOutOfBounds) {
       return Math.abs(Units.rotationsToDegrees(getError())) <= TurretConstants.AIM_TOLERANCE_DEG;
     } else {
       return false;
