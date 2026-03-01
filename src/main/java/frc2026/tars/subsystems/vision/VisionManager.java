@@ -107,9 +107,9 @@ public class VisionManager {
           Rotation3d.kZero);
   public static final Transform3d robotToTurretFixed =
       new Transform3d(
-          Units.inchesToMeters(-5.765591),
+          Units.inchesToMeters(2.516),
           Units.inchesToMeters(0.000143),
-          Units.inchesToMeters(15.5),
+          Units.inchesToMeters(13.961),
           Rotation3d.kZero);
 
   public VisionManager(Drivetrain drivetrain, Turret turret) {

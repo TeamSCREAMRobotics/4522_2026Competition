@@ -23,12 +23,9 @@ import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.intake.IntakeWrist;
+import frc2026.tars.subsystems.shooter.dyerotor.Dyerotor;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.hood.Hood;
-import frc2026.tars.subsystems.shooter.indexer.Feeder;
-import frc2026.tars.subsystems.shooter.indexer.Feeder.FeederGoal;
-import frc2026.tars.subsystems.shooter.indexer.Spindexer;
-import frc2026.tars.subsystems.shooter.indexer.Spindexer.SpindexerGoal;
 import frc2026.tars.subsystems.shooter.turret.Turret;
 import frc2026.tars.subsystems.vision.VisionManager;
 import frc2026.tars.util.Util;
@@ -39,9 +36,7 @@ public class Shooter extends SubsystemBase {
   private final Flywheel flywheel;
   private final Hood hood;
   private final Turret turret;
-  private final Spindexer spindexer;
-  private final Feeder feeder;
-  private final IntakeWrist intakeWrist;
+  private final Dyerotor dyerotor;
   private final Drivetrain drivetrain;
   private final RobotState robotState;
   private Pose2d robotPose;
@@ -99,17 +94,14 @@ public class Shooter extends SubsystemBase {
       Flywheel flywheel,
       Hood hood,
       Turret turret,
-      Spindexer spindexer,
-      Feeder feeder,
+      Dyerotor spindexer,
       IntakeWrist intakeWrist,
       Drivetrain drivetrain,
       RobotState robotState) {
     this.flywheel = flywheel;
     this.hood = hood;
     this.turret = turret;
-    this.spindexer = spindexer;
-    this.feeder = feeder;
-    this.intakeWrist = intakeWrist;
+    this.dyerotor = spindexer;
     this.drivetrain = drivetrain;
     this.robotState = robotState;
 
@@ -184,12 +176,11 @@ public class Shooter extends SubsystemBase {
   }
 
   private void startFeedIfNotRunning() {
-    if (!isFeedActive && flywheel.atVel()) {
+    if (!isFeedActive && turret.isAimingAtTarget(() -> target, () -> robotPose)) {
       isFeedActive = true;
       feedTimer.reset();
       feedTimer.start();
-      spindexer.applyGoal(SpindexerGoal.RUN);
-      feeder.applyGoal(FeederGoal.RUN);
+      dyerotor.runDyerotor();
     }
   }
 
@@ -197,8 +188,7 @@ public class Shooter extends SubsystemBase {
     isFeedActive = false;
     feedTimer.stop();
     feedTimer.reset();
-    spindexer.applyGoal(SpindexerGoal.STOP);
-    feeder.applyGoal(FeederGoal.STOP);
+    dyerotor.stopDyerotor();
   }
 
   private void updateFeed() {
@@ -344,13 +334,7 @@ public class Shooter extends SubsystemBase {
             case INTAKE_UP:
               turret.moveToAngleRR(Rotation2d.fromDegrees(90.0));
               hood.moveToAngle(Rotation2d.fromDegrees(0.0));
-              flywheel.setTargetVelocityTorqueCurrent(
-                  ShooterConstants.FLYWHEEL_MAP.get(
-                      getShotDistance(
-                              AllianceFlipUtil.get(
-                                  FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter))
-                          .getMeters()),
-                  0.0);
+              // flywheel.setTargetVelocityTorqueCurrent(ShooterConstants.FLYWHEEL_MAP.get(getShotDistance(AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter)).getMeters()), 0.0);
               break;
             case NA:
               break;
