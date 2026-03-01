@@ -56,6 +56,8 @@ public class Turret extends TalonFXSubsystem {
   public final MechanismLigament2d turret = new MechanismLigament2d("turret", 0.4, 0.0);
   private final SysIdRoutine routine;
 
+  private boolean targetOutOfBounds = false;
+
   /** Creates a new Pivot Subsystem. */
   public Turret(TalonFXSubsystemConfiguration config) {
     super(config);
@@ -129,6 +131,7 @@ public class Turret extends TalonFXSubsystem {
     } else if (ccwValid) {
       chosenDelta = pathCCW;
     } else {
+      targetOutOfBounds = true;
       // No legal path — clamp to nearest limit
       return Rotation2d.fromDegrees(
           MathUtil.clamp(
@@ -136,6 +139,8 @@ public class Turret extends TalonFXSubsystem {
               TurretConstants.MIN_ROT_DEG,
               TurretConstants.MAX_ROT_DEG));
     }
+
+    targetOutOfBounds = false;
 
     return Rotation2d.fromDegrees(
         MathUtil.clamp(
@@ -308,9 +313,9 @@ public class Turret extends TalonFXSubsystem {
     setSetpointMotionMagicPosition(safeTarget.getRotations());
   }
 
-  public boolean isAimingAtTarget(
-      Supplier<Translation2d> targetPosition, Supplier<Pose2d> robotPose) {
-    Rotation2d fieldAngle =
+  public boolean isAimingAtTarget(/* 
+      Supplier<Translation2d> targetPosition, Supplier<Pose2d> robotPose */) {
+    /* Rotation2d fieldAngle =
         ScreamMath.calculateAngleToPoint(
             robotPose
                 .get()
@@ -335,6 +340,11 @@ public class Turret extends TalonFXSubsystem {
             Units.radiansToDegrees(
                 MathUtil.angleModulus(getAngle().minus(safeTarget).getRadians())));
 
-    return aimError <= TurretConstants.AIM_TOLERANCE_DEG;
+    return aimError <= TurretConstants.AIM_TOLERANCE_DEG; */
+    if(!targetOutOfBounds){
+      return Math.abs(Units.rotationsToDegrees(getError())) <= TurretConstants.AIM_TOLERANCE_DEG;
+    } else {
+      return false;
+    }
   }
 }
