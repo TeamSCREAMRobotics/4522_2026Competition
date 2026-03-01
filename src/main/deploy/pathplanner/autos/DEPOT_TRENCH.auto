@@ -5,21 +5,71 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "FL_TRENCH_TS"
+            "waitTime": 0.25
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FL_TRENCH_TNZ"
+            "pathName": "DEPOT_TRENCH_TNZ"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Intakeing"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "DEPOT_TRENCH_RETURN"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Short Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FL_TRENCH_RETURN"
+            "pathName": "DEPOT_TRENCH_TBF"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Intakeing"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "DEPOT_TRENCH_TBF-R"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Short Shoot"
           }
         }
       ]

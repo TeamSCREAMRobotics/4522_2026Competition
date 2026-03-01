@@ -1,0 +1,107 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.1802965599051007,
+        "y": 6.3858837485172
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.911921708185054,
+        "y": 6.945361803084223
+      },
+      "isLocked": false,
+      "linkedName": "DEPOT_T-RETURN_END"
+    },
+    {
+      "anchor": {
+        "x": 3.804934756820879,
+        "y": 7.451043890865955
+      },
+      "prevControl": {
+        "x": 2.804934756820879,
+        "y": 7.451043890865955
+      },
+      "nextControl": {
+        "x": 4.804934756820879,
+        "y": 7.451043890865955
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.677034400948993,
+        "y": 7.472562277580071
+      },
+      "prevControl": {
+        "x": 5.332437722419931,
+        "y": 7.472562277580071
+      },
+      "nextControl": {
+        "x": 6.021631079478055,
+        "y": 7.472562277580071
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.687793594306051,
+        "y": 5.1270581257414
+      },
+      "prevControl": {
+        "x": 5.7200711743772255,
+        "y": 5.729572953736655
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "DEPOT_T-TBF_END"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.8756660746003644,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.3072824156305627,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Run Intake",
+      "waypointRelativePos": 2.4364454443194736,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Run Intake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "DEPOT_TRENCH",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}
