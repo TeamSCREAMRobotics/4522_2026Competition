@@ -1,7 +1,11 @@
 package frc2026.tars.subsystems.shooter.turret;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.teamscreamrobotics.drivers.TalonFXSubsystem.CANCoderConstants;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.CANDevice;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXConstants;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemConfiguration;
@@ -15,9 +19,9 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class TurretConstants {
 
-  public static final double REDUCTION = 45.0;
-  public static final double MIN_ROT_DEG = -50.0;
-  public static final double MAX_ROT_DEG = 250.0;
+  public static final double REDUCTION = 44.7568;
+  public static final double MIN_ROT_DEG = 0.0;
+  public static final double MAX_ROT_DEG = 260.0;
   // public static final double MIN_ROT_DEG = -178.0;
   // public static final double MAX_ROT_DEG = 238.0;
 
@@ -27,16 +31,17 @@ public class TurretConstants {
 
   public static final double MAGNITUDE = 0.95;
 
-  public static final DCMotor DC_MOTOR = DCMotor.getKrakenX60(1);
+  public static final DCMotor DC_MOTOR = DCMotor.getKrakenX44Foc(1);
   public static final int CAN_ID = 8;
-  public static final double kP = 45.0; // 47.5;
+  public static final double kP = 45; // 45.0; // 47.5;
   public static final double kI = 0.0;
   public static final double kD = 0.0;
   public static final double kS = 0.25;
   public static final double kV = 0.0;
   public static final double kA = 0.0;
-  public static final double MAX_VEL = 0.5; // rot/s was 20.0
-  public static final double MAX_ACCEL = 1.0; // was 15.0, changed to keep chain from breaking
+  public static final double MAX_VEL = 1.1; // rot/s was 20.0
+  public static final double MAX_ACCEL =
+      10.0; // 1.0; // was 15.0, changed to keep chain from breaking
   public static final boolean BRAKE_MODE = true;
   public static final boolean ENABLE_STATOR_LIMIT = true;
   public static final int STATOR_CURRENT_LIMIT = 40;
@@ -50,7 +55,11 @@ public class TurretConstants {
   public static final TalonFXSubsystemConfiguration TURRET_CONFIG =
       new TalonFXSubsystemConfiguration();
 
+  public static final CANcoderConfiguration CAN_CODER_CONFIG = new CANcoderConfiguration();
+
   public static final double LATENCY = 0.15; // TODO: Tune this constant
+
+  public static final double AIM_TOLERANCE_DEG = 2.0;
 
   static {
     TURRET_CONFIG.name = "Turret";
@@ -72,6 +81,14 @@ public class TurretConstants {
     TURRET_CONFIG.supplyCurrentLimit = TurretConstants.SUPPLY_CURRENT_LIMIT;
     TURRET_CONFIG.enableSupplyCurrentLimit = TurretConstants.ENABLE_SUPPLY_LIMIT;
 
+    CAN_CODER_CONFIG.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1.0;
+    CAN_CODER_CONFIG.MagnetSensor.MagnetOffset = 0.240478515625 + 0.25;
+    CAN_CODER_CONFIG.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+    TURRET_CONFIG.cancoderConstants = new CANCoderConstants(new CANDevice(4), CAN_CODER_CONFIG);
+
+    TURRET_CONFIG.feedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    TURRET_CONFIG.feedbackRemoteSensorId = 4;
+
     // Set brake mode
     TURRET_CONFIG.neutralMode = NeutralModeValue.Coast;
 
@@ -80,7 +97,8 @@ public class TurretConstants {
     TURRET_CONFIG.minUnitsLimit = BACKWARD_SOFTWARE_LIMIT;
 
     // Apply gear ratio
-    TURRET_CONFIG.sensorToMechRatio = REDUCTION;
+    TURRET_CONFIG.sensorToMechRatio = 1.00;
+    TURRET_CONFIG.rotorToSensorRatio = REDUCTION;
 
     TURRET_CONFIG.cruiseVelocity = MAX_VEL;
     TURRET_CONFIG.acceleration = MAX_ACCEL;

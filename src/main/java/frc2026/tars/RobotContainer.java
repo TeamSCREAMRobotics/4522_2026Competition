@@ -29,13 +29,12 @@ import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
 import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
 import frc2026.tars.subsystems.shooter.Shooter;
+import frc2026.tars.subsystems.shooter.dyerotor.Dyerotor;
+import frc2026.tars.subsystems.shooter.dyerotor.DyerotorConstants;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
 import frc2026.tars.subsystems.shooter.hood.HoodConstants;
-import frc2026.tars.subsystems.shooter.indexer.Feeder;
-import frc2026.tars.subsystems.shooter.indexer.IndexerConstants;
-import frc2026.tars.subsystems.shooter.indexer.Spindexer;
 import frc2026.tars.subsystems.shooter.turret.Turret;
 import frc2026.tars.subsystems.shooter.turret.TurretConstants;
 import frc2026.tars.subsystems.vision.VisionManager;
@@ -48,28 +47,25 @@ public class RobotContainer {
       IntakeWrist intakeWrist,
       Turret turret,
       Hood hood,
-      Flywheel flywheel,
-      Feeder feeder) {}
+      Flywheel flywheel) {}
 
-  private final IntakeWrist intakeWrist = new IntakeWrist(IntakeConstants.INTAKE_WRIST_CONFIG);
+  private final IntakeWrist intakeWrist = new IntakeWrist(IntakeConstants.WRIST_CONFIG);
   private final IntakeRollers intakeRollers = new IntakeRollers(IntakeConstants.ROLLERS_CONFIG);
   private final Drivetrain drivetrain = TunerConstants.drivetrain;
 
   private final Turret turret = new Turret(TurretConstants.TURRET_CONFIG);
   private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
   private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
-  private final Spindexer spindexer = new Spindexer(IndexerConstants.SPINDEXER_CONFIG);
-  private final Feeder feeder = new Feeder(IndexerConstants.FEEDER_CONFIG);
+  private final Dyerotor spindexer = new Dyerotor(DyerotorConstants.DYEROTOR_CONFIG);
 
   @Getter
   private final Subsystems subsystems =
-      new Subsystems(drivetrain, intakeWrist, turret, hood, flywheel, feeder);
+      new Subsystems(drivetrain, intakeWrist, turret, hood, flywheel);
 
   @Getter private final RobotState robotState = new RobotState(subsystems);
 
   private final Shooter shooter =
-      new Shooter(
-          flywheel, hood, turret, spindexer, feeder, intakeWrist, drivetrain, getRobotState());
+      new Shooter(flywheel, hood, turret, spindexer, intakeWrist, drivetrain, getRobotState());
 
   private final VisionManager visionManager = new VisionManager(drivetrain, turret);
 
@@ -223,7 +219,10 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> drivetrain.resetRotation(AllianceFlipUtil.getFwdHeading())));
 
     Controlboard.zeroIntake()
-        .whileTrue(intakeWrist.zero().andThen(() -> Dashboard.zeroIntake.set(false)));
+        .whileTrue(
+            Commands.runOnce(() -> intakeWrist.resetPosition(0.0), intakeWrist)
+                .andThen(() -> Dashboard.zeroIntake.set(false))
+                .ignoringDisable(true));
 
     Controlboard.zeroHood().whileTrue(hood.zero().andThen(() -> Dashboard.zeroHood.set(false)));
 
@@ -240,9 +239,7 @@ public class RobotContainer {
                     hood.moveToAngleCommand(
                         Rotation2d.fromDegrees(Dashboard.manualHoodAngle.get())),
                     Commands.run(
-                        () ->
-                            flywheel.setTargetVelocityTorqueCurrent(
-                                Dashboard.manualFlywheelVelocity.get(), 0),
+                        () -> flywheel.setVoltage(Dashboard.manualFlywheelVelocity.get()),
                         flywheel))
                 .ignoringDisable(true));
   }

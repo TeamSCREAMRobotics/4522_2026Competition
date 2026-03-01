@@ -158,25 +158,25 @@ public class TunerConstants {
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
       module_0 =
           ConstantCreator.createModuleConstants(
-              1, 0, 0, -0.445068359375 + 0.25, 0, 0, true, false, false);
+              1, 0, 0, 0.173095703125 + 0.25, 0, 0, false, false, false);
 
   private static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
       module_1 =
           ConstantCreator.createModuleConstants(
-              3, 2, 1, 0.496826171875 + 0.25, 0, 0, true, false, false);
+              3, 2, 1, 0.27880859375 + 0.25, 0, 0, false, false, false);
 
   private static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
       module_2 =
           ConstantCreator.createModuleConstants(
-              5, 4, 2, -0.31787109375 + 0.25, 0, 0, false, false, false);
+              5, 4, 2, 0.317626953125 + 0.25, 0, 0, true, false, false);
 
   private static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
       module_3 =
           ConstantCreator.createModuleConstants(
-              7, 6, 3, 0.025146484375 + 0.25, 0, 0, false, false, false);
+              7, 6, 3, -0.2265625 + 0.25, 0, 0, true, false, false);
 
   private static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>

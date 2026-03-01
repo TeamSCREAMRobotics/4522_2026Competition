@@ -28,14 +28,14 @@ public class FlywheelConstants {
     FLYWHEEL_CONFIG.debugMode = false;
 
     FLYWHEEL_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(10), InvertedValue.CounterClockwise_Positive);
+        new TalonFXConstants(new CANDevice(10), InvertedValue.Clockwise_Positive);
     FLYWHEEL_CONFIG.slaveConstants =
         new TalonFXConstants[] {
-          new TalonFXConstants(new CANDevice(11), InvertedValue.Clockwise_Positive)
+          new TalonFXConstants(new CANDevice(11), InvertedValue.CounterClockwise_Positive)
         };
     FLYWHEEL_CONFIG.slot0 =
-        new ScreamPIDConstants(4.5, 0.0, 0.0)
-            .getSlot0Configs(new FeedforwardConstants(0.15, 0.17, 0.0, 0.0));
+        new ScreamPIDConstants(6.7, 0.0, 0.0)
+            .getSlot0Configs(new FeedforwardConstants(0.11956, 0.25547, 0.0, 0.0));
 
     FLYWHEEL_CONFIG.neutralMode = NeutralModeValue.Coast;
 
