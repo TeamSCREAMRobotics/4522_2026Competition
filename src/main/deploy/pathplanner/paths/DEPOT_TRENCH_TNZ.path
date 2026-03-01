@@ -1,0 +1,91 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.6543060498220648,
+        "y": 7.461803084223013
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.654911032028471,
+        "y": 7.547876631079477
+      },
+      "isLocked": false,
+      "linkedName": "FL_TRENCH_END"
+    },
+    {
+      "anchor": {
+        "x": 5.967532621589562,
+        "y": 7.504839857651245
+      },
+      "prevControl": {
+        "x": 4.967560675228127,
+        "y": 7.4973494310867395
+      },
+      "nextControl": {
+        "x": 8.840237247924081,
+        "y": 7.526358244365362
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.291518386714117,
+        "y": 5.751091340450771
+      },
+      "prevControl": {
+        "x": 8.27,
+        "y": 6.977639383155397
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "FL_TRENCH_TNZ_END"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0834813499111855,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.6092362344582625,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Run Intake",
+      "waypointRelativePos": 1.484814398200232,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stop Intakeing"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "DEPOT_TRENCH",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

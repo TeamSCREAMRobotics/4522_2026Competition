@@ -3,41 +3,57 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.689003558718861,
-        "y": 5.9339976275207595
+        "x": 2.922680901542112,
+        "y": 6.192218268090154
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.032692763938315,
-        "y": 7.203582443653619
+        "x": 3.019513641755635,
+        "y": 7.36497034400949
       },
       "isLocked": false,
-      "linkedName": "FL_TRENCH_TNZ_END"
+      "linkedName": "DEPOT_T-BFR_END"
     },
     {
       "anchor": {
-        "x": 4.71946619217082,
-        "y": 7.483321470937129
+        "x": 3.7941755634638206,
+        "y": 7.451043890865955
       },
       "prevControl": {
-        "x": 5.696127178908381,
-        "y": 7.461856394305536
+        "x": 2.7941755634638206,
+        "y": 7.451043890865955
       },
       "nextControl": {
-        "x": 3.7403795966785305,
-        "y": 7.504839857651245
+        "x": 4.794175563463821,
+        "y": 7.451043890865955
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.1802965599051007,
-        "y": 6.3858837485172
+        "x": 5.741589561091342,
+        "y": 7.483321470937129
       },
       "prevControl": {
-        "x": 2.7074970344009497,
-        "y": 7.160545670225385
+        "x": 5.451091340450772,
+        "y": 7.483321470937129
+      },
+      "nextControl": {
+        "x": 5.991589561091341,
+        "y": 7.483321470937129
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.763712930011864,
+        "y": 7.074472123368921
+      },
+      "prevControl": {
+        "x": 6.361172337130672,
+        "y": 7.245074898429315
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +63,11 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.5,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 2.019538188277085,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
@@ -63,13 +83,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 140.6482473737354
   },
   "reversed": false,
   "folder": "DEPOT_TRENCH",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 128.0470425323487
+    "rotation": -45.0
   },
   "useDefaultConstraints": true
 }
