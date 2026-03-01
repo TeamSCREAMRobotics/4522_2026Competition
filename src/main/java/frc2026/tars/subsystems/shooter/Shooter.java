@@ -176,7 +176,7 @@ public class Shooter extends SubsystemBase {
   }
 
   private void startFeedIfNotRunning() {
-    if (!isFeedActive && turret.isAimingAtTarget(() -> target, () -> robotPose)) {
+    if (!isFeedActive && turret.isAimingAtTarget()) {
       isFeedActive = true;
       feedTimer.reset();
       feedTimer.start();
