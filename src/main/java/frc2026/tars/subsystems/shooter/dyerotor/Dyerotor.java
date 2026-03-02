@@ -20,7 +20,7 @@ public class Dyerotor extends TalonFXSubsystem {
   public void runDyerotor() {
     runTimer.start();
     if (runTimer.get() >= .5) {
-      setVoltage(5.3);
+      setVoltage(sixPointSeven);
     } else {
       setVoltage(2.0);
     }
