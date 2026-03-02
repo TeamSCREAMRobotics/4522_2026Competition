@@ -7,32 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "FR_TRENCH_TS"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Short Shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "FR_TRENCH_SCOOP"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Intake"
-                }
-              }
-            ]
+            "pathName": "OUTPOST_TRENCH_TS"
           }
         },
         {
