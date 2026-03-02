@@ -20,7 +20,7 @@ public class DyerotorConstants {
 
     DYEROTOR_CONFIG.supplyCurrentLimit = 40;
     DYEROTOR_CONFIG.enableSupplyCurrentLimit = true;
-    DYEROTOR_CONFIG.statorCurrentLimit = 80;
+    DYEROTOR_CONFIG.statorCurrentLimit = 60;
     DYEROTOR_CONFIG.enableStatorCurrentLimit = true;
   }
 }
