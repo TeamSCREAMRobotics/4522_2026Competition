@@ -60,7 +60,7 @@ public final class ClimberConstants {
             true);
 
     CONFIGURATION.masterConstants =
-        new TalonFXConstants(new CANDevice(16, ""), InvertedValue.Clockwise_Positive);
+        new TalonFXConstants(new CANDevice(17, ""), InvertedValue.Clockwise_Positive);
 
     CONFIGURATION.neutralMode = NeutralModeValue.Brake;
     CONFIGURATION.sensorToMechRatio = REDUCTION;
