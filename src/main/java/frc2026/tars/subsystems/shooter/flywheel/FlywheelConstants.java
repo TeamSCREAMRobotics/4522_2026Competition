@@ -34,7 +34,7 @@ public class FlywheelConstants {
           new TalonFXConstants(new CANDevice(11), InvertedValue.CounterClockwise_Positive)
         };
     FLYWHEEL_CONFIG.slot0 =
-        new ScreamPIDConstants(6.7, 0.0, 0.0)
+        new ScreamPIDConstants(3.0, 5.5, 0.0)
             .getSlot0Configs(new FeedforwardConstants(0.11956, 0.25547, 0.0, 0.0));
 
     FLYWHEEL_CONFIG.neutralMode = NeutralModeValue.Coast;

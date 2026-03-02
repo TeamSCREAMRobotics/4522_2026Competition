@@ -20,7 +20,7 @@ public class Flywheel extends TalonFXSubsystem {
   }
 
   public boolean atVel() {
-    return Math.abs(getError()) <= 5.0;
+    return Math.abs(getError()) <= 7.5;
   }
 
   public void setTargetVelocityTorqueCurrent(double velocity, double torqueFeedForward) {

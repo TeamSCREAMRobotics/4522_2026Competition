@@ -51,9 +51,6 @@ public class Shooter extends SubsystemBase {
 
   private boolean wantShoot = false;
 
-  // Feed state tracking — avoids spawning a new Command every loop
-  private boolean isFeedActive = false;
-  private final Timer feedTimer = new Timer();
   // TODO: Change back to 1.0s.
   private static final double FEED_DURATION_SECONDS = 0.1;
 
@@ -129,19 +126,6 @@ public class Shooter extends SubsystemBase {
     double distanceMeters = getShotDistance(target).getMeters();
     double hoodAngleDeg = getHoodAngleFromDistance(distanceMeters);
 
-    /* Trajectory.configure()
-        .setGamePiece(GamePiece.FUEL)
-        .setInitialHeight(ShooterConstants.HEIGHT)
-        .setTargetHeight(Trajectory.HUB_HEIGHT)
-        .setTargetDistance(distanceMeters)
-        .setShotAngle(90.0 - (hoodAngleDeg + HoodConstants.HOOD_OFFSET.getDegrees()));
-
-    double flywheelSetpoint =
-        (Conversions.mpsToRPS(
-                Trajectory.getRequiredVelocity(),
-                FlywheelConstants.FLYWHEEL_CIRCUMFERENCE.getMeters(),
-                FlywheelConstants.FLYWHEEL_REDUCTION)) * 2.0; */
-
     double multiplier = wantShoot ? 1.0 : 8.0;
     double flywheelMap = ShooterConstants.FLYWHEEL_MAP.get(distanceMeters / multiplier);
 
@@ -152,8 +136,6 @@ public class Shooter extends SubsystemBase {
     } else if (distanceMeters <= 4.0 && distanceMeters > 2.0) {
       flywheelSetpoint = flywheelMap * Dashboard.midMapNudge.get();
     } else flywheelSetpoint = flywheelMap * Dashboard.farMapNudge.get();
-
-    // turret.aimOnTheFly(target, robotPose, robotSpeeds, Trajectory.getTimeOfFlight());
 
     turret.pointToTargetFR(() -> target, () -> robotPose);
 
@@ -175,26 +157,12 @@ public class Shooter extends SubsystemBase {
         .finallyDo(() -> wantShoot = false);
   }
 
-  private void startFeedIfNotRunning() {
-    if (!isFeedActive && turret.isAimingAtTarget()) {
-      isFeedActive = true;
-      feedTimer.reset();
-      feedTimer.start();
-      dyerotor.runDyerotor();
-    }
+  public void runFeed(){
+    dyerotor.runDyerotor();
   }
 
-  private void stopFeed() {
-    isFeedActive = false;
-    feedTimer.stop();
-    feedTimer.reset();
-    dyerotor.stopDyerotor();
-  }
-
-  private void updateFeed() {
-    if (isFeedActive && feedTimer.hasElapsed(FEED_DURATION_SECONDS)) {
-      stopFeed();
-    }
+  public void stopFeed(){
+    dyerotor.stop();
   }
 
   private void idleCase(RobotState.Area area, Pose2d robotPose, ChassisSpeeds robotSpeeds) {
@@ -252,7 +220,7 @@ public class Shooter extends SubsystemBase {
                 FieldConstants.AllianceZones.oppRightAllianceZone),
             hoodMapNeutralZone,
             wantShoot);
-        startFeedIfNotRunning();
+        runFeed();
         break;
       case OUTPOST_SIDE_NEUTRALZONE:
         applyAimingSetpoints(
@@ -263,10 +231,10 @@ public class Shooter extends SubsystemBase {
                 FieldConstants.AllianceZones.oppLeftAllianceZone),
             hoodMapNeutralZone,
             wantShoot);
-        startFeedIfNotRunning();
+        runFeed();
         break;
       default:
-        stopFeed();
+      stopFeed();
         break;
     }
   }
@@ -300,17 +268,18 @@ public class Shooter extends SubsystemBase {
           }
 
           updateShooterState(area, wantShoot);
-          updateFeed();
 
           switch (state) {
             case IDLE:
               idleCase(area, robotPose, robotSpeeds);
+              stopFeed();
               break;
 
             case STOWED:
               hood.setVoltage(-2.0);
               flywheel.setTargetVelocityTorqueCurrent(7.5, 0);
-              if (isFeedActive) stopFeed();
+              stopFeed();
+
               setIdleState(IdleState.NA);
               break;
 
@@ -322,7 +291,7 @@ public class Shooter extends SubsystemBase {
                       FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter),
                   hoodMapAllianceZone,
                   true);
-              startFeedIfNotRunning();
+              runFeed();
               setIdleState(IdleState.NA);
               break;
 
