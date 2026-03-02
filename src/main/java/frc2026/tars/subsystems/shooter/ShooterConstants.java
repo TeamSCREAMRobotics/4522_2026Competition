@@ -7,6 +7,8 @@ public class ShooterConstants {
 
   public static final InterpolatingDoubleTreeMap FLYWHEEL_MAP = new InterpolatingDoubleTreeMap();
 
+  public static final double LATENCY = 0.15;
+
   public static final double FUNCTION_CURVE = 0.01;
   public static final double FUNCTION_SCALAR = 12.5;
 

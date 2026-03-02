@@ -201,6 +201,10 @@ public class Turret extends TalonFXSubsystem {
     return moveToAngleCommandFR(() -> angle, robotHeading);
   }
 
+  public void moveToAngleFR(Rotation2d angle, Rotation2d robotHeading) {
+    moveToAngleRR(angle.minus(robotHeading));
+  }
+
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return routine.quasistatic(direction);
   }

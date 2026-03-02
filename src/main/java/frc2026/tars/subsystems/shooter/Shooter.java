@@ -115,6 +115,36 @@ public class Shooter extends SubsystemBase {
     return Length.fromMeters(getFieldToTurret().getTranslation().getDistance(target));
   }
 
+  private void shootOnTheFly(
+      Pose2d robotPose, ChassisSpeeds robotSpeed, Translation2d target, boolean wantShoot) {
+    Translation2d futurePos =
+        robotPose
+            .getTranslation()
+            .plus(
+                new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond)
+                    .times(ShooterConstants.LATENCY));
+
+    Translation2d targetVec = target.minus(futurePos);
+    double distance = targetVec.getNorm();
+
+    double multiplier = wantShoot ? 1.0 : 8.0;
+    double flywheelVelocity = ShooterConstants.FLYWHEEL_MAP.get(distance / multiplier);
+
+    Translation2d robotVelVec =
+        new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond);
+
+    Translation2d shotVec = targetVec.div(distance).times(flywheelVelocity).minus(robotVelVec);
+
+    double turretAngleField = shotVec.getAngle().getDegrees();
+    double turretAngleRelative = turretAngleField - robotPose.getRotation().getDegrees();
+
+    turret.moveToAngleFR(Rotation2d.fromDegrees(turretAngleRelative), robotPose.getRotation());
+
+    hood.moveToAngle(Rotation2d.fromDegrees(getHoodAngleFromDistance(distance)));
+
+    flywheel.setTargetVelocityTorqueCurrent(flywheelVelocity, 0.0);
+  }
+
   private void applyAimingSetpoints(
       Pose2d robotPose,
       ChassisSpeeds robotSpeeds,
