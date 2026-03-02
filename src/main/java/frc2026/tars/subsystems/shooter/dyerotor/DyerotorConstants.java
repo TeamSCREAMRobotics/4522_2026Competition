@@ -2,7 +2,6 @@ package frc2026.tars.subsystems.shooter.dyerotor;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.*;
-import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemConfiguration;
 
 public class DyerotorConstants {
   public static final TalonFXSubsystemConfiguration DYEROTOR_CONFIG =
@@ -17,10 +16,11 @@ public class DyerotorConstants {
 
     DYEROTOR_CONFIG.masterConstants =
         new TalonFXConstants(new CANDevice(13), InvertedValue.CounterClockwise_Positive);
-    DYEROTOR_CONFIG.slaveConstants =
-        new TalonFXConstants[] {
-          new TalonFXConstants(new CANDevice(16), InvertedValue.Clockwise_Positive)
-        };
+
+  //  DYEROTOR_CONFIG.slaveConstants =
+  //      new TalonFXConstants[] {
+  //       new TalonFXConstants(new CANDevice(16), InvertedValue.Clockwise_Positive)
+  //      };
 
     DYEROTOR_CONFIG.supplyCurrentLimit = 40;
     DYEROTOR_CONFIG.enableSupplyCurrentLimit = true;
