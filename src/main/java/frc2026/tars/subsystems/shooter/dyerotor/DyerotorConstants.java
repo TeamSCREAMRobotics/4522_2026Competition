@@ -17,9 +17,10 @@ public class DyerotorConstants {
 
     DYEROTOR_CONFIG.masterConstants =
         new TalonFXConstants(new CANDevice(13), InvertedValue.CounterClockwise_Positive);
-    DYEROTOR_CONFIG.slaveConstants = new TalonFXConstants[] {
-      new TalonFXConstants(new CANDevice(16), InvertedValue.Clockwise_Positive)
-    };
+    DYEROTOR_CONFIG.slaveConstants =
+        new TalonFXConstants[] {
+          new TalonFXConstants(new CANDevice(16), InvertedValue.Clockwise_Positive)
+        };
 
     DYEROTOR_CONFIG.supplyCurrentLimit = 40;
     DYEROTOR_CONFIG.enableSupplyCurrentLimit = true;
