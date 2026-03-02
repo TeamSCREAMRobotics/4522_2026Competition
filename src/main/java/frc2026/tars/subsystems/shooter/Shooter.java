@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -157,11 +156,11 @@ public class Shooter extends SubsystemBase {
         .finallyDo(() -> wantShoot = false);
   }
 
-  public void runFeed(){
+  public void runFeed() {
     dyerotor.runDyerotor();
   }
 
-  public void stopFeed(){
+  public void stopFeed() {
     dyerotor.stop();
   }
 
@@ -234,7 +233,7 @@ public class Shooter extends SubsystemBase {
         runFeed();
         break;
       default:
-      stopFeed();
+        stopFeed();
         break;
     }
   }
