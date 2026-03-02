@@ -1,7 +1,6 @@
 package frc2026.tars.subsystems.shooter.dyerotor;
 
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
-
 import edu.wpi.first.wpilibj.Timer;
 
 public class Dyerotor extends TalonFXSubsystem {
