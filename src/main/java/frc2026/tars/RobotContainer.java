@@ -60,7 +60,7 @@ public class RobotContainer {
   private final Turret turret = new Turret(TurretConstants.TURRET_CONFIG);
   private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
   private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
-  private final Dyerotor spindexer = new Dyerotor(DyerotorConstants.DYEROTOR_CONFIG);
+  private final Dyerotor dyerotor = new Dyerotor(DyerotorConstants.DYEROTOR_CONFIG);
 
   @Getter
   private final Subsystems subsystems =
@@ -69,7 +69,7 @@ public class RobotContainer {
   @Getter private final RobotState robotState = new RobotState(subsystems);
 
   private final Shooter shooter =
-      new Shooter(flywheel, hood, turret, spindexer, intakeWrist, drivetrain, getRobotState());
+      new Shooter(flywheel, hood, turret, dyerotor, intakeWrist, intakeRollers, drivetrain, getRobotState());
 
   private final VisionManager visionManager = new VisionManager(drivetrain, turret);
 
