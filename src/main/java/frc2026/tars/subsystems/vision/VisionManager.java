@@ -21,6 +21,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc2026.tars.Robot;
+import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.shooter.turret.Turret;
 import frc2026.tars.util.Util;
@@ -225,7 +226,7 @@ public class VisionManager {
       PoseEstimate estimate, Limelight limelight, boolean mt1, boolean isTurret) {
     boolean shouldUseMt2 = !rejectEstimate(estimate, limelight);
 
-    if (shouldUseMt2) {
+    if (shouldUseMt2 && !Dashboard.disableAllVisionUpdates.get()) {
       double stdFactor = Math.pow(estimate.avgTagDist, 2.75) / (estimate.tagCount * 0.5);
       double xyStds =
           VisionConstants.xyStdBaseline
@@ -286,7 +287,8 @@ public class VisionManager {
         || !FieldConstants.fieldArea.contains(estimate.pose)) {
       Logger.log("Vision/" + limelight.name() + "/VisionType", VisionType.REJECTED_INVALID);
       return true;
-    } else if ((estimate.tagCount == 1 && estimate.rawFiducials[0].ambiguity > 0.3)) {
+    } else if ((estimate.tagCount == 1 && estimate.rawFiducials[0].ambiguity > 0.3)
+        && !Dashboard.disableAmbiguityRejection.get()) {
       Logger.log("Vision/" + limelight.name() + "/VisionType", VisionType.REJECTED_AMBIGUITY);
       return true;
     } else if ((Math.abs(drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble())

@@ -4,9 +4,10 @@
   "holonomicMode": true,
   "pathFolders": [
     "DEPOT_BUMP",
+    "DEPOT_T-NZ-DEP",
     "DEPOT_TRENCH",
     "DEPOT_T_D_O",
-    "DEPOT_T-NZ-DEP",
+    "HUB_CENTER",
     "OUTPOST_BUMP",
     "OUTPOST_TRENCH",
     "OUTPOST_TRENCH_OUTPOST"

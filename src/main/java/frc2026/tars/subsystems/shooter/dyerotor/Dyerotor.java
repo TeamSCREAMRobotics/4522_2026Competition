@@ -14,7 +14,7 @@ public class Dyerotor extends TalonFXSubsystem {
   public double sixPointSeven = sixPointSeven();
 
   public double sixPointSeven() {
-    return 7.2;
+    return 7.0;
   }
 
   public void runDyerotor() {
