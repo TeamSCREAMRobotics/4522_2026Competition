@@ -23,8 +23,8 @@ import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.intake.IntakeRollers;
-import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
+import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
 import frc2026.tars.subsystems.shooter.dyerotor.Dyerotor;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
@@ -197,7 +197,7 @@ public class Shooter extends SubsystemBase {
 
   public void runFeed() {
     if (flywheel.atVel()) {
-    dyerotor.runDyerotor();
+      dyerotor.runDyerotor();
     }
   }
 

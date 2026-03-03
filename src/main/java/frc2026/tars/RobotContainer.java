@@ -69,7 +69,15 @@ public class RobotContainer {
   @Getter private final RobotState robotState = new RobotState(subsystems);
 
   private final Shooter shooter =
-      new Shooter(flywheel, hood, turret, dyerotor, intakeWrist, intakeRollers, drivetrain, getRobotState());
+      new Shooter(
+          flywheel,
+          hood,
+          turret,
+          dyerotor,
+          intakeWrist,
+          intakeRollers,
+          drivetrain,
+          getRobotState());
 
   private final VisionManager visionManager = new VisionManager(drivetrain, turret);
 
