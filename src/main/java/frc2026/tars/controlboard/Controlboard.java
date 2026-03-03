@@ -130,11 +130,11 @@ public class Controlboard {
     return driveController.b();
   }
 
-  public static Trigger rotate0Degrees(){
+  public static Trigger rotate0Degrees() {
     return driveController.y();
   }
 
-  public static Trigger rotate180Degrees(){
+  public static Trigger rotate180Degrees() {
     return driveController.a();
   }
 
