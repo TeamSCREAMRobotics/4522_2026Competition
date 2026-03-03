@@ -59,9 +59,6 @@ public class Shooter extends SubsystemBase {
 
   private boolean wantShoot = false;
 
-  // TODO: Change back to 1.0s.
-  private static final double FEED_DURATION_SECONDS = 0.1;
-
   public void hoodMapPoints() {
     // TODO: Add tuned points to hood maps
 
@@ -385,7 +382,7 @@ public class Shooter extends SubsystemBase {
               agitateStartTime = 0.0;
               agitateForward = true;
 
-              led.rainbow(.2, 3.0);
+              led.rainbow(3.0, 3.0);
 
               setIdleState(IdleState.NA);
               break;
