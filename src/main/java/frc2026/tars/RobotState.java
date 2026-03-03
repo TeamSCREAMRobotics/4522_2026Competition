@@ -18,9 +18,12 @@ import java.util.function.Supplier;
 
 public class RobotState {
   private final Drivetrain drivetrain;
+
   @SuppressWarnings("unused")
   private final IntakeWrist intakeWrist;
+
   private final LED led;
+
   public enum Mode {
     AUTO,
     TELEOP,

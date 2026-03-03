@@ -252,7 +252,13 @@ public class Shooter extends SubsystemBase {
             hoodMapAllianceZone,
             wantShoot);
         setIdleState(IdleState.IDLE_HUB);
-        led.wave(Color.kBlack, AllianceFlipUtil.get(new Color(1.0f, 0.49803922f, 0.83137256f), new Color(0.26078432f, 1.0f, 0.36078432f)), 0.1, 1.25);
+        led.wave(
+            Color.kBlack,
+            AllianceFlipUtil.get(
+                new Color(1.0f, 0.49803922f, 0.83137256f),
+                new Color(0.26078432f, 1.0f, 0.36078432f)),
+            0.1,
+            1.25);
         break;
       case DEPOT_SIDE_NEUTRALZONE:
         applyAimingSetpoints(
@@ -287,11 +293,16 @@ public class Shooter extends SubsystemBase {
                 FieldConstants.AllianceZones.oppLeftAllianceZone),
             hoodMapNeutralZone,
             wantShoot);
-        led.wave(Color.kBlack, AllianceFlipUtil.get(new Color(0.26078432f, 1.0f, 0.36078432f)/*new Color(0.0f, 1.0f, 0.83137256f)*/, new Color(1.0f, 0.49803922f, 0.83137256f)), 0.1, 1.25);
+        led.wave(
+            Color.kBlack,
+            AllianceFlipUtil.get(
+                new Color(0.26078432f, 1.0f, 0.36078432f) /*new Color(0.0f, 1.0f, 0.83137256f)*/,
+                new Color(1.0f, 0.49803922f, 0.83137256f)),
+            0.1,
+            1.25);
       default:
         setIdleState(IdleState.NA);
         break;
-
     }
   }
 
@@ -364,7 +375,7 @@ public class Shooter extends SubsystemBase {
               agitateStartTime = 0.0;
               agitateForward = true;
               stopFeed();
-              
+
               break;
 
             case STOWED:
