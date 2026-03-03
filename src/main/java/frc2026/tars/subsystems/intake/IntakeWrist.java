@@ -50,6 +50,7 @@ public class IntakeWrist extends TalonFXSubsystem {
 
   public enum IntakeWristGoal implements TalonFXSubsystemGoal {
     STOW(Rotation2d.fromDegrees(0.0)),
+    AGITATE(Rotation2d.fromDegrees(45.0)),
     EXTENDED(Rotation2d.fromDegrees(90.0));
 
     public final DoubleSupplier position;

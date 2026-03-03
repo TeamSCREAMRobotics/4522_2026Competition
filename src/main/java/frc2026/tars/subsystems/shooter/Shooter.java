@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -21,7 +22,10 @@ import frc2026.tars.RobotState;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
+import frc2026.tars.subsystems.intake.IntakeRollers;
 import frc2026.tars.subsystems.intake.IntakeWrist;
+import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
+import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
 import frc2026.tars.subsystems.shooter.dyerotor.Dyerotor;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.hood.Hood;
@@ -38,6 +42,8 @@ public class Shooter extends SubsystemBase {
   private final Dyerotor dyerotor;
   private final Drivetrain drivetrain;
   private final RobotState robotState;
+  private final IntakeWrist intakeWrist;
+  private final IntakeRollers intakeRollers;
   private Pose2d robotPose;
   private ChassisSpeeds robotSpeeds;
   private static final InterpolatingDoubleTreeMap hoodMapAllianceZone =
@@ -90,14 +96,17 @@ public class Shooter extends SubsystemBase {
       Flywheel flywheel,
       Hood hood,
       Turret turret,
-      Dyerotor spindexer,
+      Dyerotor dyerotor,
       IntakeWrist intakeWrist,
+      IntakeRollers intakeRollers,
       Drivetrain drivetrain,
       RobotState robotState) {
     this.flywheel = flywheel;
     this.hood = hood;
     this.turret = turret;
-    this.dyerotor = spindexer;
+    this.dyerotor = dyerotor;
+    this.intakeWrist = intakeWrist;
+    this.intakeRollers = intakeRollers;
     this.drivetrain = drivetrain;
     this.robotState = robotState;
 
@@ -187,11 +196,26 @@ public class Shooter extends SubsystemBase {
   }
 
   public void runFeed() {
+    if (flywheel.atVel()) {
     dyerotor.runDyerotor();
+    }
   }
 
   public void stopFeed() {
     dyerotor.stop();
+  }
+
+  private boolean agitate;
+
+  private void agitate() {
+    Timer.delay(1.0);
+    intakeRollers.applyGoal(IntakeRollersGoal.INTAKE);
+    while (agitate) {
+      intakeWrist.applyGoal(IntakeWristGoal.AGITATE);
+      Timer.delay(0.5);
+      intakeWrist.applyGoal(IntakeWristGoal.STOW);
+      Timer.delay(0.5);
+    }
   }
 
   private void idleCase(RobotState.Area area, Pose2d robotPose, ChassisSpeeds robotSpeeds) {
@@ -301,6 +325,7 @@ public class Shooter extends SubsystemBase {
           switch (state) {
             case IDLE:
               idleCase(area, robotPose, robotSpeeds);
+              agitate = false;
               stopFeed();
               break;
 
@@ -310,6 +335,7 @@ public class Shooter extends SubsystemBase {
               stopFeed();
 
               setIdleState(IdleState.NA);
+              agitate = false;
               break;
 
             case SHOOTING:
@@ -322,22 +348,28 @@ public class Shooter extends SubsystemBase {
                   true);
               runFeed();
               setIdleState(IdleState.NA);
+              agitate = true;
+              agitate();
               break;
 
             case FERRYING:
               ferryCase(area, robotPose, robotSpeeds, wantShoot);
               setIdleState(IdleState.NA);
+              agitate = false;
               break;
 
             case INTAKE_UP:
               turret.moveToAngleRR(Rotation2d.fromDegrees(90.0));
               hood.moveToAngle(Rotation2d.fromDegrees(0.0));
+              agitate = false;
               // flywheel.setTargetVelocityTorqueCurrent(ShooterConstants.FLYWHEEL_MAP.get(getShotDistance(AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter)).getMeters()), 0.0);
               break;
             case NA:
+              agitate = false;
               break;
 
             default:
+              agitate = false;
               break;
           }
         })
