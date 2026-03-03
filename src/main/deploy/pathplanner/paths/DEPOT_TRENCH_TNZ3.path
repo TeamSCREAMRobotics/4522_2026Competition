@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.019513641755635,
-        "y": 7.36497034400949
+        "x": 2.1504888888888893,
+        "y": 7.69891111111111
       },
       "isLocked": false,
       "linkedName": "DEPOT_T-BFR_END"
     },
     {
       "anchor": {
-        "x": 3.7941755634638206,
-        "y": 7.451043890865955
+        "x": 3.7193444444444443,
+        "y": 7.483321470937129
       },
       "prevControl": {
-        "x": 2.7941755634638206,
-        "y": 7.451043890865955
+        "x": 2.7193444444444443,
+        "y": 7.483321470937129
       },
       "nextControl": {
-        "x": 4.794175563463821,
-        "y": 7.451043890865955
+        "x": 4.719344444444444,
+        "y": 7.483321470937129
       },
       "isLocked": false,
       "linkedName": null
@@ -40,7 +40,7 @@
         "y": 7.483321470937129
       },
       "nextControl": {
-        "x": 5.991589561091341,
+        "x": 5.991589561091342,
         "y": 7.483321470937129
       },
       "isLocked": false,
@@ -63,19 +63,33 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.5,
-      "rotationDegrees": 180.0
+      "rotationDegrees": 1.0487392247349467
     },
     {
       "waypointRelativePos": 2.019538188277085,
-      "rotationDegrees": 180.0
+      "rotationDegrees": -0.09444293917192131
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.622332506203487,
+      "maxWaypointRelativePos": 0,
+      "constraints": {
+        "maxVelocity": 3.5,
+        "maxAcceleration": 4.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.5,
+    "maxAcceleration": 4.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -83,13 +97,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 140.6482473737354
+    "rotation": -49.48609723568266
   },
   "reversed": false,
   "folder": "DEPOT_TRENCH",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -45.0
+    "rotation": -62.35488637653744
   },
   "useDefaultConstraints": true
 }

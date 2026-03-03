@@ -4,16 +4,17 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -28,6 +29,7 @@ import frc2026.tars.subsystems.intake.IntakeRollers;
 import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
 import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
+import frc2026.tars.subsystems.leds.LED;
 import frc2026.tars.subsystems.shooter.Shooter;
 import frc2026.tars.subsystems.shooter.dyerotor.Dyerotor;
 import frc2026.tars.subsystems.shooter.dyerotor.DyerotorConstants;
@@ -49,6 +51,8 @@ public class RobotContainer {
       Hood hood,
       Flywheel flywheel) {}
 
+private final LED led = new LED();
+
   private final IntakeWrist intakeWrist = new IntakeWrist(IntakeConstants.WRIST_CONFIG);
   private final IntakeRollers intakeRollers = new IntakeRollers(IntakeConstants.ROLLERS_CONFIG);
   private final Drivetrain drivetrain = TunerConstants.drivetrain;
@@ -57,6 +61,7 @@ public class RobotContainer {
   private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
   private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
   private final Dyerotor spindexer = new Dyerotor(DyerotorConstants.DYEROTOR_CONFIG);
+  
 
   @Getter
   private final Subsystems subsystems =
@@ -109,10 +114,11 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("test", 1);
 
-    auto = AutoBuilder.buildAutoChooser();
-    auto.setDefaultOption("Do Nothing", new PathPlannerAuto("command"));
-    SmartDashboard.putData(auto);
+    
 
+    auto = AutoBuilder.buildAutoChooser();
+    auto.setDefaultOption("Do Nothing", null);
+SmartDashboard.putData(auto);
     mechVisualizer.setEnabled(true);
   }
 
@@ -193,12 +199,32 @@ public class RobotContainer {
             .withName("Drivetrain: Default command"));
 
     shooter.setDefaultCommand(shooter.defaultCommand());
-  }
+
+    led.setDefaultCommand(
+        led.run(
+                () -> {
+                  if (DriverStation.isDisabled()) {
+                    led.larson(
+                        () ->
+                            (AllianceFlipUtil.shouldFlip().getAsBoolean()
+                                ? Color.kGreen
+                                : Color.kBlue),
+                        1.25);
+                  } else {
+                    led.wave(
+                        Color.kBlack,
+                        true ? new Color(0.1, 0.0, 0.0) : new Color(0.0, 1.0, 0.0),
+                        0.1,
+                        1.25);
+                  }
+                })
+            .ignoringDisable(true));
+}
 
   private void configureAutoCommands() {
 
     NamedCommands.registerCommand(
-        "Run Intake", intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE).withTimeout(2.0));
+        "Run Intake", intakeRollers.applyGoalCommand(IntakeRollersGoal.AUTOINTAKE).withTimeout(2.0));
 
     NamedCommands.registerCommand(
         "Intake In",
@@ -211,7 +237,11 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Stop Intakeing", intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP).withTimeout(0.1));
 
-    NamedCommands.registerCommand("Short Shoot", shooter.autoShoot(5.0));
+    NamedCommands.registerCommand("Short Shoot", shooter.autoShoot(2.5));
+
+    NamedCommands.registerCommand("Medium Shoot", shooter.autoShoot(4));
+
+    NamedCommands.registerCommand("Long Shoot", shooter.autoShoot(7.5));
   }
 
   private void configureManualOverrides() {

@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.911921708185054,
-        "y": 6.945361803084223
+        "x": 2.7449,
+        "y": 7.007055555555556
       },
       "isLocked": false,
       "linkedName": "DEPOT_T-RETURN_END"
@@ -62,6 +62,10 @@
   ],
   "rotationTargets": [
     {
+      "waypointRelativePos": 0.6348547717842377,
+      "rotationDegrees": 0.0
+    },
+    {
       "waypointRelativePos": 1.8756660746003644,
       "rotationDegrees": 0.0
     },
@@ -72,22 +76,10 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Run Intake",
-      "waypointRelativePos": 2.4364454443194736,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Run Intake"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.5,
+    "maxAcceleration": 4.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -101,7 +93,7 @@
   "folder": "DEPOT_TRENCH",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -62.35583554680027
   },
   "useDefaultConstraints": true
 }

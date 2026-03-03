@@ -7,7 +7,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.25
+            "waitTime": 0.3
           }
         },
         {
@@ -21,12 +21,6 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "Stop Intakeing"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "DEPOT_TRENCH_RETURN"
@@ -38,7 +32,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Short Shoot"
+            "name": "Medium Shoot"
           }
         },
         {
@@ -52,12 +46,6 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "Stop Intakeing"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "DEPOT_TRENCH_TBF-R"
@@ -69,7 +57,20 @@
         {
           "type": "named",
           "data": {
-            "name": "Short Shoot"
+            "name": "Medium Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "DEPOT_TRENCH_TNZ3"
+                }
+              }
+            ]
           }
         }
       ]
