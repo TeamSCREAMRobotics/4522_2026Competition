@@ -49,7 +49,8 @@ public class RobotContainer {
       IntakeWrist intakeWrist,
       Turret turret,
       Hood hood,
-      Flywheel flywheel) {}
+      Flywheel flywheel,
+      LED led) {}
 
   private final LED led = new LED();
 
@@ -64,7 +65,7 @@ public class RobotContainer {
 
   @Getter
   private final Subsystems subsystems =
-      new Subsystems(drivetrain, intakeWrist, turret, hood, flywheel);
+      new Subsystems(drivetrain, intakeWrist, turret, hood, flywheel, led);
 
   @Getter private final RobotState robotState = new RobotState(subsystems);
 
@@ -76,6 +77,7 @@ public class RobotContainer {
           dyerotor,
           intakeWrist,
           intakeRollers,
+          led,
           drivetrain,
           getRobotState());
 
@@ -121,6 +123,8 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("test", 1);
 
+    robotState.flashLEDS();
+
     auto = AutoBuilder.buildAutoChooser();
     auto.setDefaultOption("Do Nothing", null);
     SmartDashboard.putData(auto);
@@ -140,12 +144,21 @@ public class RobotContainer {
                 .withName("Intake Stopped"));
 
     Controlboard.moveIntakeWrist()
-        .toggleOnTrue(intakeWrist.applyGoalCommand(IntakeWristGoal.STOW))
-        .toggleOnFalse(intakeWrist.applyGoalCommand(IntakeWristGoal.EXTENDED));
+        .whileTrue(
+            Commands.runEnd(
+                () -> intakeWrist.applyGoal(IntakeWristGoal.STOW),
+                () -> intakeWrist.applyGoal(IntakeWristGoal.EXTENDED),
+                intakeWrist));
+
+    Controlboard.shoot()
+        .whileTrue(
+            new SequentialCommandGroup(
+                Commands.waitSeconds(2.0),
+                Commands.runEnd(() -> shooter.agitate(true), () -> shooter.agitate(false))));
 
     Controlboard.lockSwerve().whileTrue(drivetrain.applyRequest(() -> brake));
 
-    Controlboard.rotate90Degres()
+    Controlboard.rotate90Degrees()
         .whileTrue(
             drivetrain.applyRequest(
                 () ->
@@ -164,6 +177,26 @@ public class RobotContainer {
                         .getFacingAngleProfiled(
                             Controlboard.getTranslation().get(),
                             Rotation2d.fromDegrees(-90),
+                            DrivetrainConstants.headingControllerProfiled)));
+    Controlboard.rotate0Degrees()
+        .whileTrue(
+            drivetrain.applyRequest(
+                () ->
+                    drivetrain
+                        .getHelper()
+                        .getFacingAngleProfiled(
+                            Controlboard.getTranslation().get(),
+                            Rotation2d.fromDegrees(0),
+                            DrivetrainConstants.headingControllerProfiled)));
+    Controlboard.rotate180Degrees()
+        .whileTrue(
+            drivetrain.applyRequest(
+                () ->
+                    drivetrain
+                        .getHelper()
+                        .getFacingAngleProfiled(
+                            Controlboard.getTranslation().get(),
+                            Rotation2d.fromDegrees(180),
                             DrivetrainConstants.headingControllerProfiled)));
 
     Controlboard.hailMaryMode()
@@ -216,11 +249,7 @@ public class RobotContainer {
                                 : Color.kBlue),
                         1.25);
                   } else {
-                    led.wave(
-                        Color.kBlack,
-                        true ? new Color(0.1, 0.0, 0.0) : new Color(0.0, 1.0, 0.0),
-                        0.1,
-                        1.25);
+                    return;
                   }
                 })
             .ignoringDisable(true));
@@ -266,6 +295,8 @@ public class RobotContainer {
         .onTrue(
             turret.setZero().andThen(() -> Dashboard.zeroTurret.set(false)).ignoringDisable(true));
 
+    Controlboard.blipDyerotor().whileTrue(Commands.run(() -> dyerotor.setVoltage(-0.5), dyerotor));
+
     Controlboard.getManualMode()
         .whileTrue(
             Commands.parallel(
@@ -276,7 +307,14 @@ public class RobotContainer {
                         Rotation2d.fromDegrees(Dashboard.manualHoodAngle.get())),
                     Commands.run(
                         () -> flywheel.setVoltage(Dashboard.manualFlywheelVelocity.get()),
-                        flywheel))
+                        flywheel),
+                    intakeWrist.moveToAngleCommand(
+                        Rotation2d.fromDegrees(Dashboard.manualIntakeWrist.get())),
+                    Commands.run(
+                        () -> intakeRollers.setVoltage(Dashboard.manualIntakeRollers.get()),
+                        intakeRollers),
+                    Commands.run(
+                        () -> dyerotor.setVoltage(Dashboard.manualDyerotor.get()), dyerotor))
                 .ignoringDisable(true));
   }
 

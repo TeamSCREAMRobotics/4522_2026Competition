@@ -12,13 +12,15 @@ import frc2026.tars.RobotContainer.Subsystems;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.intake.IntakeWrist;
+import frc2026.tars.subsystems.leds.LED;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class RobotState {
   private final Drivetrain drivetrain;
+  @SuppressWarnings("unused")
   private final IntakeWrist intakeWrist;
-
+  private final LED led;
   public enum Mode {
     AUTO,
     TELEOP,
@@ -115,6 +117,7 @@ public class RobotState {
   public RobotState(Subsystems subsystems) {
     this.drivetrain = subsystems.drivetrain();
     this.intakeWrist = subsystems.intakeWrist();
+    this.led = subsystems.led();
   }
 
   public Mode getMode() {
@@ -177,6 +180,40 @@ public class RobotState {
         return 1.0;
       }
     };
+  }
+
+  public void flashLEDS() {
+    GameState gameStateUtil = new GameState();
+    GameState.States hub = gameStateUtil.getActiveHub();
+    GameState.States state = GameState.determineGameState();
+
+    boolean flashing =
+        state == GameState.States.SHIFTONEFLASHING
+            || state == GameState.States.SHIFTTWOFLASHING
+            || state == GameState.States.SHIFTTHREEFLASHING
+            || state == GameState.States.SHIFTFOURFLASHING
+            || state == GameState.States.ENDGAMEFLASHING;
+
+    boolean normal =
+        state == GameState.States.SHIFTONE
+            || state == GameState.States.SHIFTTWO
+            || state == GameState.States.SHIFTTHREE
+            || state == GameState.States.SHIFTFOUR
+            || state == GameState.States.ENDGAME;
+
+    edu.wpi.first.wpilibj.util.Color hubColor;
+
+    if (hub == GameState.States.RED) {
+      hubColor = edu.wpi.first.wpilibj.util.Color.kGreen;
+    } else {
+      hubColor = edu.wpi.first.wpilibj.util.Color.kRed;
+    }
+
+    if (flashing) {
+      led.strobe(hubColor, 0.2);
+    } else if (normal) {
+      led.breathe(hubColor, edu.wpi.first.wpilibj.util.Color.kBlack, 1.0);
+    }
   }
 
   public void logArea() {

@@ -86,10 +86,6 @@ public class Controlboard {
     return new Trigger(() -> Dashboard.zeroIntake.get());
   }
 
-  public static Trigger zeroClimber() {
-    return new Trigger(() -> Dashboard.zeroClimber.get());
-  }
-
   public static Trigger zeroHood() {
     return new Trigger(() -> Dashboard.zeroHood.get());
   }
@@ -126,11 +122,23 @@ public class Controlboard {
     return driveController.povDown();
   }
 
-  public static Trigger rotate90Degres() {
+  public static Trigger rotate90Degrees() {
     return driveController.x();
   }
 
   public static Trigger rotateNegative90Degrees() {
     return driveController.b();
+  }
+
+  public static Trigger rotate0Degrees(){
+    return driveController.y();
+  }
+
+  public static Trigger rotate180Degrees(){
+    return driveController.a();
+  }
+
+  public static Trigger blipDyerotor() {
+    return new Trigger(() -> Dashboard.blipDyerotor.get());
   }
 }

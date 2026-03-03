@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,6 +27,7 @@ import frc2026.tars.subsystems.intake.IntakeRollers;
 import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
 import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
+import frc2026.tars.subsystems.leds.LED;
 import frc2026.tars.subsystems.shooter.dyerotor.Dyerotor;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.hood.Hood;
@@ -44,6 +46,7 @@ public class Shooter extends SubsystemBase {
   private final RobotState robotState;
   private final IntakeWrist intakeWrist;
   private final IntakeRollers intakeRollers;
+  private final LED led;
   private Pose2d robotPose;
   private ChassisSpeeds robotSpeeds;
   private static final InterpolatingDoubleTreeMap hoodMapAllianceZone =
@@ -99,6 +102,7 @@ public class Shooter extends SubsystemBase {
       Dyerotor dyerotor,
       IntakeWrist intakeWrist,
       IntakeRollers intakeRollers,
+      LED led,
       Drivetrain drivetrain,
       RobotState robotState) {
     this.flywheel = flywheel;
@@ -109,6 +113,7 @@ public class Shooter extends SubsystemBase {
     this.intakeRollers = intakeRollers;
     this.drivetrain = drivetrain;
     this.robotState = robotState;
+    this.led = led;
 
     hoodMapPoints();
   }
@@ -196,8 +201,9 @@ public class Shooter extends SubsystemBase {
   }
 
   public void runFeed() {
-    if (flywheel.atVel()) {
+    if (flywheel.atVel() || Dashboard.disableWaitUntilAtVelocity.get()) {
       dyerotor.runDyerotor();
+      led.strobe(Color.kRed, 0.7);
     }
   }
 
@@ -205,16 +211,32 @@ public class Shooter extends SubsystemBase {
     dyerotor.stop();
   }
 
-  private boolean agitate;
+  private double agitateStartTime = 0.0;
+  private boolean agitateForward = true;
 
-  private void agitate() {
-    Timer.delay(1.0);
-    intakeRollers.applyGoal(IntakeRollersGoal.INTAKE);
-    while (agitate) {
+  public void agitate(boolean shouldAgitate) {
+    if (!shouldAgitate) {
+      intakeWrist.applyGoal(IntakeWristGoal.EXTENDED);
+      intakeRollers.applyGoal(IntakeRollersGoal.STOP);
+      return;
+    }
+
+    double now = Timer.getFPGATimestamp();
+
+    if (agitateStartTime == 0.0) {
+      agitateStartTime = now;
+    }
+
+    if (now - agitateStartTime >= 0.5) {
+      agitateForward = !agitateForward;
+      agitateStartTime = now;
+    }
+
+    if (agitateForward) {
+      intakeRollers.applyGoal(IntakeRollersGoal.INTAKE);
       intakeWrist.applyGoal(IntakeWristGoal.AGITATE);
-      Timer.delay(0.5);
-      intakeWrist.applyGoal(IntakeWristGoal.STOW);
-      Timer.delay(0.5);
+    } else {
+      intakeWrist.applyGoal(IntakeWristGoal.EXTENDED);
     }
   }
 
@@ -230,6 +252,7 @@ public class Shooter extends SubsystemBase {
             hoodMapAllianceZone,
             wantShoot);
         setIdleState(IdleState.IDLE_HUB);
+        led.wave(Color.kBlack, AllianceFlipUtil.get(new Color(1.0f, 0.49803922f, 0.83137256f), new Color(0.26078432f, 1.0f, 0.36078432f)), 0.1, 1.25);
         break;
       case DEPOT_SIDE_NEUTRALZONE:
         applyAimingSetpoints(
@@ -241,6 +264,7 @@ public class Shooter extends SubsystemBase {
             hoodMapNeutralZone,
             wantShoot);
         setIdleState(IdleState.IDLE_FERRY_DEPOT);
+        led.wave(Color.kBlack, new Color(0.0f, 0.5019608f, 0.5019608f), 0.1, 1.25);
         break;
       case OUTPOST_SIDE_NEUTRALZONE:
         applyAimingSetpoints(
@@ -252,10 +276,22 @@ public class Shooter extends SubsystemBase {
             hoodMapNeutralZone,
             wantShoot);
         setIdleState(IdleState.IDLE_FERRY_OUTPOST);
+        led.wave(Color.kBlack, new Color(0.0f, 0.5019608f, 0.5019608f), 0.1, 1.25);
         break;
+      case OTHERALLIANCEZONE:
+        applyAimingSetpoints(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.rightAllianceZone,
+                FieldConstants.AllianceZones.oppLeftAllianceZone),
+            hoodMapNeutralZone,
+            wantShoot);
+        led.wave(Color.kBlack, AllianceFlipUtil.get(new Color(0.26078432f, 1.0f, 0.36078432f)/*new Color(0.0f, 1.0f, 0.83137256f)*/, new Color(1.0f, 0.49803922f, 0.83137256f)), 0.1, 1.25);
       default:
         setIdleState(IdleState.NA);
         break;
+
     }
   }
 
@@ -325,17 +361,22 @@ public class Shooter extends SubsystemBase {
           switch (state) {
             case IDLE:
               idleCase(area, robotPose, robotSpeeds);
-              agitate = false;
+              agitateStartTime = 0.0;
+              agitateForward = true;
               stopFeed();
+              
               break;
 
             case STOWED:
               hood.setVoltage(-2.0);
               flywheel.setTargetVelocityTorqueCurrent(7.5, 0);
               stopFeed();
+              agitateStartTime = 0.0;
+              agitateForward = true;
+
+              led.rainbow(.2, 3.0);
 
               setIdleState(IdleState.NA);
-              agitate = false;
               break;
 
             case SHOOTING:
@@ -348,28 +389,30 @@ public class Shooter extends SubsystemBase {
                   true);
               runFeed();
               setIdleState(IdleState.NA);
-              agitate = true;
-              agitate();
               break;
 
             case FERRYING:
               ferryCase(area, robotPose, robotSpeeds, wantShoot);
               setIdleState(IdleState.NA);
-              agitate = false;
+              agitateStartTime = 0.0;
+              agitateForward = true;
               break;
 
             case INTAKE_UP:
               turret.moveToAngleRR(Rotation2d.fromDegrees(90.0));
               hood.moveToAngle(Rotation2d.fromDegrees(0.0));
-              agitate = false;
+              agitateStartTime = 0.0;
+              agitateForward = true;
               // flywheel.setTargetVelocityTorqueCurrent(ShooterConstants.FLYWHEEL_MAP.get(getShotDistance(AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter)).getMeters()), 0.0);
               break;
             case NA:
-              agitate = false;
+              agitateStartTime = 0.0;
+              agitateForward = true;
               break;
 
             default:
-              agitate = false;
+              agitateStartTime = 0.0;
+              agitateForward = true;
               break;
           }
         })
