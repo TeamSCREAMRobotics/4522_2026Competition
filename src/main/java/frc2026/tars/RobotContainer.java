@@ -51,7 +51,7 @@ public class RobotContainer {
       Hood hood,
       Flywheel flywheel) {}
 
-private final LED led = new LED();
+  private final LED led = new LED();
 
   private final IntakeWrist intakeWrist = new IntakeWrist(IntakeConstants.WRIST_CONFIG);
   private final IntakeRollers intakeRollers = new IntakeRollers(IntakeConstants.ROLLERS_CONFIG);
@@ -61,7 +61,6 @@ private final LED led = new LED();
   private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
   private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
   private final Dyerotor spindexer = new Dyerotor(DyerotorConstants.DYEROTOR_CONFIG);
-  
 
   @Getter
   private final Subsystems subsystems =
@@ -114,11 +113,9 @@ private final LED led = new LED();
 
     SmartDashboard.putNumber("test", 1);
 
-    
-
     auto = AutoBuilder.buildAutoChooser();
     auto.setDefaultOption("Do Nothing", null);
-SmartDashboard.putData(auto);
+    SmartDashboard.putData(auto);
     mechVisualizer.setEnabled(true);
   }
 
@@ -219,12 +216,13 @@ SmartDashboard.putData(auto);
                   }
                 })
             .ignoringDisable(true));
-}
+  }
 
   private void configureAutoCommands() {
 
     NamedCommands.registerCommand(
-        "Run Intake", intakeRollers.applyGoalCommand(IntakeRollersGoal.AUTOINTAKE).withTimeout(2.0));
+        "Run Intake",
+        intakeRollers.applyGoalCommand(IntakeRollersGoal.AUTOINTAKE).withTimeout(2.0));
 
     NamedCommands.registerCommand(
         "Intake In",
