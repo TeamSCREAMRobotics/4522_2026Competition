@@ -3,65 +3,61 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5574733096085422,
-        "y": 5.23465005931198
+        "x": 6.871574054210871,
+        "y": 3.526002654531113
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.439727164887308,
-        "y": 5.5574258600237245
+        "x": 6.8899158173678945,
+        "y": 2.2712337035843198
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "OUTPOST_TRENCH_BS_END"
     },
     {
       "anchor": {
-        "x": 6.236512455516015,
-        "y": 4.782763938315539
+        "x": 5.054272727272727,
+        "y": 0.6131363636363643
       },
       "prevControl": {
-        "x": 5.258926481297263,
-        "y": 5.620694773360187
+        "x": 6.301397727272726,
+        "y": 0.6028295454545458
       },
       "nextControl": {
-        "x": 6.5377698695136415,
-        "y": 4.524543297746145
+        "x": 3.1560041192885224,
+        "y": 0.6288245339502834
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.678244365361804,
-        "y": 4.481506524317912
+        "x": 0.7254090909090907,
+        "y": 0.6131363636363643
       },
       "prevControl": {
-        "x": 7.133244365361804,
-        "y": 4.481506524317912
+        "x": 0.9982879084358884,
+        "y": 0.6348722307885101
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "DEPOT_BUMP_TNZ_END"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6003552397868538,
-      "rotationDegrees": -145.0
-    },
-    {
-      "waypointRelativePos": 0.875666074600357,
+      "waypointRelativePos": 0.7720125786163542,
       "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.6389201349831267,
+      "minWaypointRelativePos": 1.718132854578096,
+      "maxWaypointRelativePos": 2.0,
       "constraints": {
-        "maxVelocity": 3.0,
-        "maxAcceleration": 2.0,
+        "maxVelocity": 1.5,
+        "maxAcceleration": 1.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -84,10 +80,10 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "DEPOT_BUMP",
+  "folder": "OUTPOST_TRENCH",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -145.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

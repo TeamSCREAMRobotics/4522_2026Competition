@@ -17,6 +17,7 @@ public class IntakeRollers extends TalonFXSubsystem {
   public enum IntakeRollersGoal implements TalonFXSubsystemGoal {
     STOP(() -> 0.0),
     INTAKE(() -> 7.0),
+    AUTOINTAKE(() -> 9.0),
     OUTTAKE(() -> -6.0);
 
     public final DoubleSupplier voltage;

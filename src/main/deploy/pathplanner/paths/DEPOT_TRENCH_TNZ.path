@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 8.291518386714117,
-        "y": 5.751091340450771
+        "x": 8.27,
+        "y": 5.584366666666666
       },
       "prevControl": {
-        "x": 8.27,
-        "y": 6.977639383155397
+        "x": 8.248481613285882,
+        "y": 6.810914709371292
       },
       "nextControl": null,
       "isLocked": false,
@@ -64,14 +64,14 @@
       "command": {
         "type": "named",
         "data": {
-          "name": "Stop Intakeing"
+          "name": "Run Intake"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.5,
+    "maxAcceleration": 4.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

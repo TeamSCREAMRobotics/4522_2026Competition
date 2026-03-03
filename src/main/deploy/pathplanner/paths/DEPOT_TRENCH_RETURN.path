@@ -3,29 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.291518386714117,
-        "y": 5.751091340450771
+        "x": 8.27,
+        "y": 5.584366666666666
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.559893238434164,
-        "y": 7.795338078291815
+        "x": 7.54891111111111,
+        "y": 7.513766666666667
       },
       "isLocked": false,
       "linkedName": "FL_TRENCH_TNZ_END"
     },
     {
       "anchor": {
-        "x": 4.6871886120996455,
-        "y": 7.558635824436536
+        "x": 6.525744444444444,
+        "y": 7.426066666666667
       },
       "prevControl": {
-        "x": 5.663849598837206,
-        "y": 7.537170747804942
+        "x": 7.115222241963461,
+        "y": 7.446944077408335
       },
       "nextControl": {
-        "x": 3.7081020166073557,
-        "y": 7.580154211150651
+        "x": 5.935317254528575,
+        "y": 7.405155631494855
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.7327666666666675,
+        "y": 7.426066666666667
+      },
+      "prevControl": {
+        "x": 5.709427653404228,
+        "y": 7.404601590035074
+      },
+      "nextControl": {
+        "x": 3.7536800711743776,
+        "y": 7.447585053380783
       },
       "isLocked": false,
       "linkedName": null
@@ -46,7 +62,11 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.502074688796675,
       "rotationDegrees": 0.0
     }
   ],
@@ -54,8 +74,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.5,
+    "maxAcceleration": 4.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -63,7 +83,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -62.35583554680027
   },
   "reversed": false,
   "folder": "DEPOT_TRENCH",

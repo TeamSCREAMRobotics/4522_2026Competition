@@ -8,6 +8,7 @@ import com.teamscreamrobotics.zones.RectangularPoseArea;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc2026.tars.RobotContainer.Subsystems;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;

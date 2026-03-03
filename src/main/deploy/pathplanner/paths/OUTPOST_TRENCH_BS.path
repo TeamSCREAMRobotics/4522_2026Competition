@@ -3,76 +3,64 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7272222222222218,
-        "y": 7.038177777777778
+        "x": 2.911921708185054,
+        "y": 0.5974377224199281
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9209999999999998,
-        "y": 7.2296555555555555
+        "x": 3.720765306727271,
+        "y": 0.700849414677295
       },
       "isLocked": false,
-      "linkedName": "DEPOT_T-NZ-O_NZ_RETURN_END"
+      "linkedName": "OUTPOST_TRENCH_END"
     },
     {
       "anchor": {
-        "x": 1.1248555555555557,
-        "y": 7.269966666666667
+        "x": 5.139935913125162,
+        "y": 0.5974377224199281
       },
       "prevControl": {
-        "x": 1.7538594584990461,
-        "y": 7.2233737849671495
+        "x": 4.410571265963534,
+        "y": 0.4241703291388995
       },
       "nextControl": {
-        "x": 0.8527555555555557,
-        "y": 7.290122222222222
+        "x": 6.0995260021383615,
+        "y": 0.8253973225851701
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.45972222222222214,
-        "y": 6.836622222222222
+        "x": 6.871574054210871,
+        "y": 3.526002654531113
       },
       "prevControl": {
-        "x": 0.45972222222222214,
-        "y": 7.269966666666667
-      },
-      "nextControl": {
-        "x": 0.4597222222222222,
-        "y": 5.762381217553761
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 0.4698,
-        "y": 4.800911111111111
-      },
-      "prevControl": {
-        "x": 0.5075916666666667,
-        "y": 5.191425
+        "x": 6.880951156057905,
+        "y": 2.4257560378123957
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "OUTPOST_TRENCH_BS_END"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": -90.0
+      "waypointRelativePos": 0.8050314465408783,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.4701257861635206,
+      "rotationDegrees": 54.087774861325094
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 1.8737541528239092,
-      "maxWaypointRelativePos": 2.631229235880422,
+      "minWaypointRelativePos": 1.5008976660682232,
+      "maxWaypointRelativePos": 2.0,
       "constraints": {
-        "maxVelocity": 1.0,
+        "maxVelocity": 3.0,
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -85,7 +73,7 @@
   "eventMarkers": [
     {
       "name": "Run Intake",
-      "waypointRelativePos": 1.7740863787375294,
+      "waypointRelativePos": 1.2513464991023344,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -105,10 +93,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "DEPOT_T-NZ-DEP",
+  "folder": "OUTPOST_TRENCH",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
