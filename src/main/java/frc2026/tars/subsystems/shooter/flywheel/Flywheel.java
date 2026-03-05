@@ -3,6 +3,8 @@ package frc2026.tars.subsystems.shooter.flywheel;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc2026.tars.Robot;
+
 import java.util.function.DoubleSupplier;
 
 public class Flywheel extends TalonFXSubsystem {
@@ -38,5 +40,10 @@ public class Flywheel extends TalonFXSubsystem {
         () -> {
           setTargetVelocityTorqueCurrentCommand(velocity, torqueFeedForward);
         });
+  }
+
+  @Override
+  public synchronized double getVelocity() {
+      return Robot.isSimulation() ? getSetpoint() : super.getVelocity();
   }
 }
