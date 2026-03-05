@@ -4,7 +4,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.*;
 import com.teamscreamrobotics.sim.SimWrapper;
 import com.teamscreamrobotics.util.SimUtil;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
@@ -25,7 +24,8 @@ public class DyerotorConstants {
     DYEROTOR_CONFIG.masterConstants =
         new TalonFXConstants(new CANDevice(13), InvertedValue.CounterClockwise_Positive);
 
-    DYEROTOR_CONFIG.simConstants = new TalonFXSubsystemSimConstants(new SimWrapper(sim), 1.0, new PIDController(1, 0, 0));
+    DYEROTOR_CONFIG.simConstants =
+        new TalonFXSubsystemSimConstants(new SimWrapper(sim), 1.0, new PIDController(1, 0, 0));
 
     //  DYEROTOR_CONFIG.slaveConstants =
     //      new TalonFXConstants[] {
