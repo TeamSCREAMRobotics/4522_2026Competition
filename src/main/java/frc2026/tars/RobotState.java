@@ -1,5 +1,6 @@
 package frc2026.tars;
 
+import com.teamscreamrobotics.dashboard.DashboardBoolean;
 import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.gameutil.GameState;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
@@ -10,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc2026.tars.RobotContainer.Subsystems;
 import frc2026.tars.controlboard.Controlboard;
+import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.leds.LED;
@@ -176,9 +178,10 @@ public class RobotState {
       boolean isLimited = false;
       if (isLimited) {
         return 0.5;
-      } else if (Controlboard.driveController.getLeftTriggerAxis()
-          > Controlboard.TRIGGER_DEADBAND) {
-        return 0.5;
+      } else if (Controlboard.driveController.leftStick().getAsBoolean()) {
+        return 0.7;
+      } else if (Controlboard.shoot().getAsBoolean() && !Dashboard.disableShootOnTheMove.get()) {
+        return 0.4;
       } else {
         return 1.0;
       }

@@ -2,6 +2,7 @@ package frc2026.tars.subsystems.shooter;
 
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.gameutil.FieldConstants;
+import com.teamscreamrobotics.math.Conversions;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.GeomUtil;
 import com.teamscreamrobotics.util.Logger;
@@ -12,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,7 +32,9 @@ import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
 import frc2026.tars.subsystems.leds.LED;
 import frc2026.tars.subsystems.shooter.dyerotor.Dyerotor;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
+import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
+import frc2026.tars.subsystems.shooter.hood.HoodConstants;
 import frc2026.tars.subsystems.shooter.turret.Turret;
 import frc2026.tars.subsystems.vision.VisionManager;
 import frc2026.tars.util.Util;
@@ -127,33 +131,42 @@ public class Shooter extends SubsystemBase {
   }
 
   private void shootOnTheFly(
-      Pose2d robotPose, ChassisSpeeds robotSpeed, Translation2d target, boolean wantShoot) {
+    Pose2d robotPose, ChassisSpeeds robotSpeed, Translation2d target, boolean wantShoot) {
+
+    double distance = getShotDistance(target).getMeters();
+
+    double flywheelVelocity = ShooterConstants.FLYWHEEL_MAP.get(distance);
+
+    double hoodAngle = getHoodAngleFromDistance(distance) + HoodConstants.HOOD_OFFSET.getDegrees();
+
+    double timeOfFlight = getTimeOfFlight(robotPose.getTranslation().getDistance(target), flywheelVelocity, hoodAngle);
+    
     Translation2d futurePos =
-        robotPose
+        getFieldToTurret()
             .getTranslation()
             .plus(
                 new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond)
-                    .times(ShooterConstants.LATENCY));
+                    .times(ShooterConstants.LATENCY + timeOfFlight));
 
-    Translation2d targetVec = target.minus(futurePos);
-    double distance = targetVec.getNorm();
+    //double multiplier = wantShoot ? 1.0 : 8.0;
 
-    double multiplier = wantShoot ? 1.0 : 8.0;
-    double flywheelVelocity = ShooterConstants.FLYWHEEL_MAP.get(distance / multiplier);
+    double futureDistance = futurePos.getDistance(target);
+    double futureVelocity = ShooterConstants.FLYWHEEL_MAP.get(futureDistance);
 
-    Translation2d robotVelVec =
-        new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond);
+    Translation2d futureTargetVec = target.minus(futurePos);
 
-    Translation2d shotVec = targetVec.div(distance).times(flywheelVelocity).minus(robotVelVec);
+    double turretAngleField = futureTargetVec.getAngle().getDegrees();
 
-    double turretAngleField = shotVec.getAngle().getDegrees();
-    double turretAngleRelative = turretAngleField - robotPose.getRotation().getDegrees();
+    turret.moveToAngleFR(Rotation2d.fromDegrees(turretAngleField), robotPose.getRotation());
 
-    turret.moveToAngleFR(Rotation2d.fromDegrees(turretAngleRelative), robotPose.getRotation());
+    hood.moveToAngle(Rotation2d.fromDegrees(getHoodAngleFromDistance(futureDistance)));
 
-    hood.moveToAngle(Rotation2d.fromDegrees(getHoodAngleFromDistance(distance)));
+    flywheel.setTargetVelocityTorqueCurrent(futureVelocity, 0.0);
 
-    flywheel.setTargetVelocityTorqueCurrent(flywheelVelocity, 0.0);
+    Logger.log("SOTM/ToF", timeOfFlight);
+    Logger.log("SOTM/FuturePose", new Pose2d(futurePos, robotPose.getRotation()));
+    Logger.log("SOTM/FutureDistance", futureDistance);
+    Logger.log("SOTM/TurretAngle", turretAngleField);
   }
 
   private void applyAimingSetpoints(
@@ -177,7 +190,7 @@ public class Shooter extends SubsystemBase {
       flywheelSetpoint = flywheelMap * Dashboard.midMapNudge.get();
     } else flywheelSetpoint = flywheelMap * Dashboard.farMapNudge.get();
 
-    turret.pointToTargetFR(() -> target, () -> robotPose);
+    turret.pointToTargetFR(() -> target, () -> robotPose, () -> getFieldToTurret());
 
     hood.moveToAngle(Rotation2d.fromDegrees(hoodAngleDeg));
     flywheel.setTargetVelocityTorqueCurrent(flywheelSetpoint, 0.0);
@@ -198,7 +211,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void runFeed() {
-    if (flywheel.atVel() || Dashboard.disableWaitUntilAtVelocity.get()) {
+    if ((flywheel.atVel() || Dashboard.disableWaitUntilAtVelocity.get())) {
       dyerotor.runDyerotor();
       led.strobe(Color.kRed, 0.7);
     }
@@ -239,7 +252,7 @@ public class Shooter extends SubsystemBase {
 
   private void idleCase(RobotState.Area area, Pose2d robotPose, ChassisSpeeds robotSpeeds) {
     if (area == null) return;
-
+    if (Dashboard.disableShootOnTheMove.get()) {
     switch (area) {
       case ALLIANCEZONE:
         applyAimingSetpoints(
@@ -301,12 +314,60 @@ public class Shooter extends SubsystemBase {
         setIdleState(IdleState.NA);
         break;
     }
+  } else {
+    switch (area) {
+      case ALLIANCEZONE:
+      shootOnTheFly(robotPose, robotSpeeds, AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter), wantShoot);
+        setIdleState(IdleState.IDLE_HUB);
+        led.wave(
+            Color.kBlack,
+            AllianceFlipUtil.get(
+                new Color(1.0f, 0.49803922f, 0.83137256f),
+                new Color(0.26078432f, 1.0f, 0.36078432f)),
+            0.1,
+            1.25);
+        break;
+      case DEPOT_SIDE_NEUTRALZONE:
+      shootOnTheFly(robotPose, robotSpeeds, AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.leftAllianceZone,
+                FieldConstants.AllianceZones.oppRightAllianceZone), wantShoot);
+        setIdleState(IdleState.IDLE_FERRY_DEPOT);
+        led.wave(Color.kBlack, new Color(0.0f, 0.5019608f, 0.5019608f), 0.1, 1.25);
+        break;
+      case OUTPOST_SIDE_NEUTRALZONE:
+      shootOnTheFly(robotPose, robotSpeeds, AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.rightAllianceZone,
+                FieldConstants.AllianceZones.oppLeftAllianceZone), wantShoot);
+        setIdleState(IdleState.IDLE_FERRY_OUTPOST);
+        led.wave(Color.kBlack, new Color(0.0f, 0.5019608f, 0.5019608f), 0.1, 1.25);
+        break;
+      case OTHERALLIANCEZONE:
+        applyAimingSetpoints(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.rightAllianceZone,
+                FieldConstants.AllianceZones.oppLeftAllianceZone),
+            hoodMapNeutralZone,
+            wantShoot);
+        led.wave(
+            Color.kBlack,
+            AllianceFlipUtil.get(
+                new Color(0.26078432f, 1.0f, 0.36078432f) /*new Color(0.0f, 1.0f, 0.83137256f)*/,
+                new Color(1.0f, 0.49803922f, 0.83137256f)),
+            0.1,
+            1.25);
+      default:
+        setIdleState(IdleState.NA);
+        break;
+  }}
   }
 
   private void ferryCase(
       RobotState.Area area, Pose2d robotPose, ChassisSpeeds robotSpeeds, boolean wantShoot) {
     if (area == null) return;
 
+    if (Dashboard.disableShootOnTheMove.get()) {
     switch (area) {
       case DEPOT_SIDE_NEUTRALZONE:
         applyAimingSetpoints(
@@ -333,6 +394,33 @@ public class Shooter extends SubsystemBase {
       default:
         stopFeed();
         break;
+    } } else {
+      switch (area) {
+      case DEPOT_SIDE_NEUTRALZONE:
+        shootOnTheFly(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.leftAllianceZone,
+                FieldConstants.AllianceZones.oppRightAllianceZone),
+            wantShoot);
+        runFeed();
+        break;
+      case OUTPOST_SIDE_NEUTRALZONE:
+        shootOnTheFly(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.rightAllianceZone,
+                FieldConstants.AllianceZones.oppLeftAllianceZone),
+            
+            wantShoot);
+        runFeed();
+        break;
+      default:
+        stopFeed();
+        break;
+      }
     }
   }
 
@@ -359,7 +447,7 @@ public class Shooter extends SubsystemBase {
     return run(() -> {
           RobotState.Area area = robotState.getArea();
           robotPose = drivetrain.getEstimatedPose();
-          robotSpeeds = drivetrain.getState().Speeds;
+          robotSpeeds = drivetrain.getFieldVelocity();
           if (!DriverStation.isAutonomous()) {
             wantShoot = Controlboard.shoot().getAsBoolean();
           }
@@ -376,34 +464,45 @@ public class Shooter extends SubsystemBase {
               break;
 
             case STOWED:
-              hood.setVoltage(-2.0);
+              hood.setVoltage(-2.2);
               flywheel.setTargetVelocityTorqueCurrent(7.5, 0);
               stopFeed();
               agitateStartTime = 0.0;
               agitateForward = true;
 
-              led.rainbow(3.0, 3.0);
+              led.rainbow(3.0, 1.0);
 
               setIdleState(IdleState.NA);
               break;
 
             case SHOOTING:
+            if (Dashboard.disableShootOnTheMove.get()) {
               applyAimingSetpoints(
                   robotPose,
                   robotSpeeds,
                   AllianceFlipUtil.get(
                       FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter),
                   hoodMapAllianceZone,
-                  true);
+                  wantShoot);
               runFeed();
               setIdleState(IdleState.NA);
               break;
-
+            } else {
+              shootOnTheFly(
+                  robotPose,
+                  robotSpeeds,
+                  AllianceFlipUtil.get(
+                      FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter),
+                  wantShoot);
+              setIdleState(IdleState.NA);
+              runFeed();
+              break;
+            }
             case FERRYING:
               ferryCase(area, robotPose, robotSpeeds, wantShoot);
               setIdleState(IdleState.NA);
               agitateStartTime = 0.0;
-              agitateForward = true;
+              agitateForward = false;
               break;
 
             case INTAKE_UP:
@@ -446,16 +545,13 @@ public class Shooter extends SubsystemBase {
             .plus(Util.transform3dTo2dXY(VisionManager.robotToTurretFixed)));
   }
 
-  public double getTimeOfFlight(double velocity) {
-    double distance = robotPose.getTranslation().getDistance(target);
-    double exitVelocity = velocity; // Conversions.rpsToMPS(flywheel.getVelocity(),
-    // FlywheelConstants.FLYWHEEL_CIRCUMFERENCE.getMeters(),
-    // FlywheelConstants.FLYWHEEL_REDUCTION) * EXIT_VELOCITY_RETENTION;
+  public double getTimeOfFlight(double distance, double velocity, double hoodAngleDeg) {
+    double exitVelocity = Conversions.rpsToMPS(velocity,
+    FlywheelConstants.FLYWHEEL_CIRCUMFERENCE.getMeters(),
+    FlywheelConstants.FLYWHEEL_REDUCTION) * 0.8;
     double exitAngle =
-        Math.toRadians(45.0); // ScreamMath.mapRange(hood.getPosition(), HoodConstants.MIN_UNITS,
-    // HoodConstants.MAX_UNITS, HoodConstants.HOOD_MIN_EXIT_ANGLE.getRadians(),
-    // HoodConstants.HOOD_MAX_EXIT_ANGLE.getRadians());
-    double horizontalVelocity = exitVelocity * Math.cos(exitAngle);
+       90.0 - hoodAngleDeg;
+    double horizontalVelocity = exitVelocity * Math.cos(Units.degreesToRadians(exitAngle));
 
     return distance / horizontalVelocity;
   }

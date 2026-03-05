@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc2026.tars.constants.SimConstants;
@@ -123,8 +124,6 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("test", 1);
 
-    robotState.flashLEDS();
-
     auto = AutoBuilder.buildAutoChooser();
     auto.setDefaultOption("Do Nothing", null);
     SmartDashboard.putData(auto);
@@ -149,12 +148,6 @@ public class RobotContainer {
                 () -> intakeWrist.applyGoal(IntakeWristGoal.STOW),
                 () -> intakeWrist.applyGoal(IntakeWristGoal.EXTENDED),
                 intakeWrist));
-
-    Controlboard.shoot()
-        .whileTrue(
-            new SequentialCommandGroup(
-                Commands.waitSeconds(2.0),
-                Commands.runEnd(() -> shooter.agitate(true), () -> shooter.agitate(false))));
 
     Controlboard.lockSwerve().whileTrue(drivetrain.applyRequest(() -> brake));
 
@@ -249,7 +242,7 @@ public class RobotContainer {
                                 : Color.kBlue),
                         1.25);
                   } else {
-                    return;
+                    robotState.flashLEDS();
                   }
                 })
             .ignoringDisable(true));
@@ -303,13 +296,11 @@ public class RobotContainer {
                     turret.moveToAngleCommandFR(
                         () -> Rotation2d.fromDegrees(Dashboard.manualTurretAngle.get()),
                         () -> drivetrain.getEstimatedPose().getRotation()),
-                    hood.moveToAngleCommand(
-                        Rotation2d.fromDegrees(Dashboard.manualHoodAngle.get())),
+                    Commands.run(() -> hood.moveToAngle(Rotation2d.fromDegrees(Dashboard.manualHoodAngle.get())), hood),
                     Commands.run(
                         () -> flywheel.setVoltage(Dashboard.manualFlywheelVelocity.get()),
                         flywheel),
-                    intakeWrist.moveToAngleCommand(
-                        Rotation2d.fromDegrees(Dashboard.manualIntakeWrist.get())),
+                    Commands.run(() -> intakeWrist.moveToAngle(Rotation2d.fromDegrees(Dashboard.manualIntakeWrist.get())), intakeWrist),
                     Commands.run(
                         () -> intakeRollers.setVoltage(Dashboard.manualIntakeRollers.get()),
                         intakeRollers),
@@ -341,7 +332,7 @@ public class RobotContainer {
                 0,
                 0,
                 drivetrain.getEstimatedPose().getRotation().getRadians()
-                    - turret.getAngle().getRadians())));
+                    + turret.getAngle().getRadians())));
 
     // Logger.log("Subsystems/Turret/Angle Setpoint",
     // ScreamMath.calculateAngleToPoint(drivetrain.getEstimatedPose().getTranslation(),

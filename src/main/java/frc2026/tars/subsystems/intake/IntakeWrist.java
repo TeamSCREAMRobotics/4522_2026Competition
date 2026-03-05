@@ -88,6 +88,10 @@ public class IntakeWrist extends TalonFXSubsystem {
         });
   }
 
+  public void moveToAngle(Rotation2d targetAngle) {
+    setSetpointMotionMagicPosition(targetAngle.getRotations());
+  }
+
   @Getter public TalonFXSubsystemGoal goal = getGoal();
 
   @Override

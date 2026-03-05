@@ -59,7 +59,7 @@ public class TurretConstants {
 
   public static final double LATENCY = 0.15; // TODO: Tune this constant
 
-  public static final double AIM_TOLERANCE_DEG = 2.0;
+  public static final double AIM_TOLERANCE_DEG = 5.0;
 
   static {
     TURRET_CONFIG.name = "Turret";

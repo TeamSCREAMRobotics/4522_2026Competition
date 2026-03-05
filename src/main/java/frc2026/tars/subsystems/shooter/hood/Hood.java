@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc2026.tars.Robot;
 
 public class Hood extends TalonFXSubsystem {
   public Hood(TalonFXSubsystemConfiguration config) {
@@ -35,6 +36,11 @@ public class Hood extends TalonFXSubsystem {
             .withDeadline(
                 new WaitUntilCommand(() -> ((Timer.getFPGATimestamp() - startTime) > 1.0))),
         new InstantCommand(() -> resetPosition(0)));
+  }
+
+  @Override
+  public synchronized double getPosition() {
+      return Robot.isSimulation() ? getSetpoint() : super.getPosition();
   }
 
   @Override
