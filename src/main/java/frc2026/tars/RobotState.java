@@ -1,6 +1,5 @@
 package frc2026.tars;
 
-import com.teamscreamrobotics.dashboard.DashboardBoolean;
 import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.gameutil.GameState;
 import com.teamscreamrobotics.util.AllianceFlipUtil;

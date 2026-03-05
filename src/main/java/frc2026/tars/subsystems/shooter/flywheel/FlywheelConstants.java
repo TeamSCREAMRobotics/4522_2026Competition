@@ -6,15 +6,8 @@ import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.CANDevice;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXConstants;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemConfiguration;
-import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemSimConstants;
 import com.teamscreamrobotics.pid.ScreamPIDConstants;
 import com.teamscreamrobotics.pid.ScreamPIDConstants.FeedforwardConstants;
-import com.teamscreamrobotics.sim.SimWrapper;
-import com.teamscreamrobotics.util.SimUtil;
-
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class FlywheelConstants {
   public static final double FLYWHEEL_REDUCTION = 1.0;
@@ -26,7 +19,6 @@ public class FlywheelConstants {
 
   public static final TalonFXSubsystemConfiguration FLYWHEEL_CONFIG =
       new TalonFXSubsystemConfiguration();
-
 
   static {
     FLYWHEEL_CONFIG.name = "Flywheel";

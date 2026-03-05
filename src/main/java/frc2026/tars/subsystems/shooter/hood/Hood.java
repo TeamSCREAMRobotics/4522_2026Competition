@@ -40,7 +40,7 @@ public class Hood extends TalonFXSubsystem {
 
   @Override
   public synchronized double getPosition() {
-      return Robot.isSimulation() ? getSetpoint() : super.getPosition();
+    return Robot.isSimulation() ? getSetpoint() : super.getPosition();
   }
 
   @Override
