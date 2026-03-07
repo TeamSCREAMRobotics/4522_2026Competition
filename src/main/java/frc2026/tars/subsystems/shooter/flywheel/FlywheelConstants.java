@@ -32,7 +32,6 @@ public class FlywheelConstants {
     FLYWHEEL_CONFIG.slaveConstants =
         new TalonFXConstants[] {
           new TalonFXConstants(new CANDevice(11), InvertedValue.CounterClockwise_Positive),
-          new TalonFXConstants(new CANDevice(16), InvertedValue.Clockwise_Positive)
         };
     FLYWHEEL_CONFIG.slot0 =
         new ScreamPIDConstants(3.0, 5.5, 0.0)

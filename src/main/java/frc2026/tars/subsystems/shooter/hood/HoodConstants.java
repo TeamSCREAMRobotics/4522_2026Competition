@@ -37,17 +37,19 @@ public class HoodConstants {
         new TalonFXConstants(new CANDevice(9), InvertedValue.Clockwise_Positive);
 
     HOOD_CONFIG.slot0 =
-        new ScreamPIDConstants(55.0, 0, 0)
+        new ScreamPIDConstants(90.0, 0, 0)
             .getSlot0Configs(new FeedforwardConstants(0, 0.8, 0.0, 0));
+
+    // P: 55.0
 
     HOOD_CONFIG.neutralMode = NeutralModeValue.Brake;
     HOOD_CONFIG.sensorToMechRatio = HOOD_REDUCTION;
     HOOD_CONFIG.enableSupplyCurrentLimit = true;
-    HOOD_CONFIG.supplyCurrentLimit = 35;
+    HOOD_CONFIG.supplyCurrentLimit = 15;
 
     HOOD_CONFIG.maxUnitsLimit = MAX_UNITS;
 
-    HOOD_CONFIG.acceleration = 120.0;
+    HOOD_CONFIG.acceleration = 20.0;
     HOOD_CONFIG.cruiseVelocity = 30.0;
   }
 }

@@ -57,20 +57,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Medium Shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "DEPOT_TRENCH_TNZ3"
-                }
-              }
-            ]
+            "name": "Long Shoot"
           }
         }
       ]

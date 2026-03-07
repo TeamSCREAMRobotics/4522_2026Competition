@@ -96,6 +96,10 @@ public class Turret extends TalonFXSubsystem {
     }
 
     Logger.log(logPrefix + "Motor Angle", getAngle().getDegrees());
+
+    Logger.log(logPrefix + "OutOfBounds", targetOutOfBounds);
+
+    Logger.log(logPrefix + "AimingAtTarget", isAimingAtTarget());
   }
 
   // Does the actual check to ensure that angle is within bounds
@@ -125,10 +129,13 @@ public class Turret extends TalonFXSubsystem {
     double chosenDelta;
 
     if (cwValid && ccwValid) {
+      targetOutOfBounds = false;
       chosenDelta = Math.abs(pathCW) < Math.abs(pathCCW) ? pathCW : pathCCW;
     } else if (cwValid) {
+      targetOutOfBounds = false;
       chosenDelta = pathCW;
     } else if (ccwValid) {
+      targetOutOfBounds = false;
       chosenDelta = pathCCW;
     } else {
       targetOutOfBounds = true;
@@ -139,8 +146,6 @@ public class Turret extends TalonFXSubsystem {
               TurretConstants.MIN_ROT_DEG,
               TurretConstants.MAX_ROT_DEG));
     }
-
-    targetOutOfBounds = false;
 
     return Rotation2d.fromDegrees(
         MathUtil.clamp(

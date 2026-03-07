@@ -37,6 +37,8 @@ import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
 import frc2026.tars.subsystems.shooter.hood.HoodConstants;
+import frc2026.tars.subsystems.shooter.kicker.Kicker;
+import frc2026.tars.subsystems.shooter.kicker.KickerConstants;
 import frc2026.tars.subsystems.shooter.turret.Turret;
 import frc2026.tars.subsystems.shooter.turret.TurretConstants;
 import frc2026.tars.subsystems.vision.VisionManager;
@@ -62,6 +64,7 @@ public class RobotContainer {
   private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
   private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
   private final Dyerotor dyerotor = new Dyerotor(DyerotorConstants.DYEROTOR_CONFIG);
+  private final Kicker kicker = new Kicker(KickerConstants.KICKER_CONFIG);
 
   @Getter
   private final Subsystems subsystems =
@@ -132,14 +135,10 @@ public class RobotContainer {
   private void configureBindings() {
 
     Controlboard.intake()
-        .onTrue(
+        .whileTrue(
             new SequentialCommandGroup(
                     intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.INTAKE))
-                .withName("Intake Running"))
-        .onFalse(
-            new SequentialCommandGroup(
-                    intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.STOP))
-                .withName("Intake Stopped"));
+                .withName("Intake Running"));
 
     Controlboard.moveIntakeWrist()
         .whileTrue(
@@ -191,6 +190,9 @@ public class RobotContainer {
                             Rotation2d.fromDegrees(180),
                             DrivetrainConstants.headingControllerProfiled)));
 
+    Controlboard.aggitate()
+        .whileTrue(Commands.run(() -> shooter.agitate(true)))
+        .whileFalse(Commands.run(() -> shooter.agitate(false)));
     Controlboard.hailMaryMode()
         .whileTrue(
             new SequentialCommandGroup(turret.moveToAngleCommandRR(Rotation2d.fromDegrees(0.0)))
@@ -228,6 +230,8 @@ public class RobotContainer {
             .beforeStarting(() -> drivetrain.getHelper().setLastAngle(drivetrain.getHeading()))
             .withName("Drivetrain: Default command"));
 
+    
+
     shooter.setDefaultCommand(shooter.defaultCommand());
 
     led.setDefaultCommand(
@@ -245,6 +249,9 @@ public class RobotContainer {
                   }
                 })
             .ignoringDisable(true));
+
+    intakeRollers.setDefaultCommand(intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP));
+    kicker.setDefaultCommand(kicker.applyVoltageCommand(() -> 10.0));
   }
 
   private void configureAutoCommands() {
@@ -272,6 +279,15 @@ public class RobotContainer {
   }
 
   private void configureManualOverrides() {
+    Controlboard.runBackFlywheel().whileTrue(flywheel.applyVoltageCommand(() -> -1.0));
+
+    Controlboard.blipDyerotor()
+        .whileTrue(
+            (dyerotor
+                .applyVoltageCommand(() -> -1.0)
+                .withTimeout(0.3)
+        ).andThen(() -> Dashboard.blipDyerotor.set(false)));
+
     Controlboard.resetFieldCentric()
         .onTrue(Commands.runOnce(() -> drivetrain.resetRotation(AllianceFlipUtil.getFwdHeading())));
 
@@ -287,7 +303,15 @@ public class RobotContainer {
         .onTrue(
             turret.setZero().andThen(() -> Dashboard.zeroTurret.set(false)).ignoringDisable(true));
 
-    Controlboard.blipDyerotor().whileTrue(Commands.run(() -> dyerotor.setVoltage(-0.5), dyerotor));
+    Controlboard.runBackIntake().whileTrue((intakeRollers.applyVoltageCommand(() -> -2.0)).andThen(() -> Dashboard.runBackIntake.set(false)));
+
+    // Controlboard.blipDyerotor().whileTrue(Commands.run(() -> dyerotor.setVoltage(-0.5),
+    // dyerotor));
+
+    Controlboard.resetManuals()
+        .whileTrue(
+            (Commands.runOnce(() -> Dashboard.resetManuals())
+                .andThen(() -> Dashboard.resetManuals.set(false))).ignoringDisable(true));
 
     Controlboard.getManualMode()
         .whileTrue(
