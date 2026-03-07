@@ -3,67 +3,55 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.005217935392816,
-        "y": 0.6081969157769855
+        "x": 3.6543060498220648,
+        "y": 7.461803084223013
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.9545846897574135,
-        "y": 0.6444219594093825
+        "x": 4.654911032028471,
+        "y": 7.547876631079477
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "FL_TRENCH_END"
     },
     {
       "anchor": {
-        "x": 5.827284090909091,
-        "y": 0.6081969157769855
+        "x": 4.742511111111111,
+        "y": 7.461803084223013
       },
       "prevControl": {
-        "x": 5.378937499999999,
-        "y": 0.5512954545454545
+        "x": 3.742539164749676,
+        "y": 7.454312657658508
       },
       "nextControl": {
-        "x": 6.650547303631174,
-        "y": 0.7126805468157901
+        "x": 7.615215737445621,
+        "y": 7.48332147093713
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.315044444444445,
-        "y": 1.2578333333333331
+        "x": 7.500188888888889,
+        "y": 5.652577777777777
       },
       "prevControl": {
-        "x": 7.0307497831919195,
-        "y": 0.8511267225745147
-      },
-      "nextControl": {
-        "x": 7.6738478059910475,
-        "y": 1.7711306934053488
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 7.704822222222223,
-        "y": 3.109277777777777
-      },
-      "prevControl": {
-        "x": 7.713091638417554,
-        "y": 2.8352075330485467
+        "x": 7.478670502174772,
+        "y": 6.879125820482403
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "OUTPOST_T-TS_END"
+      "linkedName": "FL_TRENCH_TNZ_END"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6540880503144649,
-      "rotationDegrees": -0.5537361293344076
+      "waypointRelativePos": 1.0834813499111855,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.6092362344582625,
+      "rotationDegrees": -90.0
     }
   ],
   "constraintZones": [],
@@ -71,7 +59,7 @@
   "eventMarkers": [
     {
       "name": "Run Intake",
-      "waypointRelativePos": 1.8,
+      "waypointRelativePos": 1.484814398200232,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -91,10 +79,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "OUTPOST_TRENCH",
+  "folder": "DEPOT_TRENCH",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

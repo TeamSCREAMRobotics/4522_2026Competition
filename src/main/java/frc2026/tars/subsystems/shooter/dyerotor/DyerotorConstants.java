@@ -32,9 +32,7 @@ public class DyerotorConstants {
     //       new TalonFXConstants(new CANDevice(16), InvertedValue.Clockwise_Positive)
     //      };
 
-    DYEROTOR_CONFIG.supplyCurrentLimit = 30;
+    DYEROTOR_CONFIG.supplyCurrentLimit = 35;
     DYEROTOR_CONFIG.enableSupplyCurrentLimit = true;
-    DYEROTOR_CONFIG.statorCurrentLimit = 40;
-    DYEROTOR_CONFIG.enableStatorCurrentLimit = true;
   }
 }
