@@ -14,7 +14,7 @@ public class Dyerotor extends TalonFXSubsystem {
   public double sixPointSeven = sixPointSeven();
 
   public double sixPointSeven() {
-    return 8.0;
+    return 7.4;
   }
 
   public void runDyerotor() {
@@ -25,10 +25,6 @@ public class Dyerotor extends TalonFXSubsystem {
       setVoltage(2.0);
     }
   }
-
-  /* public Command blipDyerotor() {
-    return new SequentialCommandGroup()
-  } */
 
   @Override
   public void stop() {

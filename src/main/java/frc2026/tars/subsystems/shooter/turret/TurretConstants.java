@@ -44,9 +44,9 @@ public class TurretConstants {
       10.0; // 1.0; // was 15.0, changed to keep chain from breaking
   public static final boolean BRAKE_MODE = true;
   public static final boolean ENABLE_STATOR_LIMIT = true;
-  public static final int STATOR_CURRENT_LIMIT = 40;
+  public static final int STATOR_CURRENT_LIMIT = 30;
   public static final boolean ENABLE_SUPPLY_LIMIT = true;
-  public static final int SUPPLY_CURRENT_LIMIT = 40;
+  public static final int SUPPLY_CURRENT_LIMIT = 30;
 
   public static final ScreamPIDConstants SIM_GAINS = new ScreamPIDConstants(40.0, 0.0, 0.0);
 
@@ -59,7 +59,7 @@ public class TurretConstants {
 
   public static final double LATENCY = 0.15; // TODO: Tune this constant
 
-  public static final double AIM_TOLERANCE_DEG = 5.0;
+  public static final double AIM_TOLERANCE_DEG = 10.0;
 
   static {
     TURRET_CONFIG.name = "Turret";

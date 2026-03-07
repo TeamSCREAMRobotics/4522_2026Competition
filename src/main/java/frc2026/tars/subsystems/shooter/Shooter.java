@@ -181,7 +181,7 @@ public class Shooter extends SubsystemBase {
     double distanceMeters = getShotDistance(target).getMeters();
     double hoodAngleDeg = getHoodAngleFromDistance(distanceMeters);
 
-    double multiplier = wantShoot ? 1.0 : 8.0;
+    double multiplier = wantShoot ? 1.0 : 4.0;
     double flywheelMap = ShooterConstants.FLYWHEEL_MAP.get(distanceMeters / multiplier);
 
     double flywheelSetpoint = flywheelMap;
@@ -194,7 +194,7 @@ public class Shooter extends SubsystemBase {
 
     turret.pointToTargetFR(() -> target, () -> robotPose, () -> getFieldToTurret());
 
-    hood.moveToAngle(Rotation2d.fromDegrees(hoodAngleDeg));
+    hood.moveToAngle(Rotation2d.fromDegrees(wantShoot ? hoodAngleDeg : 0.0));
     flywheel.setTargetVelocityTorqueCurrent(flywheelSetpoint, 0.0);
     // flywheel.setTargetVelocityTorqueCurrent(Dashboard.flywheelVelocity.get(), 0.0);
 
@@ -213,9 +213,10 @@ public class Shooter extends SubsystemBase {
   }
 
   public void runFeed() {
-    if ((flywheel.atVel() || Dashboard.disableWaitUntilAtVelocity.get())) {
+    if ((flywheel.atVel() || Dashboard.disableWaitUntilAtVelocity.get())
+        && (turret.isAimingAtTarget() || Dashboard.dissableWaitUntilAim.get())) {
       dyerotor.runDyerotor();
-      led.strobe(Color.kRed, 0.7);
+      led.solid(Color.kRed);
     }
   }
 

@@ -14,6 +14,8 @@ public class Dashboard {
   public static DashboardBoolean aimAtHub;
   public static DashboardBoolean onlyUsePoseForHub;
   public static DashboardBoolean dissableWaitUntilAim;
+  public static DashboardBoolean runBackIntake;
+  public static DashboardBoolean runBackFlywheel;
 
   public static DashboardBoolean zeroIntake;
   // public static DashboardBoolean zeroClimber;
@@ -70,14 +72,16 @@ public class Dashboard {
   public static void initialize() {
     disableAmbiguityRejection = new DashboardBoolean(vision, "Disable Ambiguity Rejection", false);
     disableAllVisionUpdates = new DashboardBoolean(vision, "Disable All Vision Updates", false);
+    runBackIntake = new DashboardBoolean(overrides, "Run Back Intake", false);
+    runBackFlywheel = new DashboardBoolean(overrides, "Run Back Flywheel", false);
 
     ferryMode = new DashboardBoolean(overrides, "Manual Ferry Mode", false);
     zeroIntake = new DashboardBoolean(overrides, "Zero Intake", false);
-    disableShootOnTheMove = new DashboardBoolean(overrides, "Dissable Shoot On The Move", false);
+    disableShootOnTheMove = new DashboardBoolean(overrides, "Dissable Shoot On The Move", true);
     // zeroClimber = new DashboardBoolean(overrides, "Zero Climber", false);
     zeroHood = new DashboardBoolean(overrides, "Zero Hood", false);
     zeroTurret = new DashboardBoolean(overrides, "Zero Turret", false);
-    blipDyerotor = new DashboardBoolean(overrides, "Reset Field Centric", false);
+    blipDyerotor = new DashboardBoolean(overrides, "blip dyerotor", false);
     disableWaitUntilAtVelocity =
         new DashboardBoolean(overrides, "Disable Wait Until At Velocity", false);
     manualMode = new DashboardBoolean(overrides, "Manual Mode", false);
@@ -114,7 +118,7 @@ public class Dashboard {
     manualHoodAngle.set(0.0);
     manualFlywheelVelocity.set(0.0);
     manualIntakeRollers.set(0.0);
-    manualIntakeWrist.set(0.0);
+    manualIntakeWrist.set(90.0);
   }
 
   public static void periodic() {

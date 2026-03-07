@@ -180,7 +180,7 @@ public class RobotState {
       } else if (Controlboard.driveController.leftStick().getAsBoolean()) {
         return 0.7;
       } else if (Controlboard.shoot().getAsBoolean() && !Dashboard.disableShootOnTheMove.get()) {
-        return 0.4;
+        return 0.25;
       } else {
         return 1.0;
       }
