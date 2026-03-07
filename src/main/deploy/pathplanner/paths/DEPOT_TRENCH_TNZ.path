@@ -32,16 +32,16 @@
     },
     {
       "anchor": {
-        "x": 8.27,
-        "y": 5.584366666666666
+        "x": 8.25706134094151,
+        "y": 5.6070470756062765
       },
       "prevControl": {
-        "x": 8.248481613285882,
-        "y": 6.810914709371292
+        "x": 8.235542954227393,
+        "y": 6.833595118310902
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "FL_TRENCH_TNZ_END"
+      "linkedName": "DEPOT_TRENCH_TNZ_NEW"
     }
   ],
   "rotationTargets": [

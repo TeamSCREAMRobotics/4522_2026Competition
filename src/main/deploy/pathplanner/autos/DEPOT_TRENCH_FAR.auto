@@ -21,6 +21,12 @@
           "data": {
             "commands": [
               {
+                "type": "named",
+                "data": {
+                  "name": "Stop Intakeing"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
                   "pathName": "DEPOT_TRENCH_RETURN"
@@ -45,6 +51,12 @@
           "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Intakeing"
+                }
+              },
               {
                 "type": "path",
                 "data": {

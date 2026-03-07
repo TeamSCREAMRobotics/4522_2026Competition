@@ -3,56 +3,72 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.704822222222223,
-        "y": 3.109277777777777
+        "x": 2.911921708185054,
+        "y": 0.5974377224199281
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.444614728334264,
-        "y": 2.3888433944163068
+        "x": 3.911921708185054,
+        "y": 0.5974377224199277
       },
       "isLocked": false,
-      "linkedName": "OUTPOST_T-TS_END"
+      "linkedName": "OUTPOST_TRENCH_END"
     },
     {
       "anchor": {
-        "x": 5.924552304731626,
+        "x": 5.332924393723252,
         "y": 0.5974377224199281
       },
       "prevControl": {
-        "x": 7.000711079256647,
-        "y": 0.8561432018881041
+        "x": 4.465795666262638,
+        "y": 0.6092668806237195
       },
       "nextControl": {
-        "x": 5.391422159800241,
-        "y": 0.4692747663316996
+        "x": 6.109243937232525,
+        "y": 0.5868473609129818
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.911921708185054,
-        "y": 0.5974377224199281
+        "x": 5.9927960057061345,
+        "y": 3.6015549215406564
       },
       "prevControl": {
-        "x": 3.5773915836589953,
-        "y": 0.6013520135811623
+        "x": 5.984089464736473,
+        "y": 2.208320154290899
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "OUTPOST_TRENCH_END"
+      "linkedName": "BS_NEW"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.8561278863232656,
+      "waypointRelativePos": 0.6,
       "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.628997867803827,
+      "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Run Intake",
+      "waypointRelativePos": 0.9,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Run Intake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.5,
     "maxAcceleration": 4.5,
@@ -63,13 +79,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "OUTPOST_TRENCH",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
