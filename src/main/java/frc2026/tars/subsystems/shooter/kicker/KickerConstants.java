@@ -7,7 +7,8 @@ import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXConstants;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemConfiguration;
 
 public class KickerConstants {
-  public final static TalonFXSubsystemConfiguration KICKER_CONFIG = new TalonFXSubsystemConfiguration();
+  public static final TalonFXSubsystemConfiguration KICKER_CONFIG =
+      new TalonFXSubsystemConfiguration();
 
   static {
     KICKER_CONFIG.name = "Kicker";

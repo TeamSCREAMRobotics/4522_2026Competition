@@ -230,8 +230,6 @@ public class RobotContainer {
             .beforeStarting(() -> drivetrain.getHelper().setLastAngle(drivetrain.getHeading()))
             .withName("Drivetrain: Default command"));
 
-    
-
     shooter.setDefaultCommand(shooter.defaultCommand());
 
     led.setDefaultCommand(
@@ -283,10 +281,8 @@ public class RobotContainer {
 
     Controlboard.blipDyerotor()
         .whileTrue(
-            (dyerotor
-                .applyVoltageCommand(() -> -1.0)
-                .withTimeout(0.3)
-        ).andThen(() -> Dashboard.blipDyerotor.set(false)));
+            (dyerotor.applyVoltageCommand(() -> -1.0).withTimeout(0.3))
+                .andThen(() -> Dashboard.blipDyerotor.set(false)));
 
     Controlboard.resetFieldCentric()
         .onTrue(Commands.runOnce(() -> drivetrain.resetRotation(AllianceFlipUtil.getFwdHeading())));
@@ -303,7 +299,10 @@ public class RobotContainer {
         .onTrue(
             turret.setZero().andThen(() -> Dashboard.zeroTurret.set(false)).ignoringDisable(true));
 
-    Controlboard.runBackIntake().whileTrue((intakeRollers.applyVoltageCommand(() -> -2.0)).andThen(() -> Dashboard.runBackIntake.set(false)));
+    Controlboard.runBackIntake()
+        .whileTrue(
+            (intakeRollers.applyVoltageCommand(() -> -2.0))
+                .andThen(() -> Dashboard.runBackIntake.set(false)));
 
     // Controlboard.blipDyerotor().whileTrue(Commands.run(() -> dyerotor.setVoltage(-0.5),
     // dyerotor));
@@ -311,7 +310,8 @@ public class RobotContainer {
     Controlboard.resetManuals()
         .whileTrue(
             (Commands.runOnce(() -> Dashboard.resetManuals())
-                .andThen(() -> Dashboard.resetManuals.set(false))).ignoringDisable(true));
+                    .andThen(() -> Dashboard.resetManuals.set(false)))
+                .ignoringDisable(true));
 
     Controlboard.getManualMode()
         .whileTrue(
