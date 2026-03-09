@@ -141,4 +141,20 @@ public class Controlboard {
   public static Trigger blipDyerotor() {
     return new Trigger(() -> Dashboard.blipDyerotor.get());
   }
+
+  public static Trigger resetManual() {
+    return new Trigger(() -> Dashboard.resetManuals.get());
+  }
+
+  public static Trigger aggitate() {
+    return driveController.rightStick();
+  }
+
+  public static Trigger runBackIntake() {
+    return new Trigger(() -> Dashboard.runBackIntake.get());
+  }
+
+  public static Trigger runBackFlywheel() {
+    return new Trigger(() -> Dashboard.runBackFlywheel.get());
+  }
 }

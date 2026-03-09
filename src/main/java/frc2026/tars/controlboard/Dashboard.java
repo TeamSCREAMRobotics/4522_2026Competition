@@ -13,6 +13,9 @@ public class Dashboard {
   public static DashboardBoolean ferryMode;
   public static DashboardBoolean aimAtHub;
   public static DashboardBoolean onlyUsePoseForHub;
+  public static DashboardBoolean dissableWaitUntilAim;
+  public static DashboardBoolean runBackIntake;
+  public static DashboardBoolean runBackFlywheel;
 
   public static DashboardBoolean zeroIntake;
   // public static DashboardBoolean zeroClimber;
@@ -35,6 +38,8 @@ public class Dashboard {
 
   // public static DashboardBoolean autoShoot;
   public static DashboardBoolean bumperShoot;
+
+  public static DashboardBoolean disableShootOnTheMove;
 
   private static final String vision = "Vision";
 
@@ -67,13 +72,16 @@ public class Dashboard {
   public static void initialize() {
     disableAmbiguityRejection = new DashboardBoolean(vision, "Disable Ambiguity Rejection", false);
     disableAllVisionUpdates = new DashboardBoolean(vision, "Disable All Vision Updates", false);
+    runBackIntake = new DashboardBoolean(overrides, "Run Back Intake", false);
+    runBackFlywheel = new DashboardBoolean(overrides, "Run Back Flywheel", false);
 
     ferryMode = new DashboardBoolean(overrides, "Manual Ferry Mode", false);
     zeroIntake = new DashboardBoolean(overrides, "Zero Intake", false);
+    disableShootOnTheMove = new DashboardBoolean(overrides, "Dissable Shoot On The Move", true);
     // zeroClimber = new DashboardBoolean(overrides, "Zero Climber", false);
     zeroHood = new DashboardBoolean(overrides, "Zero Hood", false);
     zeroTurret = new DashboardBoolean(overrides, "Zero Turret", false);
-    blipDyerotor = new DashboardBoolean(overrides, "Reset Field Centric", false);
+    blipDyerotor = new DashboardBoolean(overrides, "blip dyerotor", false);
     disableWaitUntilAtVelocity =
         new DashboardBoolean(overrides, "Disable Wait Until At Velocity", false);
     manualMode = new DashboardBoolean(overrides, "Manual Mode", false);
@@ -82,10 +90,11 @@ public class Dashboard {
     manualHoodAngle = new DashboardNumber(overrides, "Manual Hood Angle", 0.0);
     manualFlywheelVelocity = new DashboardNumber(overrides, "Manual Flywheel Velocity", 0.0);
     manualIntakeRollers = new DashboardNumber(overrides, "Manual Intake Rollers", 0.0);
-    manualIntakeWrist = new DashboardNumber(overrides, "Manual Intake Wrist", 0.0);
+    manualIntakeWrist = new DashboardNumber(overrides, "Manual Intake Wrist", 90.0);
     manualDyerotor = new DashboardNumber(overrides, "Manual Dyerotor", 0.0);
     // autoShoot = new DashboardBoolean(overrides, "Auto Shoot", false);
     bumperShoot = new DashboardBoolean(overrides, "Bumper Shoot", false);
+    dissableWaitUntilAim = new DashboardBoolean(overrides, "Dissable Wait until aim", false);
 
     closeMapNudge =
         new DashboardNumber(overrides, "Close Tree Map Nudge", ShooterConstants.CLOSE_MAP_NUDGE);
@@ -109,7 +118,7 @@ public class Dashboard {
     manualHoodAngle.set(0.0);
     manualFlywheelVelocity.set(0.0);
     manualIntakeRollers.set(0.0);
-    manualIntakeWrist.set(0.0);
+    manualIntakeWrist.set(90.0);
   }
 
   public static void periodic() {
