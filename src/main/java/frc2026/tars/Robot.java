@@ -26,7 +26,7 @@ public class Robot extends TimedRobot {
 
     Logger.setOptions(
         new DogLogOptions()
-            .withCaptureDs(false)
+            .withCaptureDs(true)
             .withCaptureNt(false)
             .withLogExtras(true)
             .withNtPublish(true)
