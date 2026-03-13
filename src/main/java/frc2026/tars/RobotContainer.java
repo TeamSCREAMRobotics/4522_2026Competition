@@ -10,7 +10,10 @@ import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -42,6 +45,7 @@ import frc2026.tars.subsystems.shooter.kicker.KickerConstants;
 import frc2026.tars.subsystems.shooter.turret.Turret;
 import frc2026.tars.subsystems.shooter.turret.TurretConstants;
 import frc2026.tars.subsystems.vision.VisionManager;
+import frc2026.tars.util.HubTracker;
 import lombok.Getter;
 
 public class RobotContainer {
@@ -71,6 +75,8 @@ public class RobotContainer {
       new Subsystems(drivetrain, intakeWrist, turret, hood, flywheel, led);
 
   @Getter private final RobotState robotState = new RobotState(subsystems);
+
+  Field2d field = new Field2d();
 
   private final Shooter shooter =
       new Shooter(
@@ -198,7 +204,9 @@ public class RobotContainer {
             new SequentialCommandGroup(turret.moveToAngleCommandRR(Rotation2d.fromDegrees(0.0)))
                 .alongWith(hood.moveToAngleCommand(Rotation2d.fromDegrees(0.0)))
                 .alongWith(flywheel.setTargetVelocityTorqueCurrentCommand(40.5, 0.0)));
-  }
+  
+    SmartDashboard.putData(field);
+            }
 
   private void configureDefaultCommands() {
 
@@ -364,6 +372,12 @@ public class RobotContainer {
                 0,
                 drivetrain.getEstimatedPose().getRotation().getRadians()
                     + turret.getAngle().getRadians())));
+    
+    field.setRobotPose(drivetrain.getEstimatedPose());
+    Logger.log("Remaining Time", DriverStation.getMatchTime());
+    Logger.log("Hub Shift Remaining", 
+        HubTracker.timeRemainingInCurrentShift().orElse(Time.ofBaseUnits(-1.0, Units.Seconds)));
+    Logger.log("Is Hub Active", HubTracker.isActive());
 
     // Logger.log("Subsystems/Turret/Angle Setpoint",
     // ScreamMath.calculateAngleToPoint(drivetrain.getEstimatedPose().getTranslation(),
