@@ -204,9 +204,9 @@ public class RobotContainer {
             new SequentialCommandGroup(turret.moveToAngleCommandRR(Rotation2d.fromDegrees(0.0)))
                 .alongWith(hood.moveToAngleCommand(Rotation2d.fromDegrees(0.0)))
                 .alongWith(flywheel.setTargetVelocityTorqueCurrentCommand(40.5, 0.0)));
-  
+
     SmartDashboard.putData(field);
-            }
+  }
 
   private void configureDefaultCommands() {
 
@@ -372,10 +372,11 @@ public class RobotContainer {
                 0,
                 drivetrain.getEstimatedPose().getRotation().getRadians()
                     + turret.getAngle().getRadians())));
-    
+
     field.setRobotPose(drivetrain.getEstimatedPose());
     Logger.log("Remaining Time", DriverStation.getMatchTime());
-    Logger.log("Hub Shift Remaining", 
+    Logger.log(
+        "Hub Shift Remaining",
         HubTracker.timeRemainingInCurrentShift().orElse(Time.ofBaseUnits(-1.0, Units.Seconds)));
     Logger.log("Is Hub Active", HubTracker.isActive());
 
