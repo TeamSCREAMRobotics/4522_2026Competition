@@ -73,7 +73,6 @@ public class IntakeConstants {
         new ScreamPIDConstants(45.5, 0, 0)
             .getSlot0Configs(new FeedforwardConstants(0, 0, 0, 0, GravityTypeValue.Arm_Cosine));
     WRIST_CONFIG.positionThreshold = Units.degreesToRotations(3.0);
-
   }
 
   public static final TalonFXSubsystemConfiguration ROLLERS_CONFIG =
