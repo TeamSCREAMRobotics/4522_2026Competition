@@ -32,7 +32,8 @@ public class TurretConstants {
   public static final double MAGNITUDE = 0.95;
 
   public static final DCMotor DC_MOTOR = DCMotor.getKrakenX44Foc(1);
-  public static final int CAN_ID = 8;
+  public static final int CAN_ID = 18;
+  // Remove this entire subsystem.
   public static final double kP = 45; // 45.0; // 47.5;
   public static final double kI = 0.0;
   public static final double kD = 0.0;

@@ -34,7 +34,7 @@ public class HoodConstants {
     HOOD_CONFIG.debugMode = false;
 
     HOOD_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(9), InvertedValue.Clockwise_Positive);
+        new TalonFXConstants(new CANDevice(8), InvertedValue.Clockwise_Positive);
 
     HOOD_CONFIG.slot0 =
         new ScreamPIDConstants(90.0, 0, 0)
