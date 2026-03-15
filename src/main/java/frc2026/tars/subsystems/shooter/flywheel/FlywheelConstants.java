@@ -28,10 +28,12 @@ public class FlywheelConstants {
     FLYWHEEL_CONFIG.debugMode = false;
 
     FLYWHEEL_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(10), InvertedValue.Clockwise_Positive);
+        new TalonFXConstants(new CANDevice(0), InvertedValue.Clockwise_Positive);
     FLYWHEEL_CONFIG.slaveConstants =
         new TalonFXConstants[] {
-          new TalonFXConstants(new CANDevice(11), InvertedValue.CounterClockwise_Positive),
+          new TalonFXConstants(new CANDevice(1), InvertedValue.Clockwise_Positive),
+          new TalonFXConstants(new CANDevice(2), InvertedValue.CounterClockwise_Positive),
+          new TalonFXConstants(new CANDevice(3), InvertedValue.CounterClockwise_Positive)
         };
     FLYWHEEL_CONFIG.slot0 =
         new ScreamPIDConstants(3.0, 5.5, 0.0)

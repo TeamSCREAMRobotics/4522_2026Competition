@@ -22,7 +22,12 @@ public class DyerotorConstants {
     DYEROTOR_CONFIG.debugMode = false;
 
     DYEROTOR_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(13), InvertedValue.CounterClockwise_Positive);
+        new TalonFXConstants(new CANDevice(6), InvertedValue.Clockwise_Positive);
+
+    DYEROTOR_CONFIG.slaveConstants =
+        new TalonFXConstants[] {
+          new TalonFXConstants(new CANDevice(7), InvertedValue.CounterClockwise_Positive)
+        };
 
     DYEROTOR_CONFIG.simConstants =
         new TalonFXSubsystemSimConstants(new SimWrapper(sim), 1.0, new PIDController(1, 0, 0));

@@ -18,7 +18,11 @@ public class KickerConstants {
     KICKER_CONFIG.debugMode = false;
 
     KICKER_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(16), InvertedValue.Clockwise_Positive);
+        new TalonFXConstants(new CANDevice(4), InvertedValue.Clockwise_Positive);
+    KICKER_CONFIG.slaveConstants =
+        new TalonFXConstants[] {
+          new TalonFXConstants(new CANDevice(5), InvertedValue.CounterClockwise_Positive)
+        };
 
     KICKER_CONFIG.neutralMode = NeutralModeValue.Coast;
 

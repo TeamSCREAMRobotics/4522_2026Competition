@@ -59,7 +59,7 @@ public class IntakeConstants {
             true);
 
     WRIST_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(14), InvertedValue.Clockwise_Positive);
+        new TalonFXConstants(new CANDevice(10), InvertedValue.Clockwise_Positive);
 
     WRIST_CONFIG.neutralMode = NeutralModeValue.Brake;
     WRIST_CONFIG.sensorToMechRatio = INTAKE_REDUCTION;
@@ -73,6 +73,7 @@ public class IntakeConstants {
         new ScreamPIDConstants(45.5, 0, 0)
             .getSlot0Configs(new FeedforwardConstants(0, 0, 0, 0, GravityTypeValue.Arm_Cosine));
     WRIST_CONFIG.positionThreshold = Units.degreesToRotations(3.0);
+
   }
 
   public static final TalonFXSubsystemConfiguration ROLLERS_CONFIG =
@@ -85,7 +86,7 @@ public class IntakeConstants {
     ROLLERS_CONFIG.logTelemetry = false;
 
     ROLLERS_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(15), InvertedValue.CounterClockwise_Positive);
+        new TalonFXConstants(new CANDevice(9), InvertedValue.CounterClockwise_Positive);
 
     ROLLERS_CONFIG.enableSupplyCurrentLimit = true;
     ROLLERS_CONFIG.supplyCurrentLimit = 20;
