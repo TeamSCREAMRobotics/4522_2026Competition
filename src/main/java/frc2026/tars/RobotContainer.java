@@ -4,14 +4,11 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.team6328.FeedForwardCharacterization;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -34,16 +31,14 @@ import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
 import frc2026.tars.subsystems.leds.LED;
 import frc2026.tars.subsystems.shooter.Shooter;
-import frc2026.tars.subsystems.shooter.dyerotor.Dyerotor;
-import frc2026.tars.subsystems.shooter.dyerotor.DyerotorConstants;
+import frc2026.tars.subsystems.shooter.feeder.Feeder;
+import frc2026.tars.subsystems.shooter.feeder.FeederConstants;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
 import frc2026.tars.subsystems.shooter.hood.HoodConstants;
-import frc2026.tars.subsystems.shooter.kicker.Kicker;
-import frc2026.tars.subsystems.shooter.kicker.KickerConstants;
-import frc2026.tars.subsystems.shooter.turret.Turret;
-import frc2026.tars.subsystems.shooter.turret.TurretConstants;
+import frc2026.tars.subsystems.shooter.rollers.Rollers;
+import frc2026.tars.subsystems.shooter.rollers.RollersConstants;
 import frc2026.tars.subsystems.vision.VisionManager;
 import frc2026.tars.util.HubTracker;
 import lombok.Getter;
@@ -53,7 +48,6 @@ public class RobotContainer {
   public record Subsystems(
       Drivetrain drivetrain,
       IntakeWrist intakeWrist,
-      Turret turret,
       Hood hood,
       Flywheel flywheel,
       LED led) {}
@@ -64,15 +58,14 @@ public class RobotContainer {
   private final IntakeRollers intakeRollers = new IntakeRollers(IntakeConstants.ROLLERS_CONFIG);
   private final Drivetrain drivetrain = TunerConstants.drivetrain;
 
-  private final Turret turret = new Turret(TurretConstants.TURRET_CONFIG);
   private final Hood hood = new Hood(HoodConstants.HOOD_CONFIG);
   private final Flywheel flywheel = new Flywheel(FlywheelConstants.FLYWHEEL_CONFIG);
-  private final Dyerotor dyerotor = new Dyerotor(DyerotorConstants.DYEROTOR_CONFIG);
-  private final Kicker kicker = new Kicker(KickerConstants.KICKER_CONFIG);
+  private final Rollers rollers = new Rollers(RollersConstants.ROLLERS_CONFIG);
+  private final Feeder feeder = new Feeder(FeederConstants.FEEDER_CONFIG);
 
   @Getter
   private final Subsystems subsystems =
-      new Subsystems(drivetrain, intakeWrist, turret, hood, flywheel, led);
+      new Subsystems(drivetrain, intakeWrist, hood, flywheel, led);
 
   @Getter private final RobotState robotState = new RobotState(subsystems);
 
@@ -82,15 +75,15 @@ public class RobotContainer {
       new Shooter(
           flywheel,
           hood,
-          turret,
-          dyerotor,
           intakeWrist,
           intakeRollers,
+          feeder,
+          rollers,
           led,
           drivetrain,
           getRobotState());
 
-  private final VisionManager visionManager = new VisionManager(drivetrain, turret);
+  private final VisionManager visionManager = new VisionManager(drivetrain);
 
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveDriveBrake();
 
@@ -140,11 +133,25 @@ public class RobotContainer {
 
   private void configureBindings() {
 
+    Controlboard.makeThingWork().whileTrue(new FeedForwardCharacterization(flywheel, flywheel::setVoltage, flywheel::getVelocity));
+
     Controlboard.intake()
         .whileTrue(
             new SequentialCommandGroup(
                     intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.INTAKE))
                 .withName("Intake Running"));
+
+    Controlboard.shoot()        
+        .whileTrue(
+            drivetrain.applyRequest(
+                () ->
+                    drivetrain
+                        .getHelper()
+                        .getFacingAngleProfiled(
+                            Controlboard.getTranslation(),
+                            robotState.getDrivetrainTarget(),
+                            DrivetrainConstants.headingControllerProfiled))
+                            .beforeStarting(() -> drivetrain.resetHeadingController()));
 
     Controlboard.moveIntakeWrist()
         .whileTrue(
@@ -162,29 +169,29 @@ public class RobotContainer {
                     drivetrain
                         .getHelper()
                         .getFacingAngleProfiled(
-                            Controlboard.getTranslation().get(),
+                            Controlboard.getTranslation(),
                             Rotation2d.fromDegrees(90),
-                            DrivetrainConstants.headingControllerProfiled)));
-    Controlboard.rotateNegative90Degrees()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    drivetrain
-                        .getHelper()
-                        .getFacingAngleProfiled(
-                            Controlboard.getTranslation().get(),
-                            Rotation2d.fromDegrees(-90),
-                            DrivetrainConstants.headingControllerProfiled)));
-    Controlboard.rotate0Degrees()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    drivetrain
-                        .getHelper()
-                        .getFacingAngleProfiled(
-                            Controlboard.getTranslation().get(),
-                            Rotation2d.fromDegrees(0),
-                            DrivetrainConstants.headingControllerProfiled)));
+                            DrivetrainConstants.headingControllerProfiled)).beforeStarting(() -> drivetrain.resetHeadingController()));
+    // Controlboard.rotateNegative90Degrees()
+    //     .whileTrue(
+    //         drivetrain.applyRequest(
+    //             () ->
+    //                 drivetrain
+    //                     .getHelper()
+    //                     .getFacingAngleProfiled(
+    //                         Controlboard.getTranslation(),
+    //                         Rotation2d.fromDegrees(-90),
+    //                         DrivetrainConstants.headingControllerProfiled)).beforeStarting(() -> drivetrain.resetHeadingController()));
+    // Controlboard.rotate0Degrees()
+    //     .whileTrue(
+    //         drivetrain.applyRequest(
+    //             () ->
+    //                 drivetrain
+    //                     .getHelper()
+    //                     .getFacingAngleProfiled(
+    //                         Controlboard.getTranslation(),
+    //                         Rotation2d.fromDegrees(0),
+    //                         DrivetrainConstants.headingControllerProfiled)).beforeStarting(() -> drivetrain.resetHeadingController()));
     Controlboard.rotate180Degrees()
         .whileTrue(
             drivetrain.applyRequest(
@@ -192,20 +199,13 @@ public class RobotContainer {
                     drivetrain
                         .getHelper()
                         .getFacingAngleProfiled(
-                            Controlboard.getTranslation().get(),
+                            Controlboard.getTranslation(),
                             Rotation2d.fromDegrees(180),
-                            DrivetrainConstants.headingControllerProfiled)));
+                            DrivetrainConstants.headingControllerProfiled)).beforeStarting(() -> drivetrain.resetHeadingController()));
 
     Controlboard.aggitate()
         .whileTrue(Commands.run(() -> shooter.agitate(true)))
         .whileFalse(Commands.run(() -> shooter.agitate(false)));
-    Controlboard.hailMaryMode()
-        .whileTrue(
-            new SequentialCommandGroup(turret.moveToAngleCommandRR(Rotation2d.fromDegrees(0.0)))
-                .alongWith(hood.moveToAngleCommand(Rotation2d.fromDegrees(0.0)))
-                .alongWith(flywheel.setTargetVelocityTorqueCurrentCommand(40.5, 0.0)));
-
-    SmartDashboard.putData(field);
   }
 
   private void configureDefaultCommands() {
@@ -225,14 +225,12 @@ public class RobotContainer {
                             .getHelper()
                             .getFieldCentric(
                                 Controlboard.getTranslation()
-                                    .get()
                                     .times(RobotState.getSpeedLimit().getAsDouble()),
                                 Controlboard.getRotation().getAsDouble())
                         : drivetrain
                             .getHelper()
                             .getRobotCentric(
                                 Controlboard.getTranslation()
-                                    .get()
                                     .times(RobotState.getSpeedLimit().getAsDouble()),
                                 Controlboard.getRotation().getAsDouble()))
             .beforeStarting(() -> drivetrain.getHelper().setLastAngle(drivetrain.getHeading()))
@@ -257,7 +255,6 @@ public class RobotContainer {
             .ignoringDisable(true));
 
     intakeRollers.setDefaultCommand(intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP));
-    kicker.setDefaultCommand(kicker.applyVoltageCommand(() -> 10.0));
   }
 
   private void configureAutoCommands() {
@@ -287,11 +284,6 @@ public class RobotContainer {
   private void configureManualOverrides() {
     Controlboard.runBackFlywheel().whileTrue(flywheel.applyVoltageCommand(() -> -1.0));
 
-    Controlboard.blipDyerotor()
-        .whileTrue(
-            (dyerotor.applyVoltageCommand(() -> -1.0).withTimeout(0.3))
-                .andThen(() -> Dashboard.blipDyerotor.set(false)));
-
     Controlboard.resetFieldCentric()
         .onTrue(Commands.runOnce(() -> drivetrain.resetRotation(AllianceFlipUtil.getFwdHeading())));
 
@@ -302,10 +294,6 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     Controlboard.zeroHood().whileTrue(hood.zero().andThen(() -> Dashboard.zeroHood.set(false)));
-
-    Controlboard.zeroTurret()
-        .onTrue(
-            turret.setZero().andThen(() -> Dashboard.zeroTurret.set(false)).ignoringDisable(true));
 
     Controlboard.runBackIntake()
         .whileTrue(
@@ -324,9 +312,6 @@ public class RobotContainer {
     Controlboard.getManualMode()
         .whileTrue(
             Commands.parallel(
-                    turret.moveToAngleCommandFR(
-                        () -> Rotation2d.fromDegrees(Dashboard.manualTurretAngle.get()),
-                        () -> drivetrain.getEstimatedPose().getRotation()),
                     Commands.run(
                         () ->
                             hood.moveToAngle(
@@ -342,9 +327,7 @@ public class RobotContainer {
                         intakeWrist),
                     Commands.run(
                         () -> intakeRollers.setVoltage(Dashboard.manualIntakeRollers.get()),
-                        intakeRollers),
-                    Commands.run(
-                        () -> dyerotor.setVoltage(Dashboard.manualDyerotor.get()), dyerotor))
+                        intakeRollers))
                 .ignoringDisable(true));
   }
 
@@ -360,25 +343,6 @@ public class RobotContainer {
   public void periodic() {
     visionManager.periodic();
     // robotState.logArea();
-
-    Logger.log(
-        "Turret Pose",
-        new Pose3d(
-            drivetrain.getEstimatedPose().getX(),
-            drivetrain.getEstimatedPose().getY(),
-            0.5,
-            new Rotation3d(
-                0,
-                0,
-                drivetrain.getEstimatedPose().getRotation().getRadians()
-                    + turret.getAngle().getRadians())));
-
-    field.setRobotPose(drivetrain.getEstimatedPose());
-    Logger.log("Remaining Time", DriverStation.getMatchTime());
-    Logger.log(
-        "Hub Shift Remaining",
-        HubTracker.timeRemainingInCurrentShift().orElse(Time.ofBaseUnits(-1.0, Units.Seconds)));
-    Logger.log("Is Hub Active", HubTracker.isActive());
 
     // Logger.log("Subsystems/Turret/Angle Setpoint",
     // ScreamMath.calculateAngleToPoint(drivetrain.getEstimatedPose().getTranslation(),

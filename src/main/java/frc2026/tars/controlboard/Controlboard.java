@@ -34,8 +34,8 @@ public class Controlboard {
     return () -> new Translation2d(driveController.getLeftY(), driveController.getLeftX());
   }
 
-  public static Supplier<Translation2d> getTranslation() {
-    return () ->
+  public static Translation2d getTranslation() {
+    return 
         snapTranslationToPole(
                 new Translation2d(
                         -applyPower(
