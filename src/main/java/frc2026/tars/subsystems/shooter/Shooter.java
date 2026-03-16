@@ -160,7 +160,7 @@ public class Shooter extends SubsystemBase {
             .plus(Rotation2d.k180deg));
 
     hood.moveToAngle(Rotation2d.fromDegrees(wantShoot ? hoodAngleDeg : 0.0));
-    flywheel.setTargetVelocityTorqueCurrent(Dashboard.manualFlywheelVelocity.get(), 0.0);
+    flywheel.setTargetVelocityTorqueCurrent(flywheelMap, 0.0);
 
     Logger.log(logPrefix + "Hood Angle", hoodAngleDeg);
     Logger.log(logPrefix + "Flywheel Velocity", flywheelSetpoint);
@@ -442,7 +442,7 @@ public class Shooter extends SubsystemBase {
     // * distance))) + (Dashboard.functionLRG.get() * Math.pow(distance, 3));
     if (distance < 2.5) {
       return 0.0;
-    } else if (distance > 6.0) {
+    } else if (distance > 5.8) {
       return 23.0;
     } else {
       return distance * Dashboard.functionScalar.get();
