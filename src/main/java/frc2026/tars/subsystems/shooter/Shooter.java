@@ -155,7 +155,9 @@ public class Shooter extends SubsystemBase {
       flywheelSetpoint = flywheelMap * Dashboard.midMapNudge.get();
     } else flywheelSetpoint = flywheelMap * Dashboard.farMapNudge.get();
 
-    robotState.setDrivetrainTarget(ScreamMath.calculateAngleToPoint(robotPose.getTranslation(), target).plus(Rotation2d.k180deg));
+    robotState.setDrivetrainTarget(
+        ScreamMath.calculateAngleToPoint(robotPose.getTranslation(), target)
+            .plus(Rotation2d.k180deg));
 
     hood.moveToAngle(Rotation2d.fromDegrees(wantShoot ? hoodAngleDeg : 0.0));
     flywheel.setTargetVelocityTorqueCurrent(Dashboard.manualFlywheelVelocity.get(), 0.0);
@@ -176,7 +178,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public void runFeed() {
-    if ((flywheel.atVel() || Dashboard.disableWaitUntilAtVelocity.get()) && (Math.abs(hood.getError()) <= 0.007 )) {
+    if ((flywheel.atVel() || Dashboard.disableWaitUntilAtVelocity.get())
+        && (Math.abs(hood.getError()) <= 0.007)) {
       rollers.setVoltage(11.0);
       feeder.setVoltage(11.0);
       // led.solid(Color.kRed);
@@ -219,67 +222,66 @@ public class Shooter extends SubsystemBase {
 
   private void idleCase(RobotState.Area area, Pose2d robotPose, ChassisSpeeds robotSpeeds) {
     if (area == null) return;
-      switch (area) {
-        case ALLIANCEZONE:
-          applyAimingSetpoints(
-              robotPose,
-              robotSpeeds,
-              AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter),
-              hoodMapAllianceZone,
-              wantShoot);
-          setIdleState(IdleState.IDLE_HUB);
-          led.wave(
-              Color.kBlack,
-              AllianceFlipUtil.get(
-                  new Color(1.0f, 0.49803922f, 0.83137256f),
-                  new Color(0.26078432f, 1.0f, 0.36078432f)),
-              0.1,
-              1.25);
-          break;
-        case DEPOT_SIDE_NEUTRALZONE:
-          applyAimingSetpoints(
-              robotPose,
-              robotSpeeds,
-              AllianceFlipUtil.get(
-                  FieldConstants.AllianceZones.leftAllianceZone,
-                  FieldConstants.AllianceZones.oppRightAllianceZone),
-              hoodMapNeutralZone,
-              wantShoot);
-          setIdleState(IdleState.IDLE_FERRY_DEPOT);
-          led.wave(Color.kBlack, new Color(0.0f, 0.5019608f, 0.5019608f), 0.1, 1.25);
-          break;
-        case OUTPOST_SIDE_NEUTRALZONE:
-          applyAimingSetpoints(
-              robotPose,
-              robotSpeeds,
-              AllianceFlipUtil.get(
-                  FieldConstants.AllianceZones.rightAllianceZone,
-                  FieldConstants.AllianceZones.oppLeftAllianceZone),
-              hoodMapNeutralZone,
-              wantShoot);
-          setIdleState(IdleState.IDLE_FERRY_OUTPOST);
-          led.wave(Color.kBlack, new Color(0.0f, 0.5019608f, 0.5019608f), 0.1, 1.25);
-          break;
-        case OTHERALLIANCEZONE:
-          applyAimingSetpoints(
-              robotPose,
-              robotSpeeds,
-              AllianceFlipUtil.get(
-                  FieldConstants.AllianceZones.rightAllianceZone,
-                  FieldConstants.AllianceZones.oppLeftAllianceZone),
-              hoodMapNeutralZone,
-              wantShoot);
-          led.wave(
-              Color.kBlack,
-              AllianceFlipUtil.get(
-                  new Color(0.26078432f, 1.0f, 0.36078432f) /*new Color(0.0f, 1.0f, 0.83137256f)*/,
-                  new Color(1.0f, 0.49803922f, 0.83137256f)),
-              0.1,
-              1.25);
-        default:
-          setIdleState(IdleState.NA);
-          break;
-      
+    switch (area) {
+      case ALLIANCEZONE:
+        applyAimingSetpoints(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter),
+            hoodMapAllianceZone,
+            wantShoot);
+        setIdleState(IdleState.IDLE_HUB);
+        led.wave(
+            Color.kBlack,
+            AllianceFlipUtil.get(
+                new Color(1.0f, 0.49803922f, 0.83137256f),
+                new Color(0.26078432f, 1.0f, 0.36078432f)),
+            0.1,
+            1.25);
+        break;
+      case DEPOT_SIDE_NEUTRALZONE:
+        applyAimingSetpoints(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.leftAllianceZone,
+                FieldConstants.AllianceZones.oppRightAllianceZone),
+            hoodMapNeutralZone,
+            wantShoot);
+        setIdleState(IdleState.IDLE_FERRY_DEPOT);
+        led.wave(Color.kBlack, new Color(0.0f, 0.5019608f, 0.5019608f), 0.1, 1.25);
+        break;
+      case OUTPOST_SIDE_NEUTRALZONE:
+        applyAimingSetpoints(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.rightAllianceZone,
+                FieldConstants.AllianceZones.oppLeftAllianceZone),
+            hoodMapNeutralZone,
+            wantShoot);
+        setIdleState(IdleState.IDLE_FERRY_OUTPOST);
+        led.wave(Color.kBlack, new Color(0.0f, 0.5019608f, 0.5019608f), 0.1, 1.25);
+        break;
+      case OTHERALLIANCEZONE:
+        applyAimingSetpoints(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.rightAllianceZone,
+                FieldConstants.AllianceZones.oppLeftAllianceZone),
+            hoodMapNeutralZone,
+            wantShoot);
+        led.wave(
+            Color.kBlack,
+            AllianceFlipUtil.get(
+                new Color(0.26078432f, 1.0f, 0.36078432f) /*new Color(0.0f, 1.0f, 0.83137256f)*/,
+                new Color(1.0f, 0.49803922f, 0.83137256f)),
+            0.1,
+            1.25);
+      default:
+        setIdleState(IdleState.NA);
+        break;
     }
   }
 
@@ -287,33 +289,32 @@ public class Shooter extends SubsystemBase {
       RobotState.Area area, Pose2d robotPose, ChassisSpeeds robotSpeeds, boolean wantShoot) {
     if (area == null) return;
 
-      switch (area) {
-        case DEPOT_SIDE_NEUTRALZONE:
-          applyAimingSetpoints(
-              robotPose,
-              robotSpeeds,
-              AllianceFlipUtil.get(
-                  FieldConstants.AllianceZones.leftAllianceZone,
-                  FieldConstants.AllianceZones.oppRightAllianceZone),
-              hoodMapNeutralZone,
-              wantShoot);
-          runFeed();
-          break;
-        case OUTPOST_SIDE_NEUTRALZONE:
-          applyAimingSetpoints(
-              robotPose,
-              robotSpeeds,
-              AllianceFlipUtil.get(
-                  FieldConstants.AllianceZones.rightAllianceZone,
-                  FieldConstants.AllianceZones.oppLeftAllianceZone),
-              hoodMapNeutralZone,
-              wantShoot);
-          runFeed();
-          break;
-        default:
-          stopFeed();
-          break;
-      
+    switch (area) {
+      case DEPOT_SIDE_NEUTRALZONE:
+        applyAimingSetpoints(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.leftAllianceZone,
+                FieldConstants.AllianceZones.oppRightAllianceZone),
+            hoodMapNeutralZone,
+            wantShoot);
+        runFeed();
+        break;
+      case OUTPOST_SIDE_NEUTRALZONE:
+        applyAimingSetpoints(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.rightAllianceZone,
+                FieldConstants.AllianceZones.oppLeftAllianceZone),
+            hoodMapNeutralZone,
+            wantShoot);
+        runFeed();
+        break;
+      default:
+        stopFeed();
+        break;
     }
   }
 
@@ -365,17 +366,17 @@ public class Shooter extends SubsystemBase {
               break;
 
             case SHOOTING:
-                applyAimingSetpoints(
-                    robotPose,
-                    robotSpeeds,
-                    AllianceFlipUtil.get(
-                        FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter),
-                    hoodMapAllianceZone,
-                    wantShoot);
-                runFeed();
-                setIdleState(IdleState.NA);
-                break;
-              
+              applyAimingSetpoints(
+                  robotPose,
+                  robotSpeeds,
+                  AllianceFlipUtil.get(
+                      FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter),
+                  hoodMapAllianceZone,
+                  wantShoot);
+              runFeed();
+              setIdleState(IdleState.NA);
+              break;
+
             case FERRYING:
               ferryCase(area, robotPose, robotSpeeds, wantShoot);
               setIdleState(IdleState.NA);
@@ -410,7 +411,8 @@ public class Shooter extends SubsystemBase {
     if (robotPose != null) {
       Logger.log(
           "Shooter/Field To Turret",
-          new Pose3d(getFieldToShooter().getX(), getFieldToShooter().getY(), 0.5, Rotation3d.kZero));
+          new Pose3d(
+              getFieldToShooter().getX(), getFieldToShooter().getY(), 0.5, Rotation3d.kZero));
     }
   }
 
@@ -443,8 +445,7 @@ public class Shooter extends SubsystemBase {
     } else if (distance > 6.0) {
       return 23.0;
     } else {
-      return distance
-          * Dashboard.functionScalar.get();
+      return distance * Dashboard.functionScalar.get();
     }
   }
 }

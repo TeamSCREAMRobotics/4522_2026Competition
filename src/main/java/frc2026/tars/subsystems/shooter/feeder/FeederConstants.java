@@ -7,7 +7,7 @@ import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXConstants;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemConfiguration;
 
 public class FeederConstants {
-    public static final TalonFXSubsystemConfiguration FEEDER_CONFIG =
+  public static final TalonFXSubsystemConfiguration FEEDER_CONFIG =
       new TalonFXSubsystemConfiguration();
 
   static {

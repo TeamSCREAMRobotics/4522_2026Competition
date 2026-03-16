@@ -111,8 +111,6 @@ public class Dashboard {
     functionCurve = new DashboardNumber(tuning, "Function Curve", ShooterConstants.FUNCTION_CURVE);
     functionScalar =
         new DashboardNumber(tuning, "Function Scalar", ShooterConstants.FUNCTION_SCALAR);
-
-    
   }
 
   public static void resetManuals() {

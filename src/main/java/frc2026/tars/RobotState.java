@@ -15,11 +15,10 @@ import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.leds.LED;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import lombok.Getter;
+import lombok.Setter;
 
 public class RobotState {
   private final Drivetrain drivetrain;
@@ -27,8 +26,7 @@ public class RobotState {
   @SuppressWarnings("unused")
   private final IntakeWrist intakeWrist;
 
-  @Getter @Setter
-  private Rotation2d drivetrainTarget = Rotation2d.kZero;
+  @Getter @Setter private Rotation2d drivetrainTarget = Rotation2d.kZero;
 
   private final LED led;
 
@@ -146,24 +144,26 @@ public class RobotState {
   private final boolean hopperElevated = false;
 
   @SuppressWarnings("unused")
-  public Supplier<Translation2d> getInputTranslation(){
+  public Supplier<Translation2d> getInputTranslation() {
     Translation2d translation = Controlboard.getTranslation();
     double x = translation.getY();
     double y = translation.getX();
     Pose2d pose = drivetrain.getEstimatedPose();
 
-    if(getArea() == Area.TRENCHES && hopperElevated){
-      if(pose.getX() < FieldConstants.LinesVertical.hubCenter){
+    if (getArea() == Area.TRENCHES && hopperElevated) {
+      if (pose.getX() < FieldConstants.LinesVertical.hubCenter) {
         y = Math.min(0, y); // Remove negative
-      } else if(pose.getX() > FieldConstants.LinesVertical.hubCenter && pose.getX() < FieldConstants.LinesVertical.center){
+      } else if (pose.getX() > FieldConstants.LinesVertical.hubCenter
+          && pose.getX() < FieldConstants.LinesVertical.center) {
         y = Math.max(0, y); // Remove positive
-      } else if(pose.getX() < FieldConstants.LinesVertical.oppHubCenter && pose.getX() > FieldConstants.LinesVertical.center){
+      } else if (pose.getX() < FieldConstants.LinesVertical.oppHubCenter
+          && pose.getX() > FieldConstants.LinesVertical.center) {
         y = Math.min(0, y);
-      } else if(pose.getX() > FieldConstants.LinesVertical.oppHubCenter){
+      } else if (pose.getX() > FieldConstants.LinesVertical.oppHubCenter) {
         y = Math.max(0, y);
       }
     }
-    
+
     final double finalX = x;
     final double finalY = y;
     return () -> new Translation2d(finalY, finalX);
@@ -273,5 +273,4 @@ public class RobotState {
     }
     */
   }
-
 }

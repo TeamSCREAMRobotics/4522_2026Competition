@@ -20,7 +20,7 @@ public class FlywheelConstants {
   public static final TalonFXSubsystemConfiguration FLYWHEEL_CONFIG =
       new TalonFXSubsystemConfiguration();
 
-      public static final double kV = 0.12138; 
+  public static final double kV = 0.12138;
 
   static {
     FLYWHEEL_CONFIG.name = "Flywheel";

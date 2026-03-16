@@ -35,15 +35,14 @@ public class Controlboard {
   }
 
   public static Translation2d getTranslation() {
-    return 
-        snapTranslationToPole(
-                new Translation2d(
-                        -applyPower(
-                            MathUtil.applyDeadband(driveController.getLeftY(), STICK_DEADBAND), 2),
-                        -applyPower(
-                            MathUtil.applyDeadband(driveController.getLeftX(), STICK_DEADBAND), 2))
-                    .times(DrivetrainConstants.maxSpeed))
-            .times(AllianceFlipUtil.getDirectionCoefficient());
+    return snapTranslationToPole(
+            new Translation2d(
+                    -applyPower(
+                        MathUtil.applyDeadband(driveController.getLeftY(), STICK_DEADBAND), 2),
+                    -applyPower(
+                        MathUtil.applyDeadband(driveController.getLeftX(), STICK_DEADBAND), 2))
+                .times(DrivetrainConstants.maxSpeed))
+        .times(AllianceFlipUtil.getDirectionCoefficient());
   }
 
   public static Translation2d snapTranslationToPole(Translation2d translation) {
