@@ -56,11 +56,10 @@ public class VisionManager {
         new Limelight(
             "limelight-right",
             new Pose3d(
-              Units.inchesToMeters(0.220),
+                Units.inchesToMeters(0.220),
                 Units.inchesToMeters(12.510),
                 Units.inchesToMeters(18.984),
-                new Rotation3d(
-                    0.0, Units.degreesToRadians(0.0), Units.degreesToRadians(90.0))));
+                new Rotation3d(0.0, Units.degreesToRadians(0.0), Units.degreesToRadians(90.0))));
     // public static final Limelight swerveRight =
     //     new Limelight(
     //         "limelight-right",
@@ -69,7 +68,8 @@ public class VisionManager {
     //             Units.inchesToMeters(-6.855182),
     //             Units.inchesToMeters(8.597005),
     //             new Rotation3d(
-    //                 0.0, Units.degreesToRadians(24.832735), Units.degreesToRadians(-135.47249))));
+    //                 0.0, Units.degreesToRadians(24.832735),
+    // Units.degreesToRadians(-135.47249))));
   }
 
   private PhotonCamera swerveLeft;
@@ -93,8 +93,7 @@ public class VisionManager {
   }
 
   private final Drivetrain drivetrain;
-  private final Limelight[] limelights =
-      new Limelight[] {Limelights.right, Limelights.shooter};
+  private final Limelight[] limelights = new Limelight[] {Limelights.right, Limelights.shooter};
 
   public VisionManager(Drivetrain drivetrain) {
     this.drivetrain = drivetrain;

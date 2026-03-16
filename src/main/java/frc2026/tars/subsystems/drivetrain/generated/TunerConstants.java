@@ -148,25 +148,21 @@ public class TunerConstants {
   public static final Translation2d frontRightPos =
       new Translation2d(trackWidth.getMeters() / 2.0, -wheelBase.getMeters() / 2.0);
   public static final Translation2d backLeftPos =
-      new Translation2d(
-          -trackWidth.getMeters() / 2.0, wheelBase.getMeters() / 2.0);
+      new Translation2d(-trackWidth.getMeters() / 2.0, wheelBase.getMeters() / 2.0);
   public static final Translation2d backRightPos =
-      new Translation2d(
-          -trackWidth.getMeters() / 2.0, -wheelBase.getMeters() / 2.0);
+      new Translation2d(-trackWidth.getMeters() / 2.0, -wheelBase.getMeters() / 2.0);
 
   public static final double driveBaseRadius = frontLeftPos.getNorm();
 
   private static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
       module_0 =
-          ConstantCreator.createModuleConstants(
-              1, 0, 0, 0.489013671875, 0, 0, false, false, false);
+          ConstantCreator.createModuleConstants(1, 0, 0, 0.489013671875, 0, 0, false, false, false);
 
   private static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
       module_1 =
-          ConstantCreator.createModuleConstants(
-              3, 2, 1, 0.07568359375, 0, 0, true, false, false);
+          ConstantCreator.createModuleConstants(3, 2, 1, 0.07568359375, 0, 0, true, false, false);
 
   private static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
@@ -177,8 +173,7 @@ public class TunerConstants {
   private static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
       module_3 =
-          ConstantCreator.createModuleConstants(
-              7, 6, 3, -0.37060546875, 0, 0, true, false, false);
+          ConstantCreator.createModuleConstants(7, 6, 3, -0.37060546875, 0, 0, true, false, false);
 
   private static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>

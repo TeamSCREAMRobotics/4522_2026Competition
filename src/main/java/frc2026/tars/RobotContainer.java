@@ -40,17 +40,12 @@ import frc2026.tars.subsystems.shooter.hood.HoodConstants;
 import frc2026.tars.subsystems.shooter.rollers.Rollers;
 import frc2026.tars.subsystems.shooter.rollers.RollersConstants;
 import frc2026.tars.subsystems.vision.VisionManager;
-import frc2026.tars.util.HubTracker;
 import lombok.Getter;
 
 public class RobotContainer {
 
   public record Subsystems(
-      Drivetrain drivetrain,
-      IntakeWrist intakeWrist,
-      Hood hood,
-      Flywheel flywheel,
-      LED led) {}
+      Drivetrain drivetrain, IntakeWrist intakeWrist, Hood hood, Flywheel flywheel, LED led) {}
 
   private final LED led = new LED();
 
@@ -133,7 +128,9 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    Controlboard.makeThingWork().whileTrue(new FeedForwardCharacterization(flywheel, flywheel::setVoltage, flywheel::getVelocity));
+    Controlboard.makeThingWork()
+        .whileTrue(
+            new FeedForwardCharacterization(flywheel, flywheel::setVoltage, flywheel::getVelocity));
 
     Controlboard.intake()
         .whileTrue(
@@ -141,17 +138,18 @@ public class RobotContainer {
                     intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.INTAKE))
                 .withName("Intake Running"));
 
-    Controlboard.shoot()        
+    Controlboard.shoot()
         .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    drivetrain
-                        .getHelper()
-                        .getFacingAngleProfiled(
-                            Controlboard.getTranslation(),
-                            robotState.getDrivetrainTarget(),
-                            DrivetrainConstants.headingControllerProfiled))
-                            .beforeStarting(() -> drivetrain.resetHeadingController()));
+            drivetrain
+                .applyRequest(
+                    () ->
+                        drivetrain
+                            .getHelper()
+                            .getFacingAngleProfiled(
+                                Controlboard.getTranslation(),
+                                robotState.getDrivetrainTarget(),
+                                DrivetrainConstants.headingControllerProfiled))
+                .beforeStarting(() -> drivetrain.resetHeadingController()));
 
     Controlboard.moveIntakeWrist()
         .whileTrue(
@@ -164,14 +162,16 @@ public class RobotContainer {
 
     Controlboard.rotate90Degrees()
         .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    drivetrain
-                        .getHelper()
-                        .getFacingAngleProfiled(
-                            Controlboard.getTranslation(),
-                            Rotation2d.fromDegrees(90),
-                            DrivetrainConstants.headingControllerProfiled)).beforeStarting(() -> drivetrain.resetHeadingController()));
+            drivetrain
+                .applyRequest(
+                    () ->
+                        drivetrain
+                            .getHelper()
+                            .getFacingAngleProfiled(
+                                Controlboard.getTranslation(),
+                                Rotation2d.fromDegrees(90),
+                                DrivetrainConstants.headingControllerProfiled))
+                .beforeStarting(() -> drivetrain.resetHeadingController()));
     // Controlboard.rotateNegative90Degrees()
     //     .whileTrue(
     //         drivetrain.applyRequest(
@@ -181,7 +181,8 @@ public class RobotContainer {
     //                     .getFacingAngleProfiled(
     //                         Controlboard.getTranslation(),
     //                         Rotation2d.fromDegrees(-90),
-    //                         DrivetrainConstants.headingControllerProfiled)).beforeStarting(() -> drivetrain.resetHeadingController()));
+    //                         DrivetrainConstants.headingControllerProfiled)).beforeStarting(() ->
+    // drivetrain.resetHeadingController()));
     // Controlboard.rotate0Degrees()
     //     .whileTrue(
     //         drivetrain.applyRequest(
@@ -191,17 +192,20 @@ public class RobotContainer {
     //                     .getFacingAngleProfiled(
     //                         Controlboard.getTranslation(),
     //                         Rotation2d.fromDegrees(0),
-    //                         DrivetrainConstants.headingControllerProfiled)).beforeStarting(() -> drivetrain.resetHeadingController()));
+    //                         DrivetrainConstants.headingControllerProfiled)).beforeStarting(() ->
+    // drivetrain.resetHeadingController()));
     Controlboard.rotate180Degrees()
         .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    drivetrain
-                        .getHelper()
-                        .getFacingAngleProfiled(
-                            Controlboard.getTranslation(),
-                            Rotation2d.fromDegrees(180),
-                            DrivetrainConstants.headingControllerProfiled)).beforeStarting(() -> drivetrain.resetHeadingController()));
+            drivetrain
+                .applyRequest(
+                    () ->
+                        drivetrain
+                            .getHelper()
+                            .getFacingAngleProfiled(
+                                Controlboard.getTranslation(),
+                                Rotation2d.fromDegrees(180),
+                                DrivetrainConstants.headingControllerProfiled))
+                .beforeStarting(() -> drivetrain.resetHeadingController()));
 
     Controlboard.aggitate()
         .whileTrue(Commands.run(() -> shooter.agitate(true)))
