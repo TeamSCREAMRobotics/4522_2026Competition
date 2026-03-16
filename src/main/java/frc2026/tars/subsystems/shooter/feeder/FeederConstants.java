@@ -1,4 +1,4 @@
-package frc2026.tars.subsystems.shooter.kicker;
+package frc2026.tars.subsystems.shooter.feeder;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -6,27 +6,27 @@ import com.teamscreamrobotics.drivers.TalonFXSubsystem.CANDevice;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXConstants;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemConfiguration;
 
-public class KickerConstants {
-  public static final TalonFXSubsystemConfiguration KICKER_CONFIG =
+public class FeederConstants {
+    public static final TalonFXSubsystemConfiguration FEEDER_CONFIG =
       new TalonFXSubsystemConfiguration();
 
   static {
-    KICKER_CONFIG.name = "Kicker";
+    FEEDER_CONFIG.name = "Feeder";
 
-    KICKER_CONFIG.codeEnabled = true;
-    KICKER_CONFIG.logTelemetry = false;
-    KICKER_CONFIG.debugMode = false;
+    FEEDER_CONFIG.codeEnabled = true;
+    FEEDER_CONFIG.logTelemetry = false;
+    FEEDER_CONFIG.debugMode = false;
 
-    KICKER_CONFIG.masterConstants =
+    FEEDER_CONFIG.masterConstants =
         new TalonFXConstants(new CANDevice(4), InvertedValue.Clockwise_Positive);
-    KICKER_CONFIG.slaveConstants =
+    FEEDER_CONFIG.slaveConstants =
         new TalonFXConstants[] {
           new TalonFXConstants(new CANDevice(5), InvertedValue.CounterClockwise_Positive)
         };
 
-    KICKER_CONFIG.neutralMode = NeutralModeValue.Coast;
+    FEEDER_CONFIG.neutralMode = NeutralModeValue.Coast;
 
-    KICKER_CONFIG.enableSupplyCurrentLimit = true;
-    KICKER_CONFIG.supplyCurrentLimit = 20;
+    FEEDER_CONFIG.enableSupplyCurrentLimit = true;
+    FEEDER_CONFIG.supplyCurrentLimit = 20;
   }
 }

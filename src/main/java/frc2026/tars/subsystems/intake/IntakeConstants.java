@@ -21,7 +21,7 @@ public class IntakeConstants {
   public static final Length INTAKE_LENGTH = Length.fromInches(13.375);
 
   // Intake Wrist Reduction
-  public static final double INTAKE_REDUCTION = 58.8;
+  public static final double INTAKE_REDUCTION = 50.0;
   // Intake Roller Reduction
   public static final double ROLLERS_REDUCTION = 2.5;
 
@@ -85,10 +85,10 @@ public class IntakeConstants {
     ROLLERS_CONFIG.logTelemetry = false;
 
     ROLLERS_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(9), InvertedValue.CounterClockwise_Positive);
+        new TalonFXConstants(new CANDevice(9), InvertedValue.Clockwise_Positive);
 
     ROLLERS_CONFIG.enableSupplyCurrentLimit = true;
-    ROLLERS_CONFIG.supplyCurrentLimit = 20;
+    ROLLERS_CONFIG.supplyCurrentLimit = 30;
     ROLLERS_CONFIG.sensorToMechRatio = ROLLERS_REDUCTION;
   }
 }

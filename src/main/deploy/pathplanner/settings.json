@@ -1,7 +1,7 @@
 {
   "robotWidth": 0.768,
   "robotLength": 0.763,
-  "holonomicMode": true,
+  "holonomicMode": false,
   "pathFolders": [
     "DEPOT_BUMP",
     "DEPOT_T-NZ-DEP",

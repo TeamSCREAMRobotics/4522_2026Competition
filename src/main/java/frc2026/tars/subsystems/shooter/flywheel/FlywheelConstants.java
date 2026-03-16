@@ -20,6 +20,8 @@ public class FlywheelConstants {
   public static final TalonFXSubsystemConfiguration FLYWHEEL_CONFIG =
       new TalonFXSubsystemConfiguration();
 
+      public static final double kV = 0.12138; 
+
   static {
     FLYWHEEL_CONFIG.name = "Flywheel";
 
@@ -28,24 +30,24 @@ public class FlywheelConstants {
     FLYWHEEL_CONFIG.debugMode = false;
 
     FLYWHEEL_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(0), InvertedValue.Clockwise_Positive);
+        new TalonFXConstants(new CANDevice(0), InvertedValue.CounterClockwise_Positive);
     FLYWHEEL_CONFIG.slaveConstants =
         new TalonFXConstants[] {
-          new TalonFXConstants(new CANDevice(1), InvertedValue.Clockwise_Positive),
-          new TalonFXConstants(new CANDevice(2), InvertedValue.CounterClockwise_Positive),
-          new TalonFXConstants(new CANDevice(3), InvertedValue.CounterClockwise_Positive)
+          new TalonFXConstants(new CANDevice(1), InvertedValue.CounterClockwise_Positive),
+          new TalonFXConstants(new CANDevice(2), InvertedValue.Clockwise_Positive),
+          new TalonFXConstants(new CANDevice(3), InvertedValue.Clockwise_Positive)
         };
     FLYWHEEL_CONFIG.slot0 =
-        new ScreamPIDConstants(3.0, 5.5, 0.0)
-            .getSlot0Configs(new FeedforwardConstants(0.11956, 0.25547, 0.0, 0.0));
+        new ScreamPIDConstants(12.0, 1.0, 0.0)
+            .getSlot0Configs(new FeedforwardConstants(kV, 0.34091, 0.0, (kV * 0.25) + 0.05));
 
     FLYWHEEL_CONFIG.neutralMode = NeutralModeValue.Coast;
 
     FLYWHEEL_CONFIG.enableSupplyCurrentLimit = true;
-    FLYWHEEL_CONFIG.supplyCurrentLimit = 20;
+    FLYWHEEL_CONFIG.supplyCurrentLimit = 50;
     FLYWHEEL_CONFIG.sensorToMechRatio = FLYWHEEL_REDUCTION;
 
-    FLYWHEEL_CONFIG.peakForwardTorqueCurrent = 40.0;
+    FLYWHEEL_CONFIG.peakForwardTorqueCurrent = 50.0;
     FLYWHEEL_CONFIG.peakReverseTorqueCurrent = 0.0;
   }
 }

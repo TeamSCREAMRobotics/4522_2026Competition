@@ -1,8 +1,10 @@
 package frc2026.tars.subsystems.shooter;
 
+import com.ctre.phoenix6.hardware.CANrange;
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.math.Conversions;
+import com.teamscreamrobotics.math.ScreamMath;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.GeomUtil;
 import com.teamscreamrobotics.util.Logger;
@@ -30,13 +32,11 @@ import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
 import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
 import frc2026.tars.subsystems.leds.LED;
-import frc2026.tars.subsystems.shooter.dyerotor.Dyerotor;
+import frc2026.tars.subsystems.shooter.feeder.Feeder;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
-import frc2026.tars.subsystems.shooter.hood.HoodConstants;
-import frc2026.tars.subsystems.shooter.turret.Turret;
-import frc2026.tars.subsystems.vision.VisionManager;
+import frc2026.tars.subsystems.shooter.rollers.Rollers;
 import frc2026.tars.util.Util;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,12 +44,12 @@ import lombok.Setter;
 public class Shooter extends SubsystemBase {
   private final Flywheel flywheel;
   private final Hood hood;
-  private final Turret turret;
-  private final Dyerotor dyerotor;
   private final Drivetrain drivetrain;
   private final RobotState robotState;
   private final IntakeWrist intakeWrist;
   private final IntakeRollers intakeRollers;
+  private final Rollers rollers;
+  private final Feeder feeder;
   private final LED led;
   private Pose2d robotPose;
   private ChassisSpeeds robotSpeeds;
@@ -58,6 +58,8 @@ public class Shooter extends SubsystemBase {
   private static final InterpolatingDoubleTreeMap hoodMapNeutralZone =
       new InterpolatingDoubleTreeMap();
   private final String logPrefix = "Subsystems/Shooter/";
+
+  private final CANrange beam = new CANrange(0);
 
   @Getter @Setter private Translation2d target = new Translation2d();
 
@@ -99,22 +101,24 @@ public class Shooter extends SubsystemBase {
   public Shooter(
       Flywheel flywheel,
       Hood hood,
-      Turret turret,
-      Dyerotor dyerotor,
       IntakeWrist intakeWrist,
       IntakeRollers intakeRollers,
+      Feeder feeder,
+      Rollers rollers,
       LED led,
       Drivetrain drivetrain,
       RobotState robotState) {
     this.flywheel = flywheel;
     this.hood = hood;
-    this.turret = turret;
-    this.dyerotor = dyerotor;
     this.intakeWrist = intakeWrist;
     this.intakeRollers = intakeRollers;
+    this.rollers = rollers;
+    this.feeder = feeder;
     this.drivetrain = drivetrain;
     this.robotState = robotState;
     this.led = led;
+
+    beam.getConfigurator().apply(ShooterConstants.beamConfig);
 
     hoodMapPoints();
   }
@@ -127,48 +131,7 @@ public class Shooter extends SubsystemBase {
     double shooterToTarget =
         Math.sqrt(Math.pow(centerToTarget, 2.0) - Math.pow(centerToShooter, 2.0));
     return Length.fromMeters(shooterToTarget); */
-    return Length.fromMeters(getFieldToTurret().getTranslation().getDistance(target));
-  }
-
-  private void shootOnTheFly(
-      Pose2d robotPose, ChassisSpeeds robotSpeed, Translation2d target, boolean wantShoot) {
-
-    double distance = getShotDistance(target).getMeters();
-
-    double flywheelVelocity = ShooterConstants.FLYWHEEL_MAP.get(distance);
-
-    double hoodAngle = getHoodAngleFromDistance(distance) + HoodConstants.HOOD_OFFSET.getDegrees();
-
-    double timeOfFlight =
-        getTimeOfFlight(
-            robotPose.getTranslation().getDistance(target), flywheelVelocity, hoodAngle);
-
-    Translation2d futurePos =
-        getFieldToTurret()
-            .getTranslation()
-            .plus(
-                new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond)
-                    .times(ShooterConstants.LATENCY + timeOfFlight));
-
-    // double multiplier = wantShoot ? 1.0 : 8.0;
-
-    double futureDistance = futurePos.getDistance(target);
-    double futureVelocity = ShooterConstants.FLYWHEEL_MAP.get(futureDistance);
-
-    Translation2d futureTargetVec = target.minus(futurePos);
-
-    double turretAngleField = futureTargetVec.getAngle().getDegrees();
-
-    turret.moveToAngleFR(Rotation2d.fromDegrees(turretAngleField), robotPose.getRotation());
-
-    hood.moveToAngle(Rotation2d.fromDegrees(getHoodAngleFromDistance(futureDistance)));
-
-    flywheel.setTargetVelocityTorqueCurrent(futureVelocity, 0.0);
-
-    Logger.log("SOTM/ToF", timeOfFlight);
-    Logger.log("SOTM/FuturePose", new Pose2d(futurePos, robotPose.getRotation()));
-    Logger.log("SOTM/FutureDistance", futureDistance);
-    Logger.log("SOTM/TurretAngle", turretAngleField);
+    return Length.fromMeters(getFieldToShooter().getTranslation().getDistance(target));
   }
 
   private void applyAimingSetpoints(
@@ -182,7 +145,7 @@ public class Shooter extends SubsystemBase {
     double hoodAngleDeg = getHoodAngleFromDistance(distanceMeters);
 
     double multiplier = wantShoot ? 1.0 : 4.0;
-    double flywheelMap = ShooterConstants.FLYWHEEL_MAP.get(distanceMeters / multiplier);
+    double flywheelMap = ShooterConstants.NEW_FLYWHEEL_MAP.get(distanceMeters / multiplier);
 
     double flywheelSetpoint = flywheelMap;
 
@@ -192,11 +155,10 @@ public class Shooter extends SubsystemBase {
       flywheelSetpoint = flywheelMap * Dashboard.midMapNudge.get();
     } else flywheelSetpoint = flywheelMap * Dashboard.farMapNudge.get();
 
-    turret.pointToTargetFR(() -> target, () -> robotPose, () -> getFieldToTurret());
+    robotState.setDrivetrainTarget(ScreamMath.calculateAngleToPoint(robotPose.getTranslation(), target).plus(Rotation2d.k180deg));
 
     hood.moveToAngle(Rotation2d.fromDegrees(wantShoot ? hoodAngleDeg : 0.0));
-    flywheel.setTargetVelocityTorqueCurrent(flywheelSetpoint, 0.0);
-    // flywheel.setTargetVelocityTorqueCurrent(Dashboard.flywheelVelocity.get(), 0.0);
+    flywheel.setTargetVelocityTorqueCurrent(Dashboard.manualFlywheelVelocity.get(), 0.0);
 
     Logger.log(logPrefix + "Hood Angle", hoodAngleDeg);
     Logger.log(logPrefix + "Flywheel Velocity", flywheelSetpoint);
@@ -207,21 +169,23 @@ public class Shooter extends SubsystemBase {
     return Commands.run(
             () -> {
               wantShoot = true;
+              robotState.setDrivetrainTarget(ScreamMath.calculateAngleToPoint(target, target));
             })
         .withTimeout(time)
         .finallyDo(() -> wantShoot = false);
   }
 
   public void runFeed() {
-    if ((flywheel.atVel() || Dashboard.disableWaitUntilAtVelocity.get())
-        && (turret.isAimingAtTarget() || Dashboard.dissableWaitUntilAim.get())) {
-      dyerotor.runDyerotor();
-      led.solid(Color.kRed);
+    if ((flywheel.atVel() || Dashboard.disableWaitUntilAtVelocity.get()) && (Math.abs(hood.getError()) <= 0.007 )) {
+      rollers.setVoltage(11.0);
+      feeder.setVoltage(11.0);
+      // led.solid(Color.kRed);
     }
   }
 
   public void stopFeed() {
-    dyerotor.stop();
+    rollers.setVoltage(0.0);
+    feeder.setVoltage(0.0);
   }
 
   private double agitateStartTime = 0.0;
@@ -255,7 +219,6 @@ public class Shooter extends SubsystemBase {
 
   private void idleCase(RobotState.Area area, Pose2d robotPose, ChassisSpeeds robotSpeeds) {
     if (area == null) return;
-    if (Dashboard.disableShootOnTheMove.get()) {
       switch (area) {
         case ALLIANCEZONE:
           applyAimingSetpoints(
@@ -316,66 +279,7 @@ public class Shooter extends SubsystemBase {
         default:
           setIdleState(IdleState.NA);
           break;
-      }
-    } else {
-      switch (area) {
-        case ALLIANCEZONE:
-          shootOnTheFly(
-              robotPose,
-              robotSpeeds,
-              AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter),
-              wantShoot);
-          setIdleState(IdleState.IDLE_HUB);
-          led.wave(
-              Color.kBlack,
-              AllianceFlipUtil.get(
-                  new Color(1.0f, 0.49803922f, 0.83137256f),
-                  new Color(0.26078432f, 1.0f, 0.36078432f)),
-              0.1,
-              1.25);
-          break;
-        case DEPOT_SIDE_NEUTRALZONE:
-          shootOnTheFly(
-              robotPose,
-              robotSpeeds,
-              AllianceFlipUtil.get(
-                  FieldConstants.AllianceZones.leftAllianceZone,
-                  FieldConstants.AllianceZones.oppRightAllianceZone),
-              wantShoot);
-          setIdleState(IdleState.IDLE_FERRY_DEPOT);
-          led.wave(Color.kBlack, new Color(0.0f, 0.5019608f, 0.5019608f), 0.1, 1.25);
-          break;
-        case OUTPOST_SIDE_NEUTRALZONE:
-          shootOnTheFly(
-              robotPose,
-              robotSpeeds,
-              AllianceFlipUtil.get(
-                  FieldConstants.AllianceZones.rightAllianceZone,
-                  FieldConstants.AllianceZones.oppLeftAllianceZone),
-              wantShoot);
-          setIdleState(IdleState.IDLE_FERRY_OUTPOST);
-          led.wave(Color.kBlack, new Color(0.0f, 0.5019608f, 0.5019608f), 0.1, 1.25);
-          break;
-        case OTHERALLIANCEZONE:
-          applyAimingSetpoints(
-              robotPose,
-              robotSpeeds,
-              AllianceFlipUtil.get(
-                  FieldConstants.AllianceZones.rightAllianceZone,
-                  FieldConstants.AllianceZones.oppLeftAllianceZone),
-              hoodMapNeutralZone,
-              wantShoot);
-          led.wave(
-              Color.kBlack,
-              AllianceFlipUtil.get(
-                  new Color(0.26078432f, 1.0f, 0.36078432f) /*new Color(0.0f, 1.0f, 0.83137256f)*/,
-                  new Color(1.0f, 0.49803922f, 0.83137256f)),
-              0.1,
-              1.25);
-        default:
-          setIdleState(IdleState.NA);
-          break;
-      }
+      
     }
   }
 
@@ -383,7 +287,6 @@ public class Shooter extends SubsystemBase {
       RobotState.Area area, Pose2d robotPose, ChassisSpeeds robotSpeeds, boolean wantShoot) {
     if (area == null) return;
 
-    if (Dashboard.disableShootOnTheMove.get()) {
       switch (area) {
         case DEPOT_SIDE_NEUTRALZONE:
           applyAimingSetpoints(
@@ -410,33 +313,7 @@ public class Shooter extends SubsystemBase {
         default:
           stopFeed();
           break;
-      }
-    } else {
-      switch (area) {
-        case DEPOT_SIDE_NEUTRALZONE:
-          shootOnTheFly(
-              robotPose,
-              robotSpeeds,
-              AllianceFlipUtil.get(
-                  FieldConstants.AllianceZones.leftAllianceZone,
-                  FieldConstants.AllianceZones.oppRightAllianceZone),
-              wantShoot);
-          runFeed();
-          break;
-        case OUTPOST_SIDE_NEUTRALZONE:
-          shootOnTheFly(
-              robotPose,
-              robotSpeeds,
-              AllianceFlipUtil.get(
-                  FieldConstants.AllianceZones.rightAllianceZone,
-                  FieldConstants.AllianceZones.oppLeftAllianceZone),
-              wantShoot);
-          runFeed();
-          break;
-        default:
-          stopFeed();
-          break;
-      }
+      
     }
   }
 
@@ -480,19 +357,14 @@ public class Shooter extends SubsystemBase {
               break;
 
             case STOWED:
-              hood.setVoltage(-2.2);
-              flywheel.setTargetVelocityTorqueCurrent(7.5, 0);
               stopFeed();
               agitateStartTime = 0.0;
               agitateForward = true;
-
-              led.rainbow(3.0, 1.0);
 
               setIdleState(IdleState.NA);
               break;
 
             case SHOOTING:
-              if (Dashboard.disableShootOnTheMove.get()) {
                 applyAimingSetpoints(
                     robotPose,
                     robotSpeeds,
@@ -503,17 +375,7 @@ public class Shooter extends SubsystemBase {
                 runFeed();
                 setIdleState(IdleState.NA);
                 break;
-              } else {
-                shootOnTheFly(
-                    robotPose,
-                    robotSpeeds,
-                    AllianceFlipUtil.get(
-                        FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter),
-                    wantShoot);
-                setIdleState(IdleState.NA);
-                runFeed();
-                break;
-              }
+              
             case FERRYING:
               ferryCase(area, robotPose, robotSpeeds, wantShoot);
               setIdleState(IdleState.NA);
@@ -522,7 +384,6 @@ public class Shooter extends SubsystemBase {
               break;
 
             case INTAKE_UP:
-              turret.moveToAngleRR(Rotation2d.fromDegrees(90.0));
               hood.moveToAngle(Rotation2d.fromDegrees(0.0));
               agitateStartTime = 0.0;
               agitateForward = true;
@@ -549,16 +410,16 @@ public class Shooter extends SubsystemBase {
     if (robotPose != null) {
       Logger.log(
           "Shooter/Field To Turret",
-          new Pose3d(getFieldToTurret().getX(), getFieldToTurret().getY(), 0.5, Rotation3d.kZero));
+          new Pose3d(getFieldToShooter().getX(), getFieldToShooter().getY(), 0.5, Rotation3d.kZero));
     }
   }
 
-  public Pose2d getFieldToTurret() {
+  public Pose2d getFieldToShooter() {
     Pose2d pose = robotPose;
 
     return GeomUtil.transformToPose(
         GeomUtil.poseToTransform(pose)
-            .plus(Util.transform3dTo2dXY(VisionManager.robotToTurretFixed)));
+            .plus(Util.transform3dTo2dXY(ShooterConstants.flywheelToRobot)));
   }
 
   public double getTimeOfFlight(double distance, double velocity, double hoodAngleDeg) {
@@ -577,12 +438,12 @@ public class Shooter extends SubsystemBase {
   public double getHoodAngleFromDistance(double distance) {
     // return Dashboard.saturationLevel.get() * (1 - Math.pow(Math.E, -(Dashboard.functionROA.get()
     // * distance))) + (Dashboard.functionLRG.get() * Math.pow(distance, 3));
-    if (distance < 2.0) {
+    if (distance < 2.5) {
       return 0.0;
     } else if (distance > 6.0) {
-      return 20.0;
+      return 23.0;
     } else {
-      return (Dashboard.functionCurve.get() * Math.pow(distance, 3))
+      return distance
           * Dashboard.functionScalar.get();
     }
   }
