@@ -64,15 +64,15 @@ public class ShooterConstants {
     NEW_FLYWHEEL_MAP.put(3.783, 35.75);
     NEW_FLYWHEEL_MAP.put(4.002, 36.3);
     NEW_FLYWHEEL_MAP.put(4.212, 36.89);
-    NEW_FLYWHEEL_MAP.put(4.401,37.4);
-    NEW_FLYWHEEL_MAP.put(4.610,37.9);
-    NEW_FLYWHEEL_MAP.put(4.829,38.6);
-    NEW_FLYWHEEL_MAP.put(5.068,39.3);
-    NEW_FLYWHEEL_MAP.put(5.206,40.2);
-    //Ferrying Dist. Keep closer so fuel doesn't scatter.
-    NEW_FLYWHEEL_MAP.put(5.477,41.0);
-    NEW_FLYWHEEL_MAP.put(5.727,42.0);
-    NEW_FLYWHEEL_MAP.put(5.944,43.5);
+    NEW_FLYWHEEL_MAP.put(4.401, 37.4);
+    NEW_FLYWHEEL_MAP.put(4.610, 37.9);
+    NEW_FLYWHEEL_MAP.put(4.829, 38.6);
+    NEW_FLYWHEEL_MAP.put(5.068, 39.3);
+    NEW_FLYWHEEL_MAP.put(5.206, 40.2);
+    // Ferrying Dist. Keep closer so fuel doesn't scatter.
+    NEW_FLYWHEEL_MAP.put(5.477, 41.0);
+    NEW_FLYWHEEL_MAP.put(5.727, 42.0);
+    NEW_FLYWHEEL_MAP.put(5.944, 43.5);
     NEW_FLYWHEEL_MAP.put(6.265, 45.0);
     // Running anything harder on the flywheel is to much for the battery.
   }
