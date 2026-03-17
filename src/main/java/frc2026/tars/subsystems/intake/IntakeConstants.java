@@ -27,6 +27,8 @@ public class IntakeConstants {
 
   public static final double ACQUIRED_PIECE_THRESHOLD = 0.0;
 
+  // public static final double MAX_ANGL
+
   public static final SingleJointedArmSim SIM =
       new SingleJointedArmSim(
           DCMotor.getKrakenX60(1),
@@ -88,7 +90,7 @@ public class IntakeConstants {
         new TalonFXConstants(new CANDevice(9), InvertedValue.Clockwise_Positive);
 
     ROLLERS_CONFIG.enableSupplyCurrentLimit = true;
-    ROLLERS_CONFIG.supplyCurrentLimit = 30;
+    ROLLERS_CONFIG.supplyCurrentLimit = 20;
     ROLLERS_CONFIG.sensorToMechRatio = ROLLERS_REDUCTION;
   }
 }

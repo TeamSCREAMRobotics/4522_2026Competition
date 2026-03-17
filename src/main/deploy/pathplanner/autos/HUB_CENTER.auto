@@ -9,12 +9,6 @@
           "data": {
             "pathName": "HUB_CENTER_LEAVE"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Medium Shoot"
-          }
         }
       ]
     }

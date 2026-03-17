@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.25706134094151,
-        "y": 5.6070470756062765
+        "x": 8.291829604158233,
+        "y": 4.421748897507771
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.53597245205262,
-        "y": 7.536447075606278
+        "x": 7.570740715269343,
+        "y": 6.351148897507772
       },
       "isLocked": false,
       "linkedName": "DEPOT_TRENCH_TNZ_NEW"
@@ -83,7 +83,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -62.35583554680027
+    "rotation": 138.11841159531178
   },
   "reversed": false,
   "folder": "DEPOT_TRENCH",

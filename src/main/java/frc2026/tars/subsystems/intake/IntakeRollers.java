@@ -6,7 +6,7 @@ import java.util.function.DoubleSupplier;
 public class IntakeRollers extends TalonFXSubsystem {
 
   public IntakeRollers(TalonFXSubsystemConfiguration config) {
-    super(config);
+    super(config, IntakeRollersGoal.STOP);
   }
 
   @Override
@@ -17,7 +17,7 @@ public class IntakeRollers extends TalonFXSubsystem {
   public enum IntakeRollersGoal implements TalonFXSubsystemGoal {
     STOP(() -> 0.0),
     INTAKE(() -> 7.7),
-    AUTOINTAKE(() -> 9.0),
+    AUTOINTAKE(() -> 12.0),
     OUTTAKE(() -> -6.0);
 
     public final DoubleSupplier voltage;

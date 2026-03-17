@@ -4,7 +4,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.team6328.FeedForwardCharacterization;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
@@ -128,10 +127,6 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    Controlboard.makeThingWork()
-        .whileTrue(
-            new FeedForwardCharacterization(flywheel, flywheel::setVoltage, flywheel::getVelocity));
-
     Controlboard.intake()
         .whileTrue(
             new SequentialCommandGroup(
@@ -140,16 +135,19 @@ public class RobotContainer {
 
     Controlboard.shoot()
         .whileTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        drivetrain
-                            .getHelper()
-                            .getFacingAngleProfiled(
-                                Controlboard.getTranslation(),
-                                robotState.getDrivetrainTarget(),
-                                DrivetrainConstants.headingControllerProfiled))
-                .beforeStarting(() -> drivetrain.resetHeadingController()));
+            Commands.parallel(
+                drivetrain
+                    .applyRequest(
+                        () ->
+                            drivetrain
+                                .getHelper()
+                                .getFacingAngleProfiled(
+                                    Controlboard.getTranslation(),
+                                    robotState.getDrivetrainTarget(),
+                                    DrivetrainConstants.headingControllerProfiled))
+                    .beforeStarting(() -> drivetrain.resetHeadingController()),
+                intakeWrist.compress(),
+                intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE)));
 
     Controlboard.moveIntakeWrist()
         .whileTrue(
@@ -257,8 +255,6 @@ public class RobotContainer {
                   }
                 })
             .ignoringDisable(true));
-
-    intakeRollers.setDefaultCommand(intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP));
   }
 
   private void configureAutoCommands() {
@@ -278,11 +274,24 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Stop Intakeing", intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP).withTimeout(0.1));
 
-    NamedCommands.registerCommand("Short Shoot", shooter.autoShoot(2.5));
+    NamedCommands.registerCommand(
+        "Aim at Hub",
+        drivetrain
+            .applyRequest(
+                () ->
+                    drivetrain
+                        .getHelper()
+                        .getFacingAngleProfiled(
+                            Controlboard.getTranslation(),
+                            robotState.getDrivetrainTarget(),
+                            DrivetrainConstants.headingControllerProfiled))
+            .beforeStarting(() -> drivetrain.resetHeadingController()));
 
-    NamedCommands.registerCommand("Medium Shoot", shooter.autoShoot(4));
+    NamedCommands.registerCommand("Shoot", shooter.autoShoot());
 
-    NamedCommands.registerCommand("Long Shoot", shooter.autoShoot(7.5));
+    NamedCommands.registerCommand(
+        "IntakeWristOut",
+        intakeWrist.runOnce(() -> intakeWrist.applyGoal(IntakeWristGoal.EXTENDED)));
   }
 
   private void configureManualOverrides() {

@@ -92,7 +92,7 @@
       }
     },
     {
-      "name": "Medium Shoot",
+      "name": "",
       "waypointRelativePos": 4.0,
       "endWaypointRelativePos": null,
       "command": null

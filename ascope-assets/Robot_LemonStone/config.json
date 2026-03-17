@@ -1,0 +1,16 @@
+{
+  "name": "LemonStone",
+  "isFTC": false,
+  "rotations": [
+    {
+      "axis": "x",
+      "degrees": 90
+    },
+    {
+      "axis": "z",
+      "degrees": 90
+    }
+  ],
+  "cameras": [],
+  "components": []
+}

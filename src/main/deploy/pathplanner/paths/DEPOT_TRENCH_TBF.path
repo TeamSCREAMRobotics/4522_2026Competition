@@ -105,7 +105,7 @@
   "folder": "DEPOT_TRENCH",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -62.35583554680027
+    "rotation": 138.11841159531178
   },
   "useDefaultConstraints": true
 }
