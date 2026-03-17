@@ -11,8 +11,8 @@ public class Dashboard {
   private static final String overrides = "Overrides";
 
   public static DashboardBoolean aimAtHub;
-  public static DashboardBoolean dissableWaitUntilAim;
-  public static DashboardBoolean dissableWaitUntilHood;
+  public static DashboardBoolean disableWaitUntilAim;
+  public static DashboardBoolean disableWaitUntilHood;
   public static DashboardBoolean runBackIntake;
   public static DashboardBoolean runBackFlywheel;
 
@@ -64,7 +64,7 @@ public class Dashboard {
     disableAllVisionUpdates = new DashboardBoolean(vision, "Disable All Vision Updates", false);
     runBackIntake = new DashboardBoolean(overrides, "Run Back Intake", false);
     runBackFlywheel = new DashboardBoolean(overrides, "Run Back Flywheel", false);
-    dissableWaitUntilHood = new DashboardBoolean(overrides, "Disable Wait Until Hood", false);
+    disableWaitUntilHood = new DashboardBoolean(overrides, "Disable Wait Until Hood", false);
 
     zeroIntake = new DashboardBoolean(overrides, "Zero Intake", false);
     // zeroClimber = new DashboardBoolean(overrides, "Zero Climber", false);
@@ -79,7 +79,7 @@ public class Dashboard {
     manualIntakeWrist = new DashboardNumber(overrides, "Manual Intake Wrist", 90.0);
     // autoShoot = new DashboardBoolean(overrides, "Auto Shoot", false);
     bumperShoot = new DashboardBoolean(overrides, "Bumper Shoot", false);
-    dissableWaitUntilAim = new DashboardBoolean(overrides, "Dissable Wait until aim", false);
+    disableWaitUntilAim = new DashboardBoolean(overrides, "Dissable Wait until aim", false);
 
     closeMapNudge =
         new DashboardNumber(overrides, "Close Tree Map Nudge", ShooterConstants.CLOSE_MAP_NUDGE);
