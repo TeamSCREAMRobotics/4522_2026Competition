@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc2026.tars.RobotContainer.Subsystems;
 import frc2026.tars.controlboard.Controlboard;
-import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.leds.LED;
@@ -212,8 +211,6 @@ public class RobotState {
         return 0.5;
       } else if (Controlboard.driveController.leftStick().getAsBoolean()) {
         return 0.7;
-      } else if (Controlboard.shoot().getAsBoolean() && !Dashboard.disableShootOnTheMove.get()) {
-        return 0.25;
       } else {
         return 1.0;
       }

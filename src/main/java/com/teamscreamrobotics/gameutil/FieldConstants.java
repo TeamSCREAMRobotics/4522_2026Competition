@@ -39,6 +39,9 @@ public class FieldConstants {
   public static final double fieldLength = AprilTagLayoutType.OFFICIAL.getLayout().getFieldLength();
   public static final double fieldWidth = AprilTagLayoutType.OFFICIAL.getLayout().getFieldWidth();
 
+  public static final Translation2d middleOfField =
+      new Translation2d(fieldLength / 2, fieldWidth / 2);
+
   public static final Translation2d fieldDimensions = new Translation2d(fieldLength, fieldWidth);
 
   public static final RectangularPoseArea fieldArea =

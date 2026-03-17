@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "IntakeWristOut"
+          }
+        },
+        {
           "type": "wait",
           "data": {
             "waitTime": 0.3
@@ -13,23 +19,29 @@
         {
           "type": "path",
           "data": {
-            "pathName": "OUTPOST_TRENCH_TS"
+            "pathName": "CHEESY_COMBACK"
           }
         },
         {
-          "type": "parallel",
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "FR_TRENCH_RETURN"
+                  "name": "Aim at Hub"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Stop Intakeing"
+                  "name": "Shoot"
                 }
               }
             ]
@@ -38,48 +50,35 @@
         {
           "type": "named",
           "data": {
-            "name": "Medium Shoot"
+            "name": "IntakeWristOut"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "OUTPOST_TRENCH_BS"
+            "pathName": "CHEESY_COMMMBAKKKK"
           }
         },
         {
-          "type": "parallel",
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "race",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "Stop Intakeing"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "BS_RETURN"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Intake"
+                  "name": "Aim at Hub"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Long Shoot"
+                  "name": "Shoot"
                 }
               }
             ]

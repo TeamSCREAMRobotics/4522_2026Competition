@@ -5,34 +5,34 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "DEPOT_TRENCH_TNZ"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "OUTPOST_BUMP_TNZ"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Intake"
+                  "pathName": "DEPOT_TRENCH_RETURN"
                 }
               }
             ]
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "OUTPOST_BUMP_RETURN"
+            "name": "Aim at Hub"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "OUTPOST Autos",
+  "folder": "DEPOT Autos",
   "choreoAuto": false
 }

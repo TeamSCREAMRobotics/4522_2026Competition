@@ -1,16 +1,13 @@
 {
-  "robotWidth": 0.768,
-  "robotLength": 0.763,
-  "holonomicMode": false,
+  "robotWidth": 0.871347,
+  "robotLength": 0.858647,
+  "holonomicMode": true,
   "pathFolders": [
-    "DEPOT_BUMP",
-    "DEPOT_T-NZ-DEP",
+    "Cheesy_OUTPOST",
     "DEPOT_TRENCH",
-    "DEPOT_T_D_O",
     "HUB_CENTER",
-    "OUTPOST_BUMP",
-    "OUTPOST_TRENCH",
-    "OUTPOST_TRENCH_OUTPOST"
+    "Cheesy_DEPOT",
+    "OUTPOST_TRENCH"
   ],
   "autoFolders": [
     "DEPOT Autos",
@@ -23,27 +20,22 @@
   "defaultNominalVoltage": 12.0,
   "robotMass": 74.088,
   "robotMOI": 6.883,
-  "robotTrackwidth": 0.546,
+  "robotTrackwidth": 0.55245,
   "driveWheelRadius": 0.051,
   "driveGearing": 7.03,
   "maxDriveSpeed": 5.45,
   "driveMotorType": "krakenX60",
   "driveCurrentLimit": 60.0,
   "wheelCOF": 1.2,
-  "flModuleX": 0.29,
-  "flModuleY": 0.17,
-  "frModuleX": 0.29,
-  "frModuleY": -0.17,
+  "flModuleX": 0.308,
+  "flModuleY": 0.308,
+  "frModuleX": 0.308,
+  "frModuleY": -0.308,
   "blModuleX": -0.308,
   "blModuleY": 0.308,
   "brModuleX": -0.308,
   "brModuleY": -0.308,
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
-  "robotFeatures": [
-    "{\"name\":\"Line\",\"type\":\"line\",\"data\":{\"start\":{\"x\":-0.116,\"y\":-0.38},\"end\":{\"x\":0.38,\"y\":-0.216},\"strokeWidth\":0.02}}",
-    "{\"name\":\"Line\",\"type\":\"line\",\"data\":{\"start\":{\"x\":-0.116,\"y\":0.38},\"end\":{\"x\":0.38,\"y\":0.216},\"strokeWidth\":0.02}}",
-    "{\"name\":\"Circle\",\"type\":\"circle\",\"data\":{\"center\":{\"x\":0.146457,\"y\":0.0},\"radius\":0.08255,\"strokeWidth\":0.02,\"filled\":false}}",
-    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":-0.375057,\"y\":0.0},\"size\":{\"width\":0.633,\"length\":0.18905},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}"
-  ]
+  "robotFeatures": []
 }

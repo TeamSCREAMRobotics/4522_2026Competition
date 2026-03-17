@@ -1,0 +1,201 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.404943181818181,
+        "y": 0.7471249999999998
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.567042439007647,
+        "y": 0.7471249999999998
+      },
+      "isLocked": false,
+      "linkedName": "CHEESY_OUTPOST_START"
+    },
+    {
+      "anchor": {
+        "x": 8.187545454545454,
+        "y": 1.1387840909090914
+      },
+      "prevControl": {
+        "x": 7.8783409090861785,
+        "y": 0.7574318181823003
+      },
+      "nextControl": {
+        "x": 8.48144949204097,
+        "y": 1.5012657371475582
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.187545454545454,
+        "y": 3.963340877738852
+      },
+      "prevControl": {
+        "x": 8.672941968695353,
+        "y": 3.9413888585238146
+      },
+      "nextControl": {
+        "x": 7.447312915647986,
+        "y": 3.996817836150743
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.672717771678336,
+        "y": 2.072219890348267
+      },
+      "prevControl": {
+        "x": 7.683024589855425,
+        "y": 2.5011695071974773
+      },
+      "nextControl": {
+        "x": 7.661595929693975,
+        "y": 1.6093505764746827
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.3665495276366535,
+        "y": 0.8619388929845593
+      },
+      "prevControl": {
+        "x": 6.923863734246717,
+        "y": 0.9676416022199693
+      },
+      "nextControl": {
+        "x": 5.90510510111542,
+        "y": 0.7744192757446535
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.061165934882313,
+        "y": 0.7471249999999998
+      },
+      "prevControl": {
+        "x": 5.339414027044401,
+        "y": 0.7224609482318729
+      },
+      "nextControl": {
+        "x": 4.782917842720225,
+        "y": 0.7717890517681267
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.010930528014447,
+        "y": 0.7471249999999998
+      },
+      "prevControl": {
+        "x": 4.260553707084052,
+        "y": 0.7334039041551166
+      },
+      "nextControl": {
+        "x": 3.761307348944843,
+        "y": 0.760846095844883
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.156119658991849,
+        "y": 1.0250127136936726
+      },
+      "prevControl": {
+        "x": 3.479561423349158,
+        "y": 0.8181790843641483
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CHEESY_COMBACK"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.19811320754716985,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0.7830188679245282,
+      "rotationDegrees": 105.00000000000001
+    },
+    {
+      "waypointRelativePos": 1.6745283018867925,
+      "rotationDegrees": 105.00000000000001
+    },
+    {
+      "waypointRelativePos": 2.279874213836475,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 4.6,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 6.394654088050311,
+      "rotationDegrees": 180.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.951526032315978,
+      "maxWaypointRelativePos": 3.3393177737881508,
+      "constraints": {
+        "maxVelocity": 2.5,
+        "maxAcceleration": 2.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Run Intake",
+      "waypointRelativePos": 0.610412926391382,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Run Intake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 4.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -109.9696307086065
+  },
+  "reversed": false,
+  "folder": "Cheesy_OUTPOST",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -2.101654327671304
+  },
+  "useDefaultConstraints": true
+}

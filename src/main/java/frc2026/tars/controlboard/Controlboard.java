@@ -89,10 +89,6 @@ public class Controlboard {
     return new Trigger(() -> Dashboard.zeroHood.get());
   }
 
-  public static Trigger zeroTurret() {
-    return new Trigger(() -> Dashboard.zeroTurret.get());
-  }
-
   public static Trigger resetManuals() {
     return new Trigger(() -> Dashboard.resetManuals.get());
   }
@@ -135,10 +131,6 @@ public class Controlboard {
 
   public static Trigger rotate180Degrees() {
     return driveController.a();
-  }
-
-  public static Trigger blipDyerotor() {
-    return new Trigger(() -> Dashboard.blipDyerotor.get());
   }
 
   public static Trigger resetManual() {
