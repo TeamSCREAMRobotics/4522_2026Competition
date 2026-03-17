@@ -117,10 +117,7 @@ public class Shooter extends SubsystemBase {
   }
 
   private void applyAimingSetpoints(
-      Pose2d robotPose,
-      ChassisSpeeds robotSpeeds,
-      Translation2d target,
-      boolean wantShoot) {
+      Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
     setTarget(target);
     double distanceMeters = getShotDistance(target).getMeters();
     double hoodAngleDeg = getHoodAngleFromDistance(distanceMeters);
@@ -299,8 +296,7 @@ public class Shooter extends SubsystemBase {
                 FieldConstants.AllianceZones.oppLeftAllianceZone));
         break;
       case OTHERALLIANCEZONE:
-        applyAimingSetpoints(
-            robotPose, robotSpeeds, FieldConstants.middleOfField, wantShoot);
+        applyAimingSetpoints(robotPose, robotSpeeds, FieldConstants.middleOfField, wantShoot);
         runFeed(FieldConstants.middleOfField);
         break;
       default:

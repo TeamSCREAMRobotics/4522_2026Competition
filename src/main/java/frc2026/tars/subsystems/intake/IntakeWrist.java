@@ -8,7 +8,6 @@ import com.teamscreamrobotics.dashboard.Ligament;
 import com.teamscreamrobotics.dashboard.Mechanism;
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
-import com.teamscreamrobotics.pid.ScreamPIDConstants.MotionMagicConstants;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -100,7 +99,8 @@ public class IntakeWrist extends TalonFXSubsystem {
             Commands.runOnce(
                 () -> setMotionMagicConfigsUnchecked(IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS)),
             applyGoalCommand(IntakeWristGoal.COMPRESS))
-        .finallyDo(() -> setMotionMagicConfigsUnchecked(IntakeConstants.FAST_MOTION_MAGIC_CONSTANTS));
+        .finallyDo(
+            () -> setMotionMagicConfigsUnchecked(IntakeConstants.FAST_MOTION_MAGIC_CONSTANTS));
   }
 
   @Getter public TalonFXSubsystemGoal goal = getGoal();
