@@ -41,4 +41,12 @@ public class IntakeRollers extends TalonFXSubsystem {
       return voltage;
     }
   }
+
+  @Override
+  public synchronized void setVoltage(double volts, double voltageFeedForward) {
+    setMaster(voltageRequest.withOutput(volts + voltageFeedForward).withEnableFOC(false));
+    if (shouldSimulate()) {
+      simulationThread.setSimVoltage(() -> volts + voltageFeedForward);
+    }
+  }
 }

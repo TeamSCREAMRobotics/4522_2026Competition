@@ -137,7 +137,7 @@ public class Controlboard {
     return new Trigger(() -> Dashboard.resetManuals.get());
   }
 
-  public static Trigger aggitate() {
+  public static Trigger agitate() {
     return driveController.rightStick();
   }
 

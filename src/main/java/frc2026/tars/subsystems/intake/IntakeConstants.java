@@ -10,6 +10,7 @@ import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemConfigura
 import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemSimConstants;
 import com.teamscreamrobotics.pid.ScreamPIDConstants;
 import com.teamscreamrobotics.pid.ScreamPIDConstants.FeedforwardConstants;
+import com.teamscreamrobotics.pid.ScreamPIDConstants.MotionMagicConstants;
 import com.teamscreamrobotics.sim.SimWrapper;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -27,7 +28,8 @@ public class IntakeConstants {
 
   public static final double ACQUIRED_PIECE_THRESHOLD = 0.0;
 
-  // public static final double MAX_ANGL
+  public static final MotionMagicConstants SLOW_MOTION_MAGIC_CONSTANTS = new MotionMagicConstants(2, 0.2, 0);
+  public static final MotionMagicConstants FAST_MOTION_MAGIC_CONSTANTS = new MotionMagicConstants(30, 30, 0);
 
   public static final SingleJointedArmSim SIM =
       new SingleJointedArmSim(

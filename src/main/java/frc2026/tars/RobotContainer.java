@@ -205,7 +205,7 @@ public class RobotContainer {
                                 DrivetrainConstants.headingControllerProfiled))
                 .beforeStarting(() -> drivetrain.resetHeadingController()));
 
-    Controlboard.aggitate()
+    Controlboard.agitate()
         .whileTrue(Commands.run(() -> shooter.agitate(true)))
         .whileFalse(Commands.run(() -> shooter.agitate(false)));
   }

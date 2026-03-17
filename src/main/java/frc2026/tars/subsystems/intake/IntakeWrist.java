@@ -53,7 +53,7 @@ public class IntakeWrist extends TalonFXSubsystem {
   public enum IntakeWristGoal implements TalonFXSubsystemGoal {
     STOW(Rotation2d.fromDegrees(0.0)),
     AGITATE(Rotation2d.fromDegrees(63.3)),
-    COMPRESSSSSSSSSSSS(Rotation2d.fromDegrees(19.0)),
+    COMPRESS(Rotation2d.fromDegrees(19.0)),
     EXTENDED(Rotation2d.fromDegrees(108.3));
 
     public final DoubleSupplier position;
@@ -98,9 +98,9 @@ public class IntakeWrist extends TalonFXSubsystem {
   public Command compress() {
     return Commands.sequence(
             Commands.runOnce(
-                () -> setMotionMagicConfigsUnchecked(new MotionMagicConstants(2, 0.2, 0))),
-            applyGoalCommand(IntakeWristGoal.COMPRESSSSSSSSSSSS))
-        .finallyDo(() -> setMotionMagicConfigsUnchecked(new MotionMagicConstants(30, 30, 0)));
+                () -> setMotionMagicConfigsUnchecked(IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS)),
+            applyGoalCommand(IntakeWristGoal.COMPRESS))
+        .finallyDo(() -> setMotionMagicConfigsUnchecked(IntakeConstants.FAST_MOTION_MAGIC_CONSTANTS));
   }
 
   @Getter public TalonFXSubsystemGoal goal = getGoal();
