@@ -28,6 +28,8 @@ public class Dashboard {
   public static DashboardNumber manualFlywheelVelocity;
   public static DashboardNumber manualIntakeRollers;
   public static DashboardNumber manualIntakeWrist;
+  public static DashboardNumber manualFloorRollers;
+  public static DashboardNumber manualFeeder;
 
   public static DashboardBoolean bumperShoot;
 
@@ -77,6 +79,8 @@ public class Dashboard {
     manualFlywheelVelocity = new DashboardNumber(overrides, "Manual Flywheel Velocity", 0.0);
     manualIntakeRollers = new DashboardNumber(overrides, "Manual Intake Rollers", 0.0);
     manualIntakeWrist = new DashboardNumber(overrides, "Manual Intake Wrist", 90.0);
+    manualFloorRollers = new DashboardNumber(overrides, "Manual Floor Rollers", 0);
+    manualFeeder = new DashboardNumber(overrides, "Manual Feeder", 0);
     // autoShoot = new DashboardBoolean(overrides, "Auto Shoot", false);
     bumperShoot = new DashboardBoolean(overrides, "Bumper Shoot", false);
     disableWaitUntilAim = new DashboardBoolean(overrides, "Dissable Wait until aim", false);
@@ -103,6 +107,8 @@ public class Dashboard {
     manualFlywheelVelocity.set(0.0);
     manualIntakeRollers.set(0.0);
     manualIntakeWrist.set(90.0);
+    manualFloorRollers.set(0.0);
+    manualFeeder.set(0.0);
   }
 
   public static void periodic() {

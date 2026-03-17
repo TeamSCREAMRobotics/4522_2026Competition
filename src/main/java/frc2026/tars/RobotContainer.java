@@ -340,7 +340,9 @@ public class RobotContainer {
                         intakeWrist),
                     Commands.run(
                         () -> intakeRollers.setVoltage(Dashboard.manualIntakeRollers.get()),
-                        intakeRollers))
+                        intakeRollers),
+                    Commands.run(() -> rollers.setVoltage(Dashboard.manualFloorRollers.get()), rollers),
+                    Commands.run(() -> feeder.setVoltage(Dashboard.manualFeeder.get()), feeder))
                 .ignoringDisable(true));
   }
 
