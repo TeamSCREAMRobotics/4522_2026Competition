@@ -28,8 +28,10 @@ public class IntakeConstants {
 
   public static final double ACQUIRED_PIECE_THRESHOLD = 0.0;
 
-  public static final MotionMagicConstants SLOW_MOTION_MAGIC_CONSTANTS = new MotionMagicConstants(2, 0.2, 0);
-  public static final MotionMagicConstants FAST_MOTION_MAGIC_CONSTANTS = new MotionMagicConstants(30, 30, 0);
+  public static final MotionMagicConstants SLOW_MOTION_MAGIC_CONSTANTS =
+      new MotionMagicConstants(2, 0.2, 0);
+  public static final MotionMagicConstants FAST_MOTION_MAGIC_CONSTANTS =
+      new MotionMagicConstants(30, 30, 0);
 
   public static final SingleJointedArmSim SIM =
       new SingleJointedArmSim(
