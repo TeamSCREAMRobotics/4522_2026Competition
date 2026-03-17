@@ -138,7 +138,7 @@ public class Shooter extends SubsystemBase {
             .plus(Rotation2d.k180deg));
 
     hood.moveToAngle(Rotation2d.fromDegrees(wantShoot ? hoodAngleDeg : 0.0));
-    flywheel.setTargetVelocityTorqueCurrent(flywheelMap, 0.0);
+    flywheel.setTargetVelocityTorqueCurrent(flywheelMap / multiplier, 0.0);
 
     Logger.log(logPrefix + "Hood Angle", hoodAngleDeg);
     Logger.log(logPrefix + "Flywheel Velocity", flywheelSetpoint);
