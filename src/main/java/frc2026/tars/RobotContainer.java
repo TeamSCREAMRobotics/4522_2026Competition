@@ -170,28 +170,28 @@ public class RobotContainer {
                                 Rotation2d.fromDegrees(90),
                                 DrivetrainConstants.headingControllerProfiled))
                 .beforeStarting(() -> drivetrain.resetHeadingController()));
-    // Controlboard.rotateNegative90Degrees()
-    //     .whileTrue(
-    //         drivetrain.applyRequest(
-    //             () ->
-    //                 drivetrain
-    //                     .getHelper()
-    //                     .getFacingAngleProfiled(
-    //                         Controlboard.getTranslation(),
-    //                         Rotation2d.fromDegrees(-90),
-    //                         DrivetrainConstants.headingControllerProfiled)).beforeStarting(() ->
-    // drivetrain.resetHeadingController()));
-    // Controlboard.rotate0Degrees()
-    //     .whileTrue(
-    //         drivetrain.applyRequest(
-    //             () ->
-    //                 drivetrain
-    //                     .getHelper()
-    //                     .getFacingAngleProfiled(
-    //                         Controlboard.getTranslation(),
-    //                         Rotation2d.fromDegrees(0),
-    //                         DrivetrainConstants.headingControllerProfiled)).beforeStarting(() ->
-    // drivetrain.resetHeadingController()));
+     Controlboard.rotateNegative90Degrees()
+         .whileTrue(
+             drivetrain.applyRequest(
+                 () ->
+                     drivetrain
+                         .getHelper()
+                         .getFacingAngleProfiled(
+                             Controlboard.getTranslation(),
+                             Rotation2d.fromDegrees(-90),
+                             DrivetrainConstants.headingControllerProfiled)).beforeStarting(() ->
+     drivetrain.resetHeadingController()));
+     Controlboard.rotate0Degrees()
+         .whileTrue(
+             drivetrain.applyRequest(
+                 () ->
+                     drivetrain
+                         .getHelper()
+                         .getFacingAngleProfiled(
+                             Controlboard.getTranslation(),
+                             Rotation2d.fromDegrees(0),
+                             DrivetrainConstants.headingControllerProfiled)).beforeStarting(() ->
+     drivetrain.resetHeadingController()));
     Controlboard.rotate180Degrees()
         .whileTrue(
             drivetrain

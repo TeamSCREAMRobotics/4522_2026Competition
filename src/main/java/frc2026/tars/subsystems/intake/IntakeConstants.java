@@ -29,7 +29,7 @@ public class IntakeConstants {
   public static final double ACQUIRED_PIECE_THRESHOLD = 0.0;
 
   public static final MotionMagicConstants SLOW_MOTION_MAGIC_CONSTANTS =
-      new MotionMagicConstants(2, 0.2, 0);
+      new MotionMagicConstants(2, 0.175, 0);
   public static final MotionMagicConstants FAST_MOTION_MAGIC_CONSTANTS =
       new MotionMagicConstants(30, 30, 0);
 
@@ -94,7 +94,7 @@ public class IntakeConstants {
         new TalonFXConstants(new CANDevice(9), InvertedValue.Clockwise_Positive);
 
     ROLLERS_CONFIG.enableSupplyCurrentLimit = true;
-    ROLLERS_CONFIG.supplyCurrentLimit = 20;
+    ROLLERS_CONFIG.supplyCurrentLimit = 30;
     ROLLERS_CONFIG.sensorToMechRatio = ROLLERS_REDUCTION;
   }
 }

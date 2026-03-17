@@ -166,19 +166,7 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Run Intake",
-      "waypointRelativePos": 0.610412926391382,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Run Intake"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.5,
     "maxAcceleration": 4.5,
@@ -195,7 +183,7 @@
   "folder": "Cheesy_OUTPOST",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -2.101654327671304
+    "rotation": -2.1016543276713042
   },
   "useDefaultConstraints": true
 }
