@@ -19,7 +19,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import frc2026.tars.Robot;
 import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import java.util.ArrayList;

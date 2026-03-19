@@ -146,7 +146,9 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command autoShoot() {
-    return Commands.parallel(Commands.run(() -> wantShoot = true), intakeWrist.compress(() -> robotState.atTargetAngle()) /* ,
+    return Commands.parallel(
+            Commands.run(() -> wantShoot = true),
+            intakeWrist.compress(() -> robotState.atTargetAngle()) /* ,
             intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE) */)
         .withDeadline(
             new WaitUntilCommand(() -> !beamDebouncer.calculate(beam.getIsDetected().getValue())))

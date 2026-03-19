@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc2026.tars.constants.SimConstants;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
@@ -97,13 +96,18 @@ public class IntakeWrist extends TalonFXSubsystem {
   }
 
   public Command compress(BooleanSupplier atTarget) {
-    return Commands.either(Commands.sequence(
-            Commands.runOnce(
-                () -> setMotionMagicConfigsUnchecked(IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS)),
-              Commands.waitSeconds(0.5),
-            applyGoalCommand(IntakeWristGoal.COMPRESS))
-        .finallyDo(
-            () -> setMotionMagicConfigsUnchecked(IntakeConstants.FAST_MOTION_MAGIC_CONSTANTS)), Commands.none(), atTarget);
+    return Commands.either(
+        Commands.sequence(
+                Commands.runOnce(
+                    () ->
+                        setMotionMagicConfigsUnchecked(
+                            IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS)),
+                Commands.waitSeconds(0.5),
+                applyGoalCommand(IntakeWristGoal.COMPRESS))
+            .finallyDo(
+                () -> setMotionMagicConfigsUnchecked(IntakeConstants.FAST_MOTION_MAGIC_CONSTANTS)),
+        Commands.none(),
+        atTarget);
   }
 
   @Getter public TalonFXSubsystemGoal goal = getGoal();
