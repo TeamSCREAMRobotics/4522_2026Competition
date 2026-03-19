@@ -218,8 +218,9 @@ public class RobotState {
     };
   }
 
-  public boolean atTargetAngle(){
-    return drivetrain.getWithinAngleThreshold(drivetrainTarget, Rotation2d.fromDegrees(7.5)) || Dashboard.disableWaitUntilAim.get();
+  public boolean atTargetAngle() {
+    return drivetrain.getWithinAngleThreshold(drivetrainTarget, Rotation2d.fromDegrees(7.5))
+        || Dashboard.disableWaitUntilAim.get();
   }
 
   public void flashLEDS() {
