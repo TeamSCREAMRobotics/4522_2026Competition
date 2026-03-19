@@ -44,7 +44,7 @@ import lombok.Getter;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
  */
 public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
-  private static final double kSimLoopPeriod = 0.004; // 4 ms
+  public static final double kSimLoopPeriod = 0.004; // 4 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
 
@@ -114,9 +114,6 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
       double odometryUpdateFrequency,
       SwerveModuleConstants<?, ?, ?>... modules) {
     super(drivetrainConstants, odometryUpdateFrequency, modules);
-    if (Utils.isSimulation()) {
-      startSimThread();
-    }
 
     helper =
         new PhoenixSwerveHelper(
@@ -165,21 +162,15 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     return m_sysIdRoutineToApply.dynamic(direction);
   }
 
-  private void startSimThread() {
+  public void runSim() {
     m_lastSimTime = Utils.getCurrentTimeSeconds();
 
-    /* Run simulation at a faster rate so PID gains behave more reasonably */
-    m_simNotifier =
-        new Notifier(
-            () -> {
-              final double currentTime = Utils.getCurrentTimeSeconds();
-              double deltaTime = currentTime - m_lastSimTime;
-              m_lastSimTime = currentTime;
+    final double currentTime = Utils.getCurrentTimeSeconds();
+    double deltaTime = currentTime - m_lastSimTime;
+    m_lastSimTime = currentTime;
 
-              /* use the measured time delta, get battery voltage from WPILib */
-              updateSimState(deltaTime, RobotController.getBatteryVoltage());
-            });
-    m_simNotifier.startPeriodic(kSimLoopPeriod);
+    /* use the measured time delta, get battery voltage from WPILib */
+    updateSimState(deltaTime, RobotController.getBatteryVoltage());
   }
 
   public boolean getWithinAngleThreshold(Rotation2d targetAngle, Rotation2d threshold) {

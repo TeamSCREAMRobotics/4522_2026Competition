@@ -95,10 +95,11 @@ public class VisionManager {
   private final Drivetrain drivetrain;
   private final Limelight[] limelights = new Limelight[] {Limelights.right, Limelights.shooter};
 
+  @SuppressWarnings("unused")
   public VisionManager(Drivetrain drivetrain) {
     this.drivetrain = drivetrain;
 
-    if (Robot.isSimulation()) {
+    if (false) {
       swerveLeft = new PhotonCamera("limelight-left");
       swerveRight = new PhotonCamera("limelight-right");
       // intake = new PhotonCamera("intake");
@@ -191,11 +192,12 @@ public class VisionManager {
     }
   }
 
+  @SuppressWarnings("unused")
   public void periodic() {
     addStaticEstimate(Limelights.right);
     addStaticEstimate(Limelights.shooter);
 
-    if (Robot.isSimulation() && visionSim != null) {
+    if (false && visionSim != null) {
       visionSim.update(drivetrain.getEstimatedPose());
       for (int i = 0; i < limelights.length; i++) {
         for (PhotonPipelineResult result : cameras[i].getAllUnreadResults()) {

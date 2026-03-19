@@ -176,19 +176,7 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Run Intake",
-      "waypointRelativePos": 2.5806451612902577,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Run Intake"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.5,
     "maxAcceleration": 4.5,
@@ -205,7 +193,7 @@
   "folder": "Cheesy_DEPOT",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 135.33516518711227
+    "rotation": 135.3351651871123
   },
   "useDefaultConstraints": true
 }

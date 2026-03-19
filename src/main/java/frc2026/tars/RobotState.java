@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc2026.tars.RobotContainer.Subsystems;
 import frc2026.tars.controlboard.Controlboard;
+import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.leds.LED;
@@ -215,6 +216,10 @@ public class RobotState {
         return 1.0;
       }
     };
+  }
+
+  public boolean atTargetAngle(){
+    return drivetrain.getWithinAngleThreshold(drivetrainTarget, Rotation2d.fromDegrees(7.5)) || Dashboard.disableWaitUntilAim.get();
   }
 
   public void flashLEDS() {
