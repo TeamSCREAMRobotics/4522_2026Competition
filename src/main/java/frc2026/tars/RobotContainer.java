@@ -146,7 +146,7 @@ public class RobotContainer {
                                     robotState.getDrivetrainTarget(),
                                     DrivetrainConstants.headingControllerProfiled))
                     .beforeStarting(() -> drivetrain.resetHeadingController()),
-                intakeWrist.compress(),
+                intakeWrist.compress(() -> robotState.atTargetAngle()),
                 intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE)));
 
     Controlboard.moveIntakeWrist()

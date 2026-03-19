@@ -5,27 +5,28 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "IntakeWristOut"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.3
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Run Intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CHEESY_COMBACK"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeWristOut"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "CHEESY_COMBACK"
+                }
+              }
+            ]
           }
         },
         {
@@ -54,15 +55,28 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "IntakeWristOut"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CHEESY_COMMMBAKKKK"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeWristOut"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "CHEESY_COMMMBAKKKK"
+                }
+              }
+            ]
           }
         },
         {
