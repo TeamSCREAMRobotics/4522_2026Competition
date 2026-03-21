@@ -23,7 +23,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "CLOSE CHEESY_COMBACK"
+                  "pathName": "CLOSE CHEESY_DEPOT"
                 }
               }
             ]
@@ -73,7 +73,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "CLOSE CHEESY_COMMMBAKKKK"
+                  "pathName": "CLOSE CHEESY_DEPOT_2"
                 }
               }
             ]
@@ -108,6 +108,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "OUTPOST Autos",
+  "folder": "DEPOT Autos",
   "choreoAuto": false
 }

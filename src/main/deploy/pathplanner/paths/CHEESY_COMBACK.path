@@ -139,7 +139,7 @@
     },
     {
       "waypointRelativePos": 2.279874213836475,
-      "rotationDegrees": -90.0
+      "rotationDegrees": 180.0
     },
     {
       "waypointRelativePos": 4.6,
@@ -154,10 +154,10 @@
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 0.951526032315978,
-      "maxWaypointRelativePos": 3.3393177737881508,
+      "maxWaypointRelativePos": 5.388251181633979,
       "constraints": {
-        "maxVelocity": 2.5,
-        "maxAcceleration": 2.5,
+        "maxVelocity": 2.0,
+        "maxAcceleration": 2.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -183,7 +183,7 @@
   "folder": "Cheesy_OUTPOST",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -2.1016543276713042
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
