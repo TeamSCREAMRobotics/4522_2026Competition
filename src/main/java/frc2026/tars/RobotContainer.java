@@ -290,9 +290,12 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "IntakeWristOut",
         intakeWrist.runOnce(() -> intakeWrist.applyGoal(IntakeWristGoal.EXTENDED)));
-        
-    NamedCommands.registerCommand("Run Kickers", 
-        intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE).withTimeout(0.25)
+
+    NamedCommands.registerCommand(
+        "Run Kickers",
+        intakeRollers
+            .applyGoalCommand(IntakeRollersGoal.INTAKE)
+            .withTimeout(0.25)
             .andThen(intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP)));
   }
 

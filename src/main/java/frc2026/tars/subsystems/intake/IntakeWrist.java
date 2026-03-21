@@ -96,12 +96,15 @@ public class IntakeWrist extends TalonFXSubsystem {
   }
 
   public Command compress(BooleanSupplier atTarget) {
-    return Commands.run(() -> {
-      if (atTarget.getAsBoolean() == true) {
-        setMotionMagicConfigsUnchecked(IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS);
-        applyGoal(IntakeWristGoal.COMPRESS);
-      } 
-    }).finallyDo(() -> setMotionMagicConfigsUnchecked(IntakeConstants.FAST_MOTION_MAGIC_CONSTANTS));
+    return Commands.run(
+            () -> {
+              if (atTarget.getAsBoolean() == true) {
+                setMotionMagicConfigsUnchecked(IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS);
+                applyGoal(IntakeWristGoal.COMPRESS);
+              }
+            })
+        .finallyDo(
+            () -> setMotionMagicConfigsUnchecked(IntakeConstants.FAST_MOTION_MAGIC_CONSTANTS));
   }
 
   @Getter public TalonFXSubsystemGoal goal = getGoal();
