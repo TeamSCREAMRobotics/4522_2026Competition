@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.156119658991849,
-        "y": 1.0250127136936726
+        "x": 3.0,
+        "y": 1.1
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.838439389788041,
-        "y": 0.6292597630350656
+        "x": 3.682319730796192,
+        "y": 0.704247049341393
       },
       "isLocked": false,
       "linkedName": "CHEESY_COMBACK"
@@ -171,13 +171,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -109.87379913599365
+    "rotation": -116.00000000000001
   },
   "reversed": false,
   "folder": "Cheesy_OUTPOST",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -109.9696307086065
+    "rotation": -117.8863739585155
   },
   "useDefaultConstraints": true
 }

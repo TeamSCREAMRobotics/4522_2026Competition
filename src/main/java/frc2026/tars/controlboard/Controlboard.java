@@ -137,10 +137,6 @@ public class Controlboard {
     return new Trigger(() -> Dashboard.resetManuals.get());
   }
 
-  public static Trigger agitate() {
-    return driveController.rightStick();
-  }
-
   public static Trigger runBackIntake() {
     return new Trigger(() -> Dashboard.runBackIntake.get());
   }

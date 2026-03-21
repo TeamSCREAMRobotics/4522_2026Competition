@@ -57,7 +57,8 @@ public class Shooter extends SubsystemBase {
   private final String logPrefix = "Subsystems/Shooter/";
 
   private final CANrange beam = new CANrange(0, "canivore");
-  private final Debouncer beamDebouncer = new Debouncer(0.75, DebounceType.kFalling);
+  // 0.75
+  private final Debouncer beamDebouncer = new Debouncer(0.45, DebounceType.kFalling);
 
   @Getter @Setter public Translation2d target = new Translation2d();
 
@@ -158,13 +159,7 @@ public class Shooter extends SubsystemBase {
   public void runFeed(Translation2d target) {
     if ((flywheel.atVel() || Dashboard.disableWaitUntilAtVelocity.get())
         && (Math.abs(hood.getError()) <= 0.007 || Dashboard.disableWaitUntilHood.get())
-        && (Math.abs(
-                    drivetrain.getHeading().getDegrees()
-                        - ScreamMath.calculateAngleToPoint(robotPose.getTranslation(), target)
-                            .plus(Rotation2d.k180deg)
-                            .getDegrees())
-                <= 7.5
-            || Dashboard.disableWaitUntilAim.get())) {
+        && robotState.atTargetAngle()) {
       rollers.setVoltage(11.0);
       feeder.setVoltage(11.0);
       // led.solid(Color.kRed);

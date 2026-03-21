@@ -206,10 +206,6 @@ public class RobotContainer {
                                 Rotation2d.fromDegrees(180),
                                 DrivetrainConstants.headingControllerProfiled))
                 .beforeStarting(() -> drivetrain.resetHeadingController()));
-
-    Controlboard.agitate()
-        .whileTrue(Commands.run(() -> shooter.agitate(true)))
-        .whileFalse(Commands.run(() -> shooter.agitate(false)));
   }
 
   private void configureDefaultCommands() {
@@ -294,6 +290,10 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "IntakeWristOut",
         intakeWrist.runOnce(() -> intakeWrist.applyGoal(IntakeWristGoal.EXTENDED)));
+        
+    NamedCommands.registerCommand("Run Kickers", 
+        intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE).withTimeout(0.25)
+            .andThen(intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP)));
   }
 
   private void configureManualOverrides() {

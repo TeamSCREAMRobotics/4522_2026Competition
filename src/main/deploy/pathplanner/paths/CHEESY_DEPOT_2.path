@@ -193,7 +193,7 @@
   "folder": "Cheesy_DEPOT",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 135.3351651871123
+    "rotation": 119.99999999999999
   },
   "useDefaultConstraints": true
 }
