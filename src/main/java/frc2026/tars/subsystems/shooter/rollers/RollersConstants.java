@@ -20,14 +20,10 @@ public class RollersConstants {
 
     ROLLERS_CONFIG.masterConstants =
         new TalonFXConstants(new CANDevice(6), InvertedValue.CounterClockwise_Positive);
-    ROLLERS_CONFIG.slaveConstants =
-        new TalonFXConstants[] {
-          new TalonFXConstants(new CANDevice(7), InvertedValue.Clockwise_Positive)
-        };
 
     ROLLERS_CONFIG.neutralMode = NeutralModeValue.Coast;
 
     ROLLERS_CONFIG.enableSupplyCurrentLimit = true;
-    ROLLERS_CONFIG.supplyCurrentLimit = 20;
+    ROLLERS_CONFIG.supplyCurrentLimit = 40;
   }
 }

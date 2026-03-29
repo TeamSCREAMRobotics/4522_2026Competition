@@ -59,6 +59,15 @@ public class VisionManager {
                 Units.inchesToMeters(12.510),
                 Units.inchesToMeters(18.984),
                 new Rotation3d(0.0, Units.degreesToRadians(0.0), Units.degreesToRadians(90.0))));
+                
+    public static final Limelight left =
+        new Limelight(
+            "limelight-left",
+            new Pose3d(
+                Units.inchesToMeters(0.220),
+                Units.inchesToMeters(12.510),
+                Units.inchesToMeters(18.984),
+                new Rotation3d(0.0, Units.degreesToRadians(0.0), Units.degreesToRadians(90.0))));
     // public static final Limelight swerveRight =
     //     new Limelight(
     //         "limelight-right",
