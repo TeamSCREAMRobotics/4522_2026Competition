@@ -18,6 +18,7 @@ public class Dashboard {
 
   public static DashboardBoolean zeroIntake;
   public static DashboardBoolean zeroHood;
+  public static DashboardBoolean zeroHopper;
 
   public static DashboardBoolean disableWaitUntilAtVelocity;
 
@@ -62,6 +63,7 @@ public class Dashboard {
   }
 
   public static void initialize() {
+    zeroHopper = new DashboardBoolean(overrides, "Zero Hopper", false);
     disableAmbiguityRejection = new DashboardBoolean(vision, "Disable Ambiguity Rejection", false);
     disableAllVisionUpdates = new DashboardBoolean(vision, "Disable All Vision Updates", false);
     runBackIntake = new DashboardBoolean(overrides, "Run Back Intake", false);

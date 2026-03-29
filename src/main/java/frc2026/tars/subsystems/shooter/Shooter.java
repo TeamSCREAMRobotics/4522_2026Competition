@@ -28,6 +28,7 @@ import frc2026.tars.RobotState;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
+import frc2026.tars.subsystems.hopper.Hopper;
 import frc2026.tars.subsystems.intake.IntakeRollers;
 import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
 import frc2026.tars.subsystems.intake.IntakeWrist;
@@ -52,11 +53,12 @@ public class Shooter extends SubsystemBase {
   private final Rollers rollers;
   private final Feeder feeder;
   private final LED led;
+  //private final Hopper hopper;
   private Pose2d robotPose;
   private ChassisSpeeds robotSpeeds;
   private final String logPrefix = "Subsystems/Shooter/";
 
-  private final CANrange beam = new CANrange(0, "canivore");
+  private final CANrange beam = new CANrange(0);
   // 0.75
   private final Debouncer beamDebouncer = new Debouncer(0.45, DebounceType.kFalling);
 
@@ -90,6 +92,7 @@ public class Shooter extends SubsystemBase {
       IntakeRollers intakeRollers,
       Feeder feeder,
       Rollers rollers,
+      //Hopper hopper,
       LED led,
       Drivetrain drivetrain,
       RobotState robotState) {
@@ -99,6 +102,7 @@ public class Shooter extends SubsystemBase {
     this.intakeRollers = intakeRollers;
     this.rollers = rollers;
     this.feeder = feeder;
+    //this.hopper = hopper;
     this.drivetrain = drivetrain;
     this.robotState = robotState;
     this.led = led;
@@ -160,8 +164,8 @@ public class Shooter extends SubsystemBase {
     if ((flywheel.atVel() || Dashboard.disableWaitUntilAtVelocity.get())
         && (Math.abs(hood.getError()) <= 0.007 || Dashboard.disableWaitUntilHood.get())
         && robotState.atTargetAngle()) {
-      rollers.setVoltage(11.0);
-      feeder.setVoltage(11.0);
+      rollers.setVoltage(12.0);
+      feeder.setVoltage(12.0);
       // led.solid(Color.kRed);
     }
   }

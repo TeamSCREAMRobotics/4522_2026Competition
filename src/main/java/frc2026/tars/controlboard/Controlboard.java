@@ -106,7 +106,7 @@ public class Controlboard {
   }
 
   public static Trigger makeThingWork() {
-    return driveController.b();
+    return driveController.povLeft();
   }
 
   public static Trigger moveIntakeWrist() {
@@ -143,5 +143,9 @@ public class Controlboard {
 
   public static Trigger runBackFlywheel() {
     return new Trigger(() -> Dashboard.runBackFlywheel.get());
+  }
+
+  public static Trigger zeroHopper() {
+    return new Trigger(() -> Dashboard.zeroHopper.get());
   }
 }
