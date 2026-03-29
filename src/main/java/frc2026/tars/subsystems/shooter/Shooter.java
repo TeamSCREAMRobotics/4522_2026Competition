@@ -28,7 +28,6 @@ import frc2026.tars.RobotState;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
-import frc2026.tars.subsystems.hopper.Hopper;
 import frc2026.tars.subsystems.intake.IntakeRollers;
 import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
 import frc2026.tars.subsystems.intake.IntakeWrist;
@@ -53,7 +52,7 @@ public class Shooter extends SubsystemBase {
   private final Rollers rollers;
   private final Feeder feeder;
   private final LED led;
-  //private final Hopper hopper;
+  // private final Hopper hopper;
   private Pose2d robotPose;
   private ChassisSpeeds robotSpeeds;
   private final String logPrefix = "Subsystems/Shooter/";
@@ -92,7 +91,7 @@ public class Shooter extends SubsystemBase {
       IntakeRollers intakeRollers,
       Feeder feeder,
       Rollers rollers,
-      //Hopper hopper,
+      // Hopper hopper,
       LED led,
       Drivetrain drivetrain,
       RobotState robotState) {
@@ -102,7 +101,7 @@ public class Shooter extends SubsystemBase {
     this.intakeRollers = intakeRollers;
     this.rollers = rollers;
     this.feeder = feeder;
-    //this.hopper = hopper;
+    // this.hopper = hopper;
     this.drivetrain = drivetrain;
     this.robotState = robotState;
     this.led = led;
