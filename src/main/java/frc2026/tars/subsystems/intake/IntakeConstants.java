@@ -93,9 +93,10 @@ public class IntakeConstants {
     ROLLERS_CONFIG.masterConstants =
         new TalonFXConstants(new CANDevice(9), InvertedValue.CounterClockwise_Positive);
 
-    ROLLERS_CONFIG.slaveConstants = new TalonFXConstants[]{
-        new TalonFXConstants(new CANDevice(7), InvertedValue.Clockwise_Positive)
-    };
+    ROLLERS_CONFIG.slaveConstants =
+        new TalonFXConstants[] {
+          new TalonFXConstants(new CANDevice(7), InvertedValue.Clockwise_Positive)
+        };
 
     ROLLERS_CONFIG.enableSupplyCurrentLimit = true;
     ROLLERS_CONFIG.supplyCurrentLimit = 30;

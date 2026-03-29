@@ -23,9 +23,6 @@ import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.drivetrain.DrivetrainConstants;
 import frc2026.tars.subsystems.drivetrain.generated.TunerConstants;
-import frc2026.tars.subsystems.hopper.Hopper;
-import frc2026.tars.subsystems.hopper.HopperConstants;
-import frc2026.tars.subsystems.hopper.Hopper.HopperGoal;
 import frc2026.tars.subsystems.intake.IntakeConstants;
 import frc2026.tars.subsystems.intake.IntakeRollers;
 import frc2026.tars.subsystems.intake.IntakeRollers.IntakeRollersGoal;
@@ -60,7 +57,7 @@ public class RobotContainer {
   private final Rollers rollers = new Rollers(RollersConstants.ROLLERS_CONFIG);
   private final Feeder feeder = new Feeder(FeederConstants.FEEDER_CONFIG);
 
-  //private final Hopper hopper = new Hopper(HopperConstants.HOPPER_CONFIG);
+  // private final Hopper hopper = new Hopper(HopperConstants.HOPPER_CONFIG);
 
   @Getter
   private final Subsystems subsystems =
@@ -78,7 +75,7 @@ public class RobotContainer {
           intakeRollers,
           feeder,
           rollers,
-          //hopper,
+          // hopper,
           led,
           drivetrain,
           getRobotState());
@@ -177,8 +174,8 @@ public class RobotContainer {
                                 DrivetrainConstants.headingControllerProfiled))
                 .beforeStarting(() -> drivetrain.resetHeadingController()));
 
-    //Controlboard.makeThingWork().whileTrue(hopper.applyGoalCommand(HopperGoal.EXTENDED));
-    
+    // Controlboard.makeThingWork().whileTrue(hopper.applyGoalCommand(HopperGoal.EXTENDED));
+
     Controlboard.rotateNegative90Degrees()
         .whileTrue(
             drivetrain
@@ -322,7 +319,8 @@ public class RobotContainer {
 
     Controlboard.zeroHood().whileTrue(hood.zero().andThen(() -> Dashboard.zeroHood.set(false)));
 
-    //Controlboard.zeroHopper().whileTrue(hopper.zero().andThen(() -> Dashboard.zeroHopper.set(false)));
+    // Controlboard.zeroHopper().whileTrue(hopper.zero().andThen(() ->
+    // Dashboard.zeroHopper.set(false)));
 
     Controlboard.runBackIntake()
         .whileTrue(

@@ -9,22 +9,21 @@ import com.teamscreamrobotics.drivers.TalonFXSubsystem.TalonFXSubsystemConfigura
 import com.teamscreamrobotics.pid.ScreamPIDConstants;
 import com.teamscreamrobotics.pid.ScreamPIDConstants.FeedforwardConstants;
 import com.teamscreamrobotics.pid.ScreamPIDConstants.MotionMagicConstants;
-
 import edu.wpi.first.math.util.Units;
 
 public class HopperConstants {
 
-    public static final double HOPPER_REDUCTION = 1.25;
+  public static final double HOPPER_REDUCTION = 1.25;
 
-    public static final MotionMagicConstants MOTION_MAGIC_CONSTANTS =
+  public static final MotionMagicConstants MOTION_MAGIC_CONSTANTS =
       new MotionMagicConstants(2, 0.175, 0);
 
-    public static final MotionMagicConstants FAST_MOTION_MAGIC_CONSTANTS =
+  public static final MotionMagicConstants FAST_MOTION_MAGIC_CONSTANTS =
       new MotionMagicConstants(2, 0.175, 0);
-    public static final MotionMagicConstants SLOW_MOTION_MAGIC_CONSTANTS =
+  public static final MotionMagicConstants SLOW_MOTION_MAGIC_CONSTANTS =
       new MotionMagicConstants(0.5, 0.044, 0);
 
-    public static final TalonFXSubsystemConfiguration HOPPER_CONFIG =
+  public static final TalonFXSubsystemConfiguration HOPPER_CONFIG =
       new TalonFXSubsystemConfiguration();
 
   static {
@@ -46,7 +45,8 @@ public class HopperConstants {
     HOPPER_CONFIG.acceleration = 30.0;
     HOPPER_CONFIG.slot0 =
         new ScreamPIDConstants(2.0, 0, 0)
-            .getSlot0Configs(new FeedforwardConstants(0, 1.3, 0, 0, GravityTypeValue.Elevator_Static));
+            .getSlot0Configs(
+                new FeedforwardConstants(0, 1.3, 0, 0, GravityTypeValue.Elevator_Static));
     HOPPER_CONFIG.positionThreshold = Units.degreesToRotations(1.0);
   }
 }

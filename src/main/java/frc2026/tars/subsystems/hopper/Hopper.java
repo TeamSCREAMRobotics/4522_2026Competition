@@ -1,27 +1,24 @@
 package frc2026.tars.subsystems.hopper;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import com.teamscreamrobotics.math.Conversions;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 public class Hopper extends TalonFXSubsystem {
 
   public Hopper(TalonFXSubsystemConfiguration config) {
     super(config, HopperGoal.IDLE);
-
   }
 
-    public enum HopperGoal implements TalonFXSubsystemGoal {
+  public enum HopperGoal implements TalonFXSubsystemGoal {
     IDLE(Length.fromInches(0.0)),
     EXTENDED(Length.fromInches(3.0));
 
@@ -31,8 +28,7 @@ public class Hopper extends TalonFXSubsystem {
     private HopperGoal(Length height) {
       this.height = height;
       this.targetRotations =
-          () ->
-              Conversions.linearDistanceToRotations(height, Length.fromInches(1.6));
+          () -> Conversions.linearDistanceToRotations(height, Length.fromInches(1.6));
     }
 
     @Override
@@ -81,6 +77,5 @@ public class Hopper extends TalonFXSubsystem {
   @Override
   public void periodic() {
     super.periodic();
-
   }
 }
