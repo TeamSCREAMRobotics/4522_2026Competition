@@ -9,14 +9,16 @@ import com.teamscreamrobotics.dashboard.Mechanism;
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import com.teamscreamrobotics.util.Logger;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc2026.tars.constants.SimConstants;
 import java.util.function.BooleanSupplier;
@@ -25,6 +27,8 @@ import lombok.Getter;
 
 /** Add your docs here. */
 public class IntakeWrist extends TalonFXSubsystem {
+
+  private Debouncer shouldCompress = new Debouncer(10.0, DebounceType.kRising);
 
   private final Ligament intakeOne =
       new Ligament()
@@ -96,13 +100,15 @@ public class IntakeWrist extends TalonFXSubsystem {
   }
 
   public Command compress(BooleanSupplier atTarget) {
-    return Commands.run(
-            () -> {
-              if (atTarget.getAsBoolean() == true) {
-                setMotionMagicConfigsUnchecked(IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS);
-                applyGoal(IntakeWristGoal.COMPRESS);
-              }
-            })
+
+    return new SequentialCommandGroup(
+            new WaitUntilCommand(atTarget),
+            new WaitCommand(2.0),
+            run(
+                () -> {
+                  setMotionMagicConfigsUnchecked(IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS);
+                  applyGoal(IntakeWristGoal.COMPRESS);
+                }))
         .finallyDo(
             () -> setMotionMagicConfigsUnchecked(IntakeConstants.FAST_MOTION_MAGIC_CONSTANTS));
   }
