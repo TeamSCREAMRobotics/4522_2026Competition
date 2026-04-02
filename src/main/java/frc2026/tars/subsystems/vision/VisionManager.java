@@ -204,6 +204,7 @@ public class VisionManager {
   public void periodic() {
     addStaticEstimate(Limelights.right);
     addStaticEstimate(Limelights.shooter);
+    addStaticEstimate(Limelights.left);
 
     if (false && visionSim != null) {
       visionSim.update(drivetrain.getEstimatedPose());
