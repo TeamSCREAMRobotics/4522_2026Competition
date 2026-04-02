@@ -40,8 +40,8 @@
         "y": 0.6731666666666685
       },
       "nextControl": {
-        "x": 7.728980817257985,
-        "y": 1.0697311766973194
+        "x": 7.728980817257991,
+        "y": 1.0697311766973252
       },
       "isLocked": false,
       "linkedName": null
@@ -89,7 +89,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "OverBump_OUTPOST_TRENCH_END"
     }
   ],
   "rotationTargets": [
