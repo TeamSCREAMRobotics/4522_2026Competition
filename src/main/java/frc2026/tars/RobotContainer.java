@@ -7,6 +7,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -17,6 +19,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc2026.tars.constants.SimConstants;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
@@ -114,6 +117,8 @@ public class RobotContainer {
 
   private final SendableChooser<Command> auto;
 
+  private Debouncer stupidahhenginnerdebouncher = new Debouncer(0.35, DebounceType.kRising);
+
   public RobotContainer() {
     configureBindings();
     configureManualOverrides();
@@ -175,6 +180,21 @@ public class RobotContainer {
                 .beforeStarting(() -> drivetrain.resetHeadingController()));
 
     // Controlboard.makeThingWork().whileTrue(hopper.applyGoalCommand(HopperGoal.EXTENDED));
+
+    Controlboard.makeThingWork()
+        .whileTrue(
+            new SequentialCommandGroup(
+                Commands.parallel(
+                        rollers.applyVoltageCommand(() -> 1.0),
+                        feeder.applyVoltageCommand(() -> 2.0))
+                    .withDeadline(
+                        new WaitUntilCommand(
+                            () ->
+                                stupidahhenginnerdebouncher.calculate(
+                                    shooter.beam.getIsDetected().getValue()))),
+                Commands.parallel(
+                    rollers.applyVoltageCommand(() -> 0.0),
+                    feeder.applyVoltageCommand(() -> 0.0))));
 
     Controlboard.rotateNegative90Degrees()
         .whileTrue(
@@ -266,6 +286,16 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Run Intake",
         intakeRollers.applyGoalCommand(IntakeRollersGoal.AUTOINTAKE).withTimeout(2.0));
+
+    NamedCommands.registerCommand(
+        "BlipFuel",
+        Commands.parallel(
+                rollers.applyVoltageCommand(() -> 1.0), feeder.applyVoltageCommand(() -> 2.0))
+            .until(() -> shooter.beam.getIsDetected().getValue())
+            .andThen(
+                Commands.parallel(
+                    rollers.applyVoltageCommand(() -> 1.0),
+                    feeder.applyVoltageCommand(() -> 2.0))));
 
     NamedCommands.registerCommand(
         "Intake In",

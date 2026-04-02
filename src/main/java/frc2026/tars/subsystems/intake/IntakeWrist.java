@@ -9,8 +9,6 @@ import com.teamscreamrobotics.dashboard.Mechanism;
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import com.teamscreamrobotics.util.Logger;
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -27,8 +25,6 @@ import lombok.Getter;
 
 /** Add your docs here. */
 public class IntakeWrist extends TalonFXSubsystem {
-
-  private Debouncer shouldCompress = new Debouncer(10.0, DebounceType.kRising);
 
   private final Ligament intakeOne =
       new Ligament()
