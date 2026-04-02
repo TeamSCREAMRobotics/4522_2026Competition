@@ -57,7 +57,7 @@ public class Shooter extends SubsystemBase {
   private ChassisSpeeds robotSpeeds;
   private final String logPrefix = "Subsystems/Shooter/";
 
-  private final CANrange beam = new CANrange(0);
+  public final CANrange beam = new CANrange(0);
   // 0.75
   private final Debouncer beamDebouncer = new Debouncer(0.45, DebounceType.kFalling);
 
