@@ -7,8 +7,9 @@
     "Cheesy_OUTPOST",
     "DEPOT_TRENCH",
     "HUB_CENTER",
-    "OverBump_OUTPOST_TRENCH",
-    "OUTPOST_TRENCH"
+    "OverBump_OUTPOST_BUMP",
+    "OUTPOST_TRENCH",
+    "OverBump_OUTPOST_TRENCH"
   ],
   "autoFolders": [
     "DEPOT Autos",
