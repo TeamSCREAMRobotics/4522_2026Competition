@@ -3,10 +3,11 @@
   "robotLength": 0.858647,
   "holonomicMode": true,
   "pathFolders": [
+    "Cheesy_DEPOT",
     "Cheesy_OUTPOST",
     "DEPOT_TRENCH",
     "HUB_CENTER",
-    "Cheesy_DEPOT",
+    "OverBump_OUTPOST_TRENCH",
     "OUTPOST_TRENCH"
   ],
   "autoFolders": [
