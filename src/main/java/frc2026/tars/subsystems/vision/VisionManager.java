@@ -61,7 +61,6 @@ public class VisionManager {
                 Units.inchesToMeters(-12.670),
                 Units.inchesToMeters(18.285),
                 new Rotation3d(180.0, Units.degreesToRadians(0.0), Units.degreesToRadians(-90.0))));
-
   }
 
   private PhotonCamera swerveLeft;
