@@ -43,20 +43,13 @@ public class VisionManager {
                 Units.inchesToMeters(0.0),
                 Units.inchesToMeters(13.925),
                 new Rotation3d(180.0, Units.degreesToRadians(-25.0), 0.0)));
-    // public static final Limelight intake =
-    //     new Limelight(
-    //         "limelight-intake",
-    //         new Pose3d(
-    //             0.0,
-    //             Units.inchesToMeters(10.5),
-    //             Units.inchesToMeters(16.0),
-    //             new Rotation3d(0, Units.degreesToRadians(-20.0), Units.degreesToRadians(35))));
+
     public static final Limelight right =
         new Limelight(
             "limelight-right",
             new Pose3d(
                 Units.inchesToMeters(0.220),
-                Units.inchesToMeters(12.510),
+                Units.inchesToMeters(12.670),
                 Units.inchesToMeters(18.984),
                 new Rotation3d(0.0, Units.degreesToRadians(0.0), Units.degreesToRadians(90.0))));
 
@@ -65,19 +58,10 @@ public class VisionManager {
             "limelight-left",
             new Pose3d(
                 Units.inchesToMeters(0.220),
-                Units.inchesToMeters(-12.510),
-                Units.inchesToMeters(18.984),
+                Units.inchesToMeters(-12.670),
+                Units.inchesToMeters(18.285),
                 new Rotation3d(180.0, Units.degreesToRadians(0.0), Units.degreesToRadians(-90.0))));
-    // public static final Limelight swerveRight =
-    //     new Limelight(
-    //         "limelight-right",
-    //         new Pose3d(
-    //             Units.inchesToMeters(-12.094917),
-    //             Units.inchesToMeters(-6.855182),
-    //             Units.inchesToMeters(8.597005),
-    //             new Rotation3d(
-    //                 0.0, Units.degreesToRadians(24.832735),
-    // Units.degreesToRadians(-135.47249))));
+
   }
 
   private PhotonCamera swerveLeft;
