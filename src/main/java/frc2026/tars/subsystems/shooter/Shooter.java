@@ -420,7 +420,7 @@ public class Shooter extends SubsystemBase {
   public double getHoodAngleFromDistance(double distance) {
     // return Dashboard.saturationLevel.get() * (1 - Math.pow(Math.E, -(Dashboard.functionROA.get()
     // * distance))) + (Dashboard.functionLRG.get() * Math.pow(distance, 3));
-    if (distance < 2.5) {
+    if (distance < 2.2) {
       return 0.0;
     } else if (distance > 5.8) {
       return 23.0;

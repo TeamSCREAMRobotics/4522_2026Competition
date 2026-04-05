@@ -112,12 +112,12 @@
     },
     {
       "anchor": {
-        "x": 3.271193181818181,
-        "y": 5.331
+        "x": 2.913395149786019,
+        "y": 5.361212553495007
       },
       "prevControl": {
-        "x": 3.683465909090909,
-        "y": 5.323352272727273
+        "x": 3.325667877058747,
+        "y": 5.3535648262222795
       },
       "nextControl": null,
       "isLocked": false,
@@ -126,7 +126,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.9853917662682604,
+      "waypointRelativePos": 0.7910447761194046,
       "rotationDegrees": 0.0
     },
     {
@@ -171,7 +171,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 125.9798142933277
   },
   "reversed": false,
   "folder": "OverBump_DEPOT",
