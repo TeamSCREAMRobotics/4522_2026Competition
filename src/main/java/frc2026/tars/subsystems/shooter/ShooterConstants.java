@@ -55,7 +55,8 @@ public class ShooterConstants {
     NEW_FLYWHEEL_MAP.put(1.770, 29.93);
     NEW_FLYWHEEL_MAP.put(1.985, 31.53);
     NEW_FLYWHEEL_MAP.put(2.196, 32.06);
-    NEW_FLYWHEEL_MAP.put(2.419, 33.30);
+    NEW_FLYWHEEL_MAP.put(2.391, 32.0);
+    NEW_FLYWHEEL_MAP.put(2.419, 32.5);
     NEW_FLYWHEEL_MAP.put(2.685, 33.0);
     NEW_FLYWHEEL_MAP.put(2.948, 33.5);
     NEW_FLYWHEEL_MAP.put(3.158, 34.0);
