@@ -154,7 +154,9 @@ public class RobotContainer {
                                     robotState.getDrivetrainTarget(),
                                     DrivetrainConstants.headingControllerProfiled))
                     .beforeStarting(() -> drivetrain.resetHeadingController()),
-                intakeWrist.compress(() -> robotState.atTargetAngle()),
+                intakeWrist.compress(
+                    () -> robotState.atTargetAngle(),
+                    () -> shooter.beam.getIsDetected().getValue()),
                 intakeRollers.applyGoalCommand(IntakeRollersGoal.COMPRESS)));
 
     Controlboard.moveIntakeWrist()
