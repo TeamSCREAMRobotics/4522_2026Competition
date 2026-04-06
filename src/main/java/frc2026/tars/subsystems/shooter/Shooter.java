@@ -59,7 +59,7 @@ public class Shooter extends SubsystemBase {
 
   public final CANrange beam = new CANrange(0);
   // 0.75
-  private final Debouncer beamDebouncer = new Debouncer(0.45, DebounceType.kFalling);
+  private final Debouncer beamDebouncer = new Debouncer(0.65, DebounceType.kFalling);
 
   @Getter @Setter public Translation2d target = new Translation2d();
 
@@ -152,7 +152,8 @@ public class Shooter extends SubsystemBase {
   public Command autoShoot() {
     return Commands.parallel(
             Commands.run(() -> wantShoot = true),
-            intakeWrist.compress(() -> robotState.atTargetAngle()) /* ,
+            intakeWrist.compress(
+                () -> robotState.atTargetAngle(), () -> beam.getIsDetected().getValue()) /* ,
             intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE) */)
         .withDeadline(
             new WaitUntilCommand(() -> !beamDebouncer.calculate(beam.getIsDetected().getValue())))
