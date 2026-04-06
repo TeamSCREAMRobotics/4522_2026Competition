@@ -99,19 +99,27 @@ public class IntakeWrist extends TalonFXSubsystem {
   }
 
   public Command compress(BooleanSupplier atTarget, BooleanSupplier beam) {
-
-    Debouncer beamDebouncer = new Debouncer(0.45, DebounceType.kFalling);
+    Debouncer beamDebouncer = new Debouncer(0.55, DebounceType.kFalling);
+    boolean[] beamWon = {false};
 
     return new SequentialCommandGroup(
             new WaitUntilCommand(atTarget),
             Commands.race(
-                new WaitCommand(1.5),
-                new WaitUntilCommand(() -> !beamDebouncer.calculate(beam.getAsBoolean()))),
-            run(
-                () -> {
-                  setMotionMagicConfigsUnchecked(IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS);
-                  applyGoal(IntakeWristGoal.COMPRESS);
-                }))
+                new WaitCommand(2.0),
+                new WaitUntilCommand(
+                    () -> {
+                      boolean cleared = !beamDebouncer.calculate(beam.getAsBoolean());
+                      if (cleared) beamWon[0] = true;
+                      return cleared;
+                    })),
+            Commands.either(
+                runOnce(() -> applyGoal(IntakeWristGoal.COMPRESS)),
+                run(
+                    () -> {
+                      setMotionMagicConfigsUnchecked(IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS);
+                      applyGoal(IntakeWristGoal.COMPRESS);
+                    }),
+                () -> beamWon[0]))
         .finallyDo(
             () -> setMotionMagicConfigsUnchecked(IntakeConstants.FAST_MOTION_MAGIC_CONSTANTS));
   }
