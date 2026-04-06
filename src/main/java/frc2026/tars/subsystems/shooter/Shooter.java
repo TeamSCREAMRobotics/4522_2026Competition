@@ -59,7 +59,7 @@ public class Shooter extends SubsystemBase {
 
   public final CANrange beam = new CANrange(0);
   // 0.75
-  private final Debouncer beamDebouncer = new Debouncer(0.65, DebounceType.kFalling);
+  private final Debouncer beamDebouncer = new Debouncer(0.85, DebounceType.kFalling);
 
   @Getter @Setter public Translation2d target = new Translation2d();
 
