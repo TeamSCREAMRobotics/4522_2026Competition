@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc2026.tars.subsystems.intake;
 
 import com.teamscreamrobotics.dashboard.Ligament;
@@ -26,7 +22,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
 
-/** Add your docs here. */
 public class IntakeWrist extends TalonFXSubsystem {
 
   private final Ligament intakeOne =
@@ -99,16 +94,20 @@ public class IntakeWrist extends TalonFXSubsystem {
   }
 
   public Command compress(BooleanSupplier atTarget, BooleanSupplier beam) {
-    Debouncer beamDebouncer = new Debouncer(0.55, DebounceType.kFalling);
+    final Debouncer[] beamDebouncer = new Debouncer[1];
     final boolean[] beamWon = {false};
 
     return new SequentialCommandGroup(
+            new InstantCommand(() -> {
+              beamDebouncer[0] = new Debouncer(0.55, DebounceType.kFalling);
+              beamWon[0] = false;
+            }),
             new WaitUntilCommand(atTarget),
             Commands.race(
                 new WaitCommand(1.5),
                 new WaitUntilCommand(
                     () -> {
-                      boolean cleared = !beamDebouncer.calculate(beam.getAsBoolean());
+                      boolean cleared = !beamDebouncer[0].calculate(beam.getAsBoolean());
                       if (cleared) {
                         beamWon[0] = true;
                       }

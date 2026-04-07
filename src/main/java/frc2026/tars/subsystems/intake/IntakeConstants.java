@@ -18,12 +18,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 public class IntakeConstants {
-  // TODO: Put actual values
   public static final Length INTAKE_LENGTH = Length.fromInches(13.375);
 
-  // Intake Wrist Reduction
   public static final double INTAKE_REDUCTION = 50.0;
-  // Intake Roller Reduction
   public static final double ROLLERS_REDUCTION = 2.5;
 
   public static final double ACQUIRED_PIECE_THRESHOLD = 0.0;
