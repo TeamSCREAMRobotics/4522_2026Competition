@@ -60,8 +60,6 @@ public class RobotContainer {
   private final Rollers rollers = new Rollers(RollersConstants.ROLLERS_CONFIG);
   private final Feeder feeder = new Feeder(FeederConstants.FEEDER_CONFIG);
 
-  // private final Hopper hopper = new Hopper(HopperConstants.HOPPER_CONFIG);
-
   @Getter
   private final Subsystems subsystems =
       new Subsystems(drivetrain, intakeWrist, hood, flywheel, led);
@@ -93,27 +91,6 @@ public class RobotContainer {
           SimConstants.SETPOINT_MECHANISM,
           RobotContainer::telemeterizeMechanisms,
           intakeWrist.intakeMech);
-
-  // public Rotation2d getCrossedReferencedAngle() {
-  //   double visionAngle =
-  // Units.radiansToDegrees(vision.getRotation(Length.fromInches(MaxAngularRate).getMeters()));
-  //   double
-  // }
-
-  // public Command aimCommand() {
-  //   return turret.aimOnTheFlyPosition(
-  //       () ->
-  //           (inAllianceZone().getAsBoolean() == false
-  //               ? getFerryZone()
-  //               : AllianceFlipUtil.get(
-  //                   FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter)),
-  //       () -> drivetrain.getEstimatedPose(),
-  //       () ->
-  //           new ChassisSpeeds(
-  //               drivetrain.getState().Speeds.vxMetersPerSecond,
-  //               drivetrain.getState().Speeds.vyMetersPerSecond,
-  //               drivetrain.getState().Speeds.omegaRadiansPerSecond));
-  // }
 
   private final SendableChooser<Command> auto;
 
@@ -181,8 +158,6 @@ public class RobotContainer {
                                 DrivetrainConstants.headingControllerProfiled))
                 .beforeStarting(() -> drivetrain.resetHeadingController()));
 
-    // Controlboard.makeThingWork().whileTrue(hopper.applyGoalCommand(HopperGoal.EXTENDED));
-
     Controlboard.makeThingWork()
         .whileTrue(
             new SequentialCommandGroup(
@@ -237,12 +212,6 @@ public class RobotContainer {
   }
 
   private void configureDefaultCommands() {
-
-    /* turret.setDefaultCommand(
-    turret.aimOnTheFlyPosition(
-        () -> FieldConstants.Hub.oppHubCenter,
-        () -> drivetrain.getState().Pose,
-        () -> drivetrain.getState().Speeds)); */
 
     drivetrain.setDefaultCommand(
         drivetrain
@@ -353,16 +322,10 @@ public class RobotContainer {
 
     Controlboard.zeroHood().whileTrue(hood.zero().andThen(() -> Dashboard.zeroHood.set(false)));
 
-    // Controlboard.zeroHopper().whileTrue(hopper.zero().andThen(() ->
-    // Dashboard.zeroHopper.set(false)));
-
     Controlboard.runBackIntake()
         .whileTrue(
             (intakeRollers.applyVoltageCommand(() -> -2.0))
                 .andThen(() -> Dashboard.runBackIntake.set(false)));
-
-    // Controlboard.blipDyerotor().whileTrue(Commands.run(() -> dyerotor.setVoltage(-0.5),
-    // dyerotor));
 
     Controlboard.resetManuals()
         .whileTrue(
@@ -406,10 +369,5 @@ public class RobotContainer {
 
   public void periodic() {
     visionManager.periodic();
-    // robotState.logArea();
-
-    // Logger.log("Subsystems/Turret/Angle Setpoint",
-    // ScreamMath.calculateAngleToPoint(drivetrain.getEstimatedPose().getTranslation(),
-    // FieldConstants.Hub.hubCenter).getDegrees());
   }
 }
