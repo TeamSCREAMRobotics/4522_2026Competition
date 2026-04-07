@@ -109,7 +109,9 @@ public class IntakeWrist extends TalonFXSubsystem {
                 new WaitUntilCommand(
                     () -> {
                       boolean cleared = !beamDebouncer.calculate(beam.getAsBoolean());
-                      if (cleared) {beamWon[0] = true;}
+                      if (cleared) {
+                        beamWon[0] = true;
+                      }
                       return cleared;
                     })),
             Commands.either(

@@ -286,12 +286,10 @@ public class RobotContainer {
   private void configureAutoCommands() {
 
     NamedCommands.registerCommand(
-        "Run Intake",
-        intakeRollers.applyGoalCommand(IntakeRollersGoal.AUTOINTAKE));
+        "Run Intake", intakeRollers.applyGoalCommand(IntakeRollersGoal.AUTOINTAKE));
 
     NamedCommands.registerCommand(
-        "Stop Intake",
-        intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP));
+        "Stop Intake", intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP));
 
     NamedCommands.registerCommand(
         "BlipFuel",
