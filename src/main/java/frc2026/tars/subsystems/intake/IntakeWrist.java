@@ -98,10 +98,11 @@ public class IntakeWrist extends TalonFXSubsystem {
     final boolean[] beamWon = {false};
 
     return new SequentialCommandGroup(
-            new InstantCommand(() -> {
-              beamDebouncer[0] = new Debouncer(0.55, DebounceType.kFalling);
-              beamWon[0] = false;
-            }),
+            new InstantCommand(
+                () -> {
+                  beamDebouncer[0] = new Debouncer(0.55, DebounceType.kFalling);
+                  beamWon[0] = false;
+                }),
             new WaitUntilCommand(atTarget),
             Commands.race(
                 new WaitCommand(1.5),
