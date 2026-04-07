@@ -100,16 +100,16 @@ public class IntakeWrist extends TalonFXSubsystem {
 
   public Command compress(BooleanSupplier atTarget, BooleanSupplier beam) {
     Debouncer beamDebouncer = new Debouncer(0.55, DebounceType.kFalling);
-    boolean[] beamWon = {false};
+    final boolean[] beamWon = {false};
 
     return new SequentialCommandGroup(
             new WaitUntilCommand(atTarget),
             Commands.race(
-                new WaitCommand(2.0),
+                new WaitCommand(1.5),
                 new WaitUntilCommand(
                     () -> {
                       boolean cleared = !beamDebouncer.calculate(beam.getAsBoolean());
-                      if (cleared) beamWon[0] = true;
+                      if (cleared) {beamWon[0] = true;}
                       return cleared;
                     })),
             Commands.either(

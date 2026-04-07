@@ -126,7 +126,7 @@ public class Shooter extends SubsystemBase {
     double distanceMeters = getShotDistance(target).getMeters();
     double hoodAngleDeg = getHoodAngleFromDistance(distanceMeters);
 
-    double multiplier = wantShoot ? 1.0 : 4.0;
+    double multiplier = wantShoot ? 1.0 : 3.0;
     double flywheelMap = ShooterConstants.NEW_FLYWHEEL_MAP.get(distanceMeters / multiplier);
 
     double flywheelSetpoint = flywheelMap;

@@ -15,24 +15,25 @@
                 }
               },
               {
-                "type": "named",
+                "type": "race",
                 "data": {
-                  "name": "Run Intake"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "OverBump_OUTPOST_TRENCH"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Run Intake"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "OverBump_OUTPOST_TRENCH"
+                      }
+                    }
+                  ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
           }
         },
         {
@@ -49,6 +50,12 @@
                 "type": "named",
                 "data": {
                   "name": "Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Intake"
                 }
               }
             ]
@@ -65,15 +72,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "race",
                 "data": {
-                  "name": "Run Intake"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "OverBump_OUTPOST_TRENCH_2"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Run Intake"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "OverBump_OUTPOST_TRENCH_2"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -93,6 +107,12 @@
                 "type": "named",
                 "data": {
                   "name": "Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Intake"
                 }
               }
             ]
