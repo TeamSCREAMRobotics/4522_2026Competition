@@ -5,6 +5,7 @@ import com.teamscreamrobotics.dashboard.Mechanism;
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import com.teamscreamrobotics.util.Logger;
+import com.teamscreamrobotics.util.RunnableUtil.RunOnce;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc2026.tars.constants.SimConstants;
 import java.util.function.BooleanSupplier;
@@ -23,6 +23,8 @@ import java.util.function.DoubleSupplier;
 import lombok.Getter;
 
 public class IntakeWrist extends TalonFXSubsystem {
+
+  private RunOnce motionMagicConfig = new RunOnce();
 
   private final Ligament intakeOne =
       new Ligament()
@@ -93,37 +95,39 @@ public class IntakeWrist extends TalonFXSubsystem {
     setSetpointMotionMagicPosition(targetAngle.getRotations());
   }
 
-  public Command compress(BooleanSupplier atTarget, BooleanSupplier beam) {
-    final Debouncer[] beamDebouncer = new Debouncer[1];
-    final boolean[] beamWon = {false};
+  private Debouncer beamDebouncer = new Debouncer(0.25, DebounceType.kRising);
+  private BooleanSupplier beamWon = () -> false;
 
+  public Command compress(BooleanSupplier atTarget, BooleanSupplier beam) {
     return new SequentialCommandGroup(
-            new InstantCommand(
+        new WaitUntilCommand(atTarget),
+        new WaitUntilCommand(
                 () -> {
-                  beamDebouncer[0] = new Debouncer(0.55, DebounceType.kFalling);
-                  beamWon[0] = false;
-                }),
-            new WaitUntilCommand(atTarget),
-            Commands.race(
-                new WaitCommand(1.5),
-                new WaitUntilCommand(
-                    () -> {
-                      boolean cleared = !beamDebouncer[0].calculate(beam.getAsBoolean());
-                      if (cleared) {
-                        beamWon[0] = true;
-                      }
-                      return cleared;
-                    })),
-            Commands.either(
-                runOnce(() -> applyGoal(IntakeWristGoal.COMPRESS)),
-                run(
-                    () -> {
-                      setMotionMagicConfigsUnchecked(IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS);
-                      applyGoal(IntakeWristGoal.COMPRESS);
-                    }),
-                () -> beamWon[0]))
-        .finallyDo(
-            () -> setMotionMagicConfigsUnchecked(IntakeConstants.FAST_MOTION_MAGIC_CONSTANTS));
+                  boolean cleared = beamDebouncer.calculate(!beam.getAsBoolean());
+                  if (cleared) {
+                    beamWon = () -> true;
+                  }
+                  return cleared;
+                })
+            .withTimeout(1.5),
+        Commands.run(
+                () -> {
+                  if (beamWon.getAsBoolean()) {
+                    applyGoal(IntakeWristGoal.COMPRESS);
+                  } else {
+                    motionMagicConfig.runOnce(
+                        () ->
+                            setMotionMagicConfigsUnchecked(
+                                IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS));
+                    applyGoal(IntakeWristGoal.COMPRESS);
+                  }
+                })
+            .finallyDo(
+                () -> {
+                  setMotionMagicConfigsUnchecked(IntakeConstants.FAST_MOTION_MAGIC_CONSTANTS);
+                  beamWon = () -> false;
+                  motionMagicConfig.reset();
+                }));
   }
 
   @Getter public TalonFXSubsystemGoal goal = getGoal();
