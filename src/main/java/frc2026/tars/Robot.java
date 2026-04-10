@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
             .withLogEntryQueueCapacity(2000));
     Logger.setEnabled(true);
 
-    SignalLogger.setPath("/media/sda1");
+    // SignalLogger.setPath("/media/sda1");
     SignalLogger.start();
 
     CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());

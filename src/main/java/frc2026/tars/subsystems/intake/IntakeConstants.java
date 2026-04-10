@@ -30,6 +30,9 @@ public class IntakeConstants {
   public static final MotionMagicConstants FAST_MOTION_MAGIC_CONSTANTS =
       new MotionMagicConstants(30, 30, 0);
 
+  public static final MotionMagicConstants MEDIUM_MOTION_MAGIC_CONSTANTS =
+      new MotionMagicConstants(10, 10, 0);
+
   public static final SingleJointedArmSim SIM =
       new SingleJointedArmSim(
           DCMotor.getKrakenX60(1),

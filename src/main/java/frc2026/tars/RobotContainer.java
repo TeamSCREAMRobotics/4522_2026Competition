@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc2026.tars.constants.SimConstants;
 import frc2026.tars.controlboard.Controlboard;
@@ -132,8 +133,7 @@ public class RobotContainer {
                                     DrivetrainConstants.headingControllerProfiled))
                     .beforeStarting(() -> drivetrain.resetHeadingController()),
                 intakeWrist.compress(
-                    () -> robotState.atTargetAngle(),
-                    () -> shooter.beam.getIsDetected().getValue()),
+                        () -> robotState.atTargetAngle()),
                 intakeRollers.applyGoalCommand(IntakeRollersGoal.COMPRESS)));
 
     Controlboard.moveIntakeWrist()
@@ -209,6 +209,21 @@ public class RobotContainer {
                                 Rotation2d.fromDegrees(180),
                                 DrivetrainConstants.headingControllerProfiled))
                 .beforeStarting(() -> drivetrain.resetHeadingController()));
+
+    // Controlboard.runBackHopper().whileTrue(Commands.parallel(intakeRollers.applyVoltageCommand(()
+    // -> -3.0), rollers.applyVoltageCommand(() -> -3.0), feeder.applyVoltageCommand(() -> -3.0)));
+
+    Controlboard.runBackHopper()
+        .onTrue(
+            intakeRollers
+                .applyVoltageCommand(() -> -12.0)
+                .alongWith(rollers.applyVoltageCommand(() -> -12.0))
+                .alongWith(feeder.applyVoltageCommand(() -> -12.0)))
+        .onFalse(
+            intakeRollers
+                .applyVoltageCommand(() -> 0.0)
+                .alongWith(rollers.applyVoltageCommand(() -> 0.0))
+                .alongWith(feeder.applyVoltageCommand(() -> 0.0)));
   }
 
   private void configureDefaultCommands() {
