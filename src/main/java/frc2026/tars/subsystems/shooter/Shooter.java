@@ -22,7 +22,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc2026.tars.RobotState;
 import frc2026.tars.controlboard.Controlboard;
@@ -153,7 +155,7 @@ public class Shooter extends SubsystemBase {
     return Commands.parallel(
             Commands.run(() -> wantShoot = true),
             intakeWrist.compress(
-                () -> robotState.atTargetAngle(), () -> beam.getIsDetected().getValue()) /* ,
+                        () -> robotState.atTargetAngle()) /* ,
             intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE) */)
         .withDeadline(
             new WaitUntilCommand(() -> !beamDebouncer.calculate(beam.getIsDetected().getValue())))

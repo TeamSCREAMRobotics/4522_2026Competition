@@ -148,4 +148,8 @@ public class Controlboard {
   public static Trigger zeroHopper() {
     return new Trigger(() -> Dashboard.zeroHopper.get());
   }
+
+  public static Trigger runBackHopper() {
+    return new Trigger(() -> Dashboard.runBackHopper.get());
+  }
 }
