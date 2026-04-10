@@ -6,14 +6,11 @@ import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import com.teamscreamrobotics.util.Logger;
 import com.teamscreamrobotics.util.RunnableUtil.RunOnce;
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -96,7 +93,7 @@ public class IntakeWrist extends TalonFXSubsystem {
     setSetpointMotionMagicPosition(targetAngle.getRotations());
   }
 
-   public Command compress(BooleanSupplier atTarget) {
+  public Command compress(BooleanSupplier atTarget) {
 
     return new SequentialCommandGroup(
             new WaitUntilCommand(atTarget),
