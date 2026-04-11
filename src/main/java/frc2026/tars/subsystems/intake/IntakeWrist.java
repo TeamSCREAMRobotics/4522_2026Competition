@@ -97,7 +97,7 @@ public class IntakeWrist extends TalonFXSubsystem {
 
     return new SequentialCommandGroup(
             new WaitUntilCommand(atTarget),
-            new WaitCommand(1.25),
+            new WaitCommand(2.0),
             run(
                 () -> {
                   setMotionMagicConfigsUnchecked(IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS);
