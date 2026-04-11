@@ -369,6 +369,14 @@ public class RobotContainer {
                         () -> rollers.setVoltage(Dashboard.manualFloorRollers.get()), rollers),
                     Commands.run(() -> feeder.setVoltage(Dashboard.manualFeeder.get()), feeder))
                 .ignoringDisable(true));
+
+    Controlboard.bumberShot()
+        .whileTrue(
+            Commands.parallel(
+                flywheel.setTargetVelocityTorqueCurrentCommand(33.5, 0.0),
+                feeder.applyVoltageCommand(() -> 12.0),
+                rollers.applyVoltageCommand(() -> 12.0),
+                Commands.run(() -> hood.moveToAngle(Rotation2d.fromDegrees(12.5)))));
   }
 
   public Command getAutonomousCommand() {

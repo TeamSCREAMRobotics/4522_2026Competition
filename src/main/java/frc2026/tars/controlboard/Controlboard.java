@@ -152,4 +152,8 @@ public class Controlboard {
   public static Trigger runBackHopper() {
     return new Trigger(() -> Dashboard.runBackHopper.get());
   }
+
+  public static Trigger bumberShot() {
+    return new Trigger(() -> Dashboard.bumperShoot.get());
+  }
 }
