@@ -131,9 +131,7 @@ public class RobotContainer {
                                     robotState.getDrivetrainTarget(),
                                     DrivetrainConstants.headingControllerProfiled))
                     .beforeStarting(() -> drivetrain.resetHeadingController()),
-                intakeWrist.compress(
-                    () -> robotState.atTargetAngle(),
-                    () -> shooter.beam.getIsDetected().getValue()),
+                intakeWrist.compress(() -> robotState.atTargetAngle()),
                 intakeRollers.applyGoalCommand(IntakeRollersGoal.COMPRESS)));
 
     Controlboard.moveIntakeWrist()
@@ -209,6 +207,21 @@ public class RobotContainer {
                                 Rotation2d.fromDegrees(180),
                                 DrivetrainConstants.headingControllerProfiled))
                 .beforeStarting(() -> drivetrain.resetHeadingController()));
+
+    // Controlboard.runBackHopper().whileTrue(Commands.parallel(intakeRollers.applyVoltageCommand(()
+    // -> -3.0), rollers.applyVoltageCommand(() -> -3.0), feeder.applyVoltageCommand(() -> -3.0)));
+
+    Controlboard.runBackHopper()
+        .onTrue(
+            intakeRollers
+                .applyVoltageCommand(() -> -12.0)
+                .alongWith(rollers.applyVoltageCommand(() -> -12.0))
+                .alongWith(feeder.applyVoltageCommand(() -> -12.0)))
+        .onFalse(
+            intakeRollers
+                .applyVoltageCommand(() -> 0.0)
+                .alongWith(rollers.applyVoltageCommand(() -> 0.0))
+                .alongWith(feeder.applyVoltageCommand(() -> 0.0)));
   }
 
   private void configureDefaultCommands() {
@@ -356,6 +369,14 @@ public class RobotContainer {
                         () -> rollers.setVoltage(Dashboard.manualFloorRollers.get()), rollers),
                     Commands.run(() -> feeder.setVoltage(Dashboard.manualFeeder.get()), feeder))
                 .ignoringDisable(true));
+
+    Controlboard.bumberShot()
+        .whileTrue(
+            Commands.parallel(
+                flywheel.setTargetVelocityTorqueCurrentCommand(33.5, 0.0),
+                feeder.applyVoltageCommand(() -> 12.0),
+                rollers.applyVoltageCommand(() -> 12.0),
+                Commands.run(() -> hood.moveToAngle(Rotation2d.fromDegrees(12.5)))));
   }
 
   public Command getAutonomousCommand() {
