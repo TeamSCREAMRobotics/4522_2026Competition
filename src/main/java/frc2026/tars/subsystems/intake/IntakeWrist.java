@@ -5,7 +5,6 @@ import com.teamscreamrobotics.dashboard.Mechanism;
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import com.teamscreamrobotics.util.Logger;
-import com.teamscreamrobotics.util.RunnableUtil.RunOnce;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -21,8 +20,6 @@ import java.util.function.DoubleSupplier;
 import lombok.Getter;
 
 public class IntakeWrist extends TalonFXSubsystem {
-
-  private RunOnce motionMagicConfig = new RunOnce();
 
   private final Ligament intakeOne =
       new Ligament()

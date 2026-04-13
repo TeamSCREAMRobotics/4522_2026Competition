@@ -45,6 +45,7 @@ import lombok.Getter;
  */
 public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
   public static final double kSimLoopPeriod = 0.004; // 4 ms
+  @SuppressWarnings("unused")
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
 
