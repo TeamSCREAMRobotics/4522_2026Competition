@@ -6,7 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc2026.tars.subsystems.drivetrain.DrivetrainConstants;
 import java.util.function.BooleanSupplier;
@@ -14,9 +14,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class Controlboard {
-  // public static final CommandXboxController driveController = new CommandXboxController(0);
-
-  public static final CommandPS5Controller otherDriveController = new CommandPS5Controller(0);
+  public static final CommandXboxController driveController = new CommandXboxController(0);
 
   public static final double STICK_DEADBAND = 0.05;
   public static final double TRIGGER_DEADBAND = 0.1;
@@ -25,7 +23,7 @@ public class Controlboard {
   public static boolean fieldCentric = true;
 
   static {
-    otherDriveController.options().onTrue(Commands.runOnce(() -> fieldCentric = !fieldCentric));
+    driveController.start().onTrue(Commands.runOnce(() -> fieldCentric = !fieldCentric));
   }
 
   public static double applyPower(double value, int power) {
@@ -33,17 +31,16 @@ public class Controlboard {
   }
 
   public static Supplier<Translation2d> getRawTranslation() {
-    return () ->
-        new Translation2d(otherDriveController.getLeftY(), otherDriveController.getLeftX());
+    return () -> new Translation2d(driveController.getLeftY(), driveController.getLeftX());
   }
 
   public static Translation2d getTranslation() {
     return snapTranslationToPole(
             new Translation2d(
                     -applyPower(
-                        MathUtil.applyDeadband(otherDriveController.getLeftY(), STICK_DEADBAND), 2),
+                        MathUtil.applyDeadband(driveController.getLeftY(), STICK_DEADBAND), 2),
                     -applyPower(
-                        MathUtil.applyDeadband(otherDriveController.getLeftX(), STICK_DEADBAND), 2))
+                        MathUtil.applyDeadband(driveController.getLeftX(), STICK_DEADBAND), 2))
                 .times(DrivetrainConstants.maxSpeed))
         .times(AllianceFlipUtil.getDirectionCoefficient());
   }
@@ -64,7 +61,7 @@ public class Controlboard {
 
   public static DoubleSupplier getRotation() {
     return () ->
-        -applyPower(MathUtil.applyDeadband(otherDriveController.getRightX(), STICK_DEADBAND), 3)
+        -applyPower(MathUtil.applyDeadband(driveController.getRightX(), STICK_DEADBAND), 3)
             * DrivetrainConstants.maxAngularSpeedRads;
   }
 
@@ -73,15 +70,15 @@ public class Controlboard {
   }
 
   public static Trigger intake() {
-    return otherDriveController.L2();
+    return driveController.leftTrigger(TRIGGER_DEADBAND);
   }
 
   public static Trigger intakeUp() {
-    return otherDriveController.L1();
+    return driveController.leftBumper();
   }
 
   public static Trigger shoot() {
-    return otherDriveController.R2();
+    return driveController.rightTrigger(TRIGGER_DEADBAND);
   }
 
   public static Trigger zeroIntake() {
@@ -105,35 +102,35 @@ public class Controlboard {
   }
 
   public static Trigger resetFieldCentric() {
-    return otherDriveController.create();
+    return driveController.back();
   }
 
   public static Trigger makeThingWork() {
-    return otherDriveController.povLeft();
+    return driveController.povLeft();
   }
 
   public static Trigger moveIntakeWrist() {
-    return otherDriveController.L1();
+    return driveController.leftBumper();
   }
 
   public static Trigger lockSwerve() {
-    return otherDriveController.povDown();
+    return driveController.povDown();
   }
 
   public static Trigger rotate90Degrees() {
-    return otherDriveController.square();
+    return driveController.x();
   }
 
   public static Trigger rotateNegative90Degrees() {
-    return otherDriveController.circle();
+    return driveController.b();
   }
 
   public static Trigger rotate0Degrees() {
-    return otherDriveController.triangle();
+    return driveController.y();
   }
 
   public static Trigger rotate180Degrees() {
-    return otherDriveController.cross();
+    return driveController.a();
   }
 
   public static Trigger resetManual() {
