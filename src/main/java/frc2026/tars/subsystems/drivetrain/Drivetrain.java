@@ -44,11 +44,8 @@ import lombok.Getter;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
  */
 public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
-  public static final double kSimLoopPeriod = 0.004; // 4 ms
-
-  @SuppressWarnings("unused")
+  private static final double kSimLoopPeriod = 0.004; // 4 ms
   private Notifier m_simNotifier = null;
-
   private double m_lastSimTime;
 
   @Getter private final PhoenixSwerveHelper helper;
@@ -117,6 +114,9 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
       double odometryUpdateFrequency,
       SwerveModuleConstants<?, ?, ?>... modules) {
     super(drivetrainConstants, odometryUpdateFrequency, modules);
+    if (Utils.isSimulation()) {
+      startSimThread();
+    }
 
     helper =
         new PhoenixSwerveHelper(
@@ -165,15 +165,21 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     return m_sysIdRoutineToApply.dynamic(direction);
   }
 
-  public void runSim() {
+  private void startSimThread() {
     m_lastSimTime = Utils.getCurrentTimeSeconds();
 
-    final double currentTime = Utils.getCurrentTimeSeconds();
-    double deltaTime = currentTime - m_lastSimTime;
-    m_lastSimTime = currentTime;
+    /* Run simulation at a faster rate so PID gains behave more reasonably */
+    m_simNotifier =
+        new Notifier(
+            () -> {
+              final double currentTime = Utils.getCurrentTimeSeconds();
+              double deltaTime = currentTime - m_lastSimTime;
+              m_lastSimTime = currentTime;
 
-    /* use the measured time delta, get battery voltage from WPILib */
-    updateSimState(deltaTime, RobotController.getBatteryVoltage());
+              /* use the measured time delta, get battery voltage from WPILib */
+              updateSimState(deltaTime, RobotController.getBatteryVoltage());
+            });
+    m_simNotifier.startPeriodic(kSimLoopPeriod);
   }
 
   public boolean getWithinAngleThreshold(Rotation2d targetAngle, Rotation2d threshold) {

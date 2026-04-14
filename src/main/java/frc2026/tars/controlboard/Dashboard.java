@@ -23,6 +23,7 @@ public class Dashboard {
   public static DashboardBoolean runBackHopper;
 
   public static DashboardBoolean disableWaitUntilAtVelocity;
+  public static DashboardBoolean dissableShootOnTheMove;
 
   public static DashboardBoolean manualMode;
   public static DashboardBoolean resetManuals;
@@ -73,6 +74,7 @@ public class Dashboard {
     disableWaitUntilHood = new DashboardBoolean(overrides, "Disable Wait Until Hood", false);
 
     runBackHopper = new DashboardBoolean(overrides, "Run Back Hopper", false);
+    dissableShootOnTheMove = new DashboardBoolean(overrides, "Disable Shoot On The Move", false);
 
     zeroIntake = new DashboardBoolean(overrides, "Zero Intake", false);
     // zeroClimber = new DashboardBoolean(overrides, "Zero Climber", false);

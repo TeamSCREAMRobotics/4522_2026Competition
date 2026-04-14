@@ -210,7 +210,7 @@ public class RobotState {
       boolean isLimited = false;
       if (isLimited) {
         return 0.5;
-      } else if (Controlboard.driveController.leftStick().getAsBoolean()) {
+      } else if (Controlboard.otherDriveController.L3().getAsBoolean()) {
         return 0.7;
       } else {
         return 1.0;
