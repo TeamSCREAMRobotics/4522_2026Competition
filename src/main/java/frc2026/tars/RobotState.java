@@ -44,8 +44,15 @@ public class RobotState {
     ALLIANCEZONE(
         () -> AllianceFlipUtil.get(FieldConstants.BLUEALLIANCE, FieldConstants.REDALLIANCE)),
 
-    OTHERALLIANCEZONE(
-        () -> AllianceFlipUtil.get(FieldConstants.REDALLIANCE, FieldConstants.BLUEALLIANCE)),
+    OTHER_ALLIANCEZONE_DEPO(
+        () ->
+            AllianceFlipUtil.get(
+                FieldConstants.REDALLIANCE_DEPO, FieldConstants.BLUEALLIANCE_DEPO)),
+
+    OTHER_ALLIANCEZONE_OUTPOST(
+        () ->
+            AllianceFlipUtil.get(
+                FieldConstants.REDALLIANCE_OUTPOST, FieldConstants.BLUEALLIANCE_OUTPOST)),
 
     BUMPS(
         () -> FieldConstants.LeftBump.leftBump,
@@ -212,6 +219,8 @@ public class RobotState {
         return 0.5;
       } else if (Controlboard.driveController.leftStick().getAsBoolean()) {
         return 0.7;
+      } else if (Controlboard.shoot().getAsBoolean()) {
+        return 0.25;
       } else {
         return 1.0;
       }
@@ -268,12 +277,5 @@ public class RobotState {
         Logger.log("Field/Zones/" + area.name() + "_" + index++, rectangleToPolygon(rect));
       }
     }
-
-    /*
-    Logger.log("RobotState/Area Is Present", getArea());
-    if (getArea().isPresent()) {
-    Logger.log("RobotState/Area", getArea().get().name());
-    }
-    */
   }
 }

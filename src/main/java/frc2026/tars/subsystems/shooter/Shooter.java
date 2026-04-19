@@ -58,6 +58,9 @@ public class Shooter extends SubsystemBase {
   private final String logPrefix = "Subsystems/Shooter/";
 
   public final CANrange beam = new CANrange(0);
+
+  public final CANrange beamOne = new CANrange(1);
+
   // 0.75
   private final Debouncer beamDebouncer = new Debouncer(0.85, DebounceType.kFalling);
 
@@ -107,6 +110,9 @@ public class Shooter extends SubsystemBase {
     this.led = led;
 
     beam.getConfigurator().apply(ShooterConstants.beamConfig);
+    beamOne.getConfigurator().apply(ShooterConstants.beamConfig);
+
+    beamOne.getIsDetected().setUpdateFrequency(100.0);
   }
 
   public Length getShotDistance(Translation2d target) {
@@ -180,9 +186,14 @@ public class Shooter extends SubsystemBase {
         ScreamMath.calculateAngleToPoint(robotPose.getTranslation(), compTarget)
             .plus(Rotation2d.k180deg));
 
-    hood.moveToAngle(Rotation2d.fromDegrees(getHoodAngleFromDistance(futureDistance)));
+    double multiplier = wantShoot ? 1.0 : 3.0;
+
+    hood.moveToAngle(
+        wantShoot
+            ? Rotation2d.fromDegrees(getHoodAngleFromDistance(futureDistance))
+            : Rotation2d.kZero);
     flywheel.setTargetVelocityTorqueCurrent(
-        ShooterConstants.NEW_FLYWHEEL_MAP.get(futureDistance), 0.0);
+        ShooterConstants.NEW_FLYWHEEL_MAP.get(futureDistance) / multiplier, 0.0);
 
     Logger.log("SOTM/ToF", sotmTof);
     Logger.log("SOTM/FutureDistance", futureDistance);
@@ -247,7 +258,7 @@ public class Shooter extends SubsystemBase {
 
   public void runFeed(Translation2d target) {
     if ((flywheel.atVel() || Dashboard.disableWaitUntilAtVelocity.get())
-        && (Math.abs(hood.getError()) <= 0.007 || Dashboard.disableWaitUntilHood.get())
+        && (Math.abs(hood.getError()) <= 0.02 || Dashboard.disableWaitUntilHood.get())
         && robotState.atTargetAngle()) {
       rollers.setVoltage(12.0);
       feeder.setVoltage(12.0);
@@ -283,7 +294,7 @@ public class Shooter extends SubsystemBase {
 
     if (agitateForward) {
       intakeRollers.applyGoal(IntakeRollersGoal.INTAKE);
-      intakeWrist.applyGoal(IntakeWristGoal.AGITATE);
+      intakeWrist.applyGoal(IntakeWristGoal.AGITATE_HIGH);
     } else {
       intakeWrist.applyGoal(IntakeWristGoal.EXTENDED);
     }
@@ -329,7 +340,7 @@ public class Shooter extends SubsystemBase {
         setIdleState(IdleState.IDLE_FERRY_OUTPOST);
         led.wave(Color.kBlack, new Color(0.0f, 0.5019608f, 0.5019608f), 0.1, 1.25);
         break;
-      case OTHERALLIANCEZONE:
+      case OTHER_ALLIANCEZONE_DEPO:
         applyAimingSetpoints(
             robotPose,
             robotSpeeds,
@@ -337,6 +348,7 @@ public class Shooter extends SubsystemBase {
                 FieldConstants.AllianceZones.rightAllianceZone,
                 FieldConstants.AllianceZones.oppLeftAllianceZone),
             wantShoot);
+        setIdleState(IdleState.IDLE_FERRY_DEPOT);
         led.wave(
             Color.kBlack,
             AllianceFlipUtil.get(
@@ -344,6 +356,25 @@ public class Shooter extends SubsystemBase {
                 new Color(1.0f, 0.49803922f, 0.83137256f)),
             0.1,
             1.25);
+        break;
+      case OTHER_ALLIANCEZONE_OUTPOST:
+        applyAimingSetpoints(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.leftAllianceZone,
+                FieldConstants.AllianceZones.oppRightAllianceZone),
+            wantShoot);
+        setIdleState(IdleState.IDLE_FERRY_OUTPOST);
+        led.wave(
+            Color.kBlack,
+            AllianceFlipUtil.get(
+                new Color(0.26078432f, 1.0f, 0.36078432f) /*new Color(0.0f, 1.0f, 0.83137256f)*/,
+                new Color(1.0f, 0.49803922f, 0.83137256f)),
+            0.1,
+            1.25);
+        break;
+
       default:
         setIdleState(IdleState.NA);
         break;
@@ -381,9 +412,31 @@ public class Shooter extends SubsystemBase {
                 FieldConstants.AllianceZones.rightAllianceZone,
                 FieldConstants.AllianceZones.oppLeftAllianceZone));
         break;
-      case OTHERALLIANCEZONE:
-        applyAimingSetpoints(robotPose, robotSpeeds, FieldConstants.middleOfField, wantShoot);
-        runFeed(FieldConstants.middleOfField);
+      case OTHER_ALLIANCEZONE_DEPO:
+        applyAimingSetpoints(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.rightAllianceZone,
+                FieldConstants.AllianceZones.oppLeftAllianceZone),
+            wantShoot);
+        runFeed(
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.rightAllianceZone,
+                FieldConstants.AllianceZones.oppLeftAllianceZone));
+        break;
+      case OTHER_ALLIANCEZONE_OUTPOST:
+        applyAimingSetpoints(
+            robotPose,
+            robotSpeeds,
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.leftAllianceZone,
+                FieldConstants.AllianceZones.oppRightAllianceZone),
+            wantShoot);
+        runFeed(
+            AllianceFlipUtil.get(
+                FieldConstants.AllianceZones.leftAllianceZone,
+                FieldConstants.AllianceZones.oppRightAllianceZone));
         break;
       default:
         stopFeed();
@@ -399,7 +452,8 @@ public class Shooter extends SubsystemBase {
     } else if (wantShoot
         && (area == RobotState.Area.DEPOT_SIDE_NEUTRALZONE
             || area == RobotState.Area.OUTPOST_SIDE_NEUTRALZONE
-            || area == RobotState.Area.OTHERALLIANCEZONE)) {
+            || area == RobotState.Area.OTHER_ALLIANCEZONE_DEPO
+            || area == RobotState.Area.OTHER_ALLIANCEZONE_OUTPOST)) {
       setState(ShooterState.FERRYING);
     } else if (Dashboard.manualMode.get()) {
       setState(ShooterState.NA);
@@ -417,6 +471,10 @@ public class Shooter extends SubsystemBase {
             wantShoot = Controlboard.shoot().getAsBoolean();
           }
 
+          Logger.log(logPrefix + "Area", area != null ? area.toString() : "NULL");
+          Logger.log(logPrefix + "RobotPose X", robotPose.getX());
+          Logger.log(logPrefix + "RobotPose Y", robotPose.getY());
+          Logger.log(logPrefix + "wantShoot", wantShoot);
           updateShooterState(area, wantShoot);
 
           switch (state) {
@@ -508,8 +566,8 @@ public class Shooter extends SubsystemBase {
     // * distance))) + (Dashboard.functionLRG.get() * Math.pow(distance, 3));
     if (distance < 2.2) {
       return 0.0;
-    } else if (distance > 5.8) {
-      return 23.0;
+    } else if (distance > 6.3) {
+      return 50.0;
     } else {
       return distance * Dashboard.functionScalar.get();
     }

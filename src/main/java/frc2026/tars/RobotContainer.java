@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc2026.tars.commands.IntakeFeed;
 import frc2026.tars.constants.SimConstants;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
@@ -33,6 +34,7 @@ import frc2026.tars.subsystems.intake.IntakeWrist;
 import frc2026.tars.subsystems.intake.IntakeWrist.IntakeWristGoal;
 import frc2026.tars.subsystems.leds.LED;
 import frc2026.tars.subsystems.shooter.Shooter;
+import frc2026.tars.subsystems.shooter.Shooter.ShooterState;
 import frc2026.tars.subsystems.shooter.feeder.Feeder;
 import frc2026.tars.subsystems.shooter.feeder.FeederConstants;
 import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
@@ -113,10 +115,8 @@ public class RobotContainer {
   private void configureBindings() {
 
     Controlboard.intake()
-        .whileTrue(
-            new SequentialCommandGroup(
-                    intakeRollers.applyGoalCommand(IntakeRollers.IntakeRollersGoal.INTAKE))
-                .withName("Intake Running"));
+        .whileTrue(intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE))
+        .onFalse(new IntakeFeed(feeder, rollers, shooter.beam, shooter.beamOne));
 
     Controlboard.shoot()
         .whileTrue(
@@ -131,7 +131,9 @@ public class RobotContainer {
                                     robotState.getDrivetrainTarget(),
                                     DrivetrainConstants.headingControllerProfiled))
                     .beforeStarting(() -> drivetrain.resetHeadingController()),
-                intakeWrist.compress(() -> robotState.atTargetAngle()),
+                intakeWrist
+                    .compress(() -> robotState.atTargetAngle())
+                    .onlyWhile(() -> shooter.getState() == ShooterState.SHOOTING),
                 intakeRollers.applyGoalCommand(IntakeRollersGoal.COMPRESS)));
 
     Controlboard.moveIntakeWrist()
@@ -170,6 +172,9 @@ public class RobotContainer {
                 Commands.parallel(
                     rollers.applyVoltageCommand(() -> 0.0),
                     feeder.applyVoltageCommand(() -> 0.0))));
+
+    // Controlboard.makeThingWork().whileTrue(new FeedForwardCharacterization(flywheel,
+    // flywheel::setVoltage, flywheel::getVelocity));
 
     Controlboard.rotateNegative90Degrees()
         .whileTrue(
@@ -355,7 +360,9 @@ public class RobotContainer {
                                 Rotation2d.fromDegrees(Dashboard.manualHoodAngle.get())),
                         hood),
                     Commands.run(
-                        () -> flywheel.setVoltage(Dashboard.manualFlywheelVelocity.get()),
+                        () ->
+                            flywheel.setTargetVelocityTorqueCurrent(
+                                Dashboard.manualFlywheelVelocity.get(), 0.0),
                         flywheel),
                     Commands.run(
                         () ->
@@ -390,5 +397,7 @@ public class RobotContainer {
 
   public void periodic() {
     visionManager.periodic();
+
+    // Logger.log("Area", RobotState.Area.val().toString());
   }
 }

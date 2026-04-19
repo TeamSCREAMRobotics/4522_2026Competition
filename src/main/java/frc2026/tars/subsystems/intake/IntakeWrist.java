@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -47,7 +48,9 @@ public class IntakeWrist extends TalonFXSubsystem {
 
   public enum IntakeWristGoal implements TalonFXSubsystemGoal {
     STOW(Rotation2d.fromDegrees(0.0)),
-    AGITATE(Rotation2d.fromDegrees(63.3)),
+    AGITATE_HIGH(Rotation2d.fromDegrees(30.0)),
+    AGITATE_MID(Rotation2d.fromDegrees(50.0)),
+    AGITATE_LOW(Rotation2d.fromDegrees(80.0)),
     COMPRESS(Rotation2d.fromDegrees(19.0)),
     EXTENDED(Rotation2d.fromDegrees(108.3));
 
@@ -92,16 +95,37 @@ public class IntakeWrist extends TalonFXSubsystem {
 
   public Command compress(BooleanSupplier atTarget) {
 
+    /* return new SequentialCommandGroup(
+        new WaitUntilCommand(atTarget),
+        new WaitCommand(2.0),
+        run(
+            () -> {
+              setMotionMagicConfigsUnchecked(IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS);
+              applyGoal(IntakeWristGoal.COMPRESS);
+            }))
+    .finallyDo(
+        () -> setMotionMagicConfigsUnchecked(IntakeConstants.FAST_MOTION_MAGIC_CONSTANTS))
+    .onlyIf(() -> shooterState.get() == ShooterState.SHOOTING); */
     return new SequentialCommandGroup(
-            new WaitUntilCommand(atTarget),
-            new WaitCommand(2.0),
-            run(
-                () -> {
-                  setMotionMagicConfigsUnchecked(IntakeConstants.SLOW_MOTION_MAGIC_CONSTANTS);
-                  applyGoal(IntakeWristGoal.COMPRESS);
-                }))
-        .finallyDo(
-            () -> setMotionMagicConfigsUnchecked(IntakeConstants.FAST_MOTION_MAGIC_CONSTANTS));
+        new WaitUntilCommand(atTarget),
+        new WaitCommand(1.0),
+        instantApplyGoalCommand(IntakeWristGoal.AGITATE_LOW),
+        new WaitCommand(0.4),
+        instantApplyGoalCommand(IntakeWristGoal.EXTENDED),
+        new WaitCommand(0.4),
+        instantApplyGoalCommand(IntakeWristGoal.AGITATE_MID),
+        new WaitCommand(0.4),
+        instantApplyGoalCommand(IntakeWristGoal.EXTENDED),
+        new WaitCommand(0.4),
+        Commands.repeatingSequence(
+            instantApplyGoalCommand(IntakeWristGoal.AGITATE_HIGH),
+            new WaitCommand(0.4),
+            instantApplyGoalCommand(IntakeWristGoal.EXTENDED),
+            new WaitCommand(0.4)));
+  }
+
+  public Command instantApplyGoalCommand(IntakeWristGoal goal) {
+    return new InstantCommand(() -> applyGoal(goal), this);
   }
 
   @Getter public TalonFXSubsystemGoal goal = getGoal();

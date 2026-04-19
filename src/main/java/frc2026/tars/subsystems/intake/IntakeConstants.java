@@ -71,10 +71,10 @@ public class IntakeConstants {
     WRIST_CONFIG.sensorToMechRatio = INTAKE_REDUCTION;
     WRIST_CONFIG.feedbackRemoteSensorId = 4;
     WRIST_CONFIG.enableSupplyCurrentLimit = true;
-    WRIST_CONFIG.supplyCurrentLimit = 20;
-    WRIST_CONFIG.statorCurrentLimit = 20;
-    WRIST_CONFIG.cruiseVelocity = 30.0;
-    WRIST_CONFIG.acceleration = 30.0;
+    WRIST_CONFIG.supplyCurrentLimit = 40;
+    WRIST_CONFIG.statorCurrentLimit = 40;
+    WRIST_CONFIG.cruiseVelocity = 40.0;
+    WRIST_CONFIG.acceleration = 60.0;
     WRIST_CONFIG.slot0 =
         new ScreamPIDConstants(45.5, 0, 0)
             .getSlot0Configs(new FeedforwardConstants(0, 0, 0, 0, GravityTypeValue.Arm_Cosine));
@@ -91,11 +91,11 @@ public class IntakeConstants {
     ROLLERS_CONFIG.logTelemetry = false;
 
     ROLLERS_CONFIG.masterConstants =
-        new TalonFXConstants(new CANDevice(9), InvertedValue.CounterClockwise_Positive);
+        new TalonFXConstants(new CANDevice(9), InvertedValue.Clockwise_Positive);
 
     ROLLERS_CONFIG.slaveConstants =
         new TalonFXConstants[] {
-          new TalonFXConstants(new CANDevice(7), InvertedValue.Clockwise_Positive)
+          new TalonFXConstants(new CANDevice(7), InvertedValue.CounterClockwise_Positive)
         };
 
     ROLLERS_CONFIG.enableSupplyCurrentLimit = true;

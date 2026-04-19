@@ -19,10 +19,10 @@ public class FeederConstants {
 
     FEEDER_CONFIG.masterConstants =
         new TalonFXConstants(new CANDevice(4), InvertedValue.Clockwise_Positive);
-    FEEDER_CONFIG.slaveConstants =
-        new TalonFXConstants[] {
-          new TalonFXConstants(new CANDevice(5), InvertedValue.CounterClockwise_Positive)
-        };
+    // FEEDER_CONFIG.slaveConstants =
+    //    new TalonFXConstants[] {
+    //      new TalonFXConstants(new CANDevice(5), InvertedValue.CounterClockwise_Positive)
+    //    };
 
     FEEDER_CONFIG.neutralMode = NeutralModeValue.Coast;
 
