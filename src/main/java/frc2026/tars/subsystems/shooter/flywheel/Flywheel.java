@@ -28,8 +28,6 @@ public class Flywheel extends TalonFXSubsystem {
     return (Math.abs(getError()) <= 0.05); // 0.25
   }
 
-  private double atVelStartTime = 0.0;
-
   public boolean atVelWithTime() {
     if (atVel()) {
       Timer.delay(0.25);
