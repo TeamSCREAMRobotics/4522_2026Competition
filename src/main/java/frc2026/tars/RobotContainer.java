@@ -2,8 +2,6 @@ package frc2026.tars;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
@@ -13,7 +11,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -104,7 +101,7 @@ public class RobotContainer {
 
   private final Routines routines = new Routines(drivetrain, shooter, robotState, this);
 
-  private final SendableChooser<Command> auto;
+  //   private final SendableChooser<Command> auto;
 
   private Debouncer stupidahhenginnerdebouncher = new Debouncer(0.35, DebounceType.kRising);
 
@@ -112,13 +109,12 @@ public class RobotContainer {
     configureBindings();
     configureManualOverrides();
     configureDefaultCommands();
-    configureAutoCommands();
 
     SmartDashboard.putNumber("test", 1);
 
-    auto = AutoBuilder.buildAutoChooser();
-    auto.setDefaultOption("Do Nothing", null);
-    SmartDashboard.putData(auto);
+    // auto = AutoBuilder.buildAutoChooser();
+    // auto.setDefaultOption("Do Nothing", null);
+    // SmartDashboard.putData(auto);
     mechVisualizer.setEnabled(true);
   }
 
@@ -280,61 +276,62 @@ public class RobotContainer {
             .ignoringDisable(true));
   }
 
-  private void configureAutoCommands() {
+  //   private void configureAutoCommands() {
 
-    NamedCommands.registerCommand(
-        "Run Intake", intakeRollers.applyGoalCommand(IntakeRollersGoal.AUTOINTAKE));
+  //     NamedCommands.registerCommand(
+  //         "Run Intake", intakeRollers.applyGoalCommand(IntakeRollersGoal.AUTOINTAKE));
 
-    NamedCommands.registerCommand(
-        "Stop Intake", intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP));
+  //     NamedCommands.registerCommand(
+  //         "Stop Intake", intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP));
 
-    NamedCommands.registerCommand(
-        "BlipFuel",
-        Commands.parallel(
-                rollers.applyVoltageCommand(() -> 1.0), feeder.applyVoltageCommand(() -> 2.0))
-            .until(() -> shooter.beam.getIsDetected().getValue())
-            .andThen(
-                Commands.parallel(
-                    rollers.applyVoltageCommand(() -> 1.0),
-                    feeder.applyVoltageCommand(() -> 2.0))));
+  //     NamedCommands.registerCommand(
+  //         "BlipFuel",
+  //         Commands.parallel(
+  //                 rollers.applyVoltageCommand(() -> 1.0), feeder.applyVoltageCommand(() -> 2.0))
+  //             .until(() -> shooter.beam.getIsDetected().getValue())
+  //             .andThen(
+  //                 Commands.parallel(
+  //                     rollers.applyVoltageCommand(() -> 1.0),
+  //                     feeder.applyVoltageCommand(() -> 2.0))));
 
-    NamedCommands.registerCommand(
-        "Intake In",
-        new SequentialCommandGroup(
-                intakeWrist
-                    .applyGoalCommand(IntakeWristGoal.STOW)
-                    .alongWith(intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP)))
-            .withName("Auto Intake In"));
+  //     NamedCommands.registerCommand(
+  //         "Intake In",
+  //         new SequentialCommandGroup(
+  //                 intakeWrist
+  //                     .applyGoalCommand(IntakeWristGoal.STOW)
+  //                     .alongWith(intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP)))
+  //             .withName("Auto Intake In"));
 
-    NamedCommands.registerCommand(
-        "Stop Intaking", intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP).withTimeout(0.1));
+  //     NamedCommands.registerCommand(
+  //         "Stop Intaking",
+  // intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP).withTimeout(0.1));
 
-    NamedCommands.registerCommand(
-        "Aim at Hub",
-        drivetrain
-            .applyRequest(
-                () ->
-                    drivetrain
-                        .getHelper()
-                        .getFacingAngleProfiled(
-                            Controlboard.getTranslation(),
-                            robotState.getDrivetrainTarget(),
-                            DrivetrainConstants.headingControllerProfiled))
-            .beforeStarting(() -> drivetrain.resetHeadingController()));
+  //     NamedCommands.registerCommand(
+  //         "Aim at Hub",
+  //         drivetrain
+  //             .applyRequest(
+  //                 () ->
+  //                     drivetrain
+  //                         .getHelper()
+  //                         .getFacingAngleProfiled(
+  //                             Controlboard.getTranslation(),
+  //                             robotState.getDrivetrainTarget(),
+  //                             DrivetrainConstants.headingControllerProfiled))
+  //             .beforeStarting(() -> drivetrain.resetHeadingController()));
 
-    NamedCommands.registerCommand("Shoot", shooter.autoShoot());
+  //     NamedCommands.registerCommand("Shoot", shooter.autoShoot());
 
-    NamedCommands.registerCommand(
-        "IntakeWristOut",
-        intakeWrist.runOnce(() -> intakeWrist.applyGoal(IntakeWristGoal.EXTENDED)));
+  //     NamedCommands.registerCommand(
+  //         "IntakeWristOut",
+  //         intakeWrist.runOnce(() -> intakeWrist.applyGoal(IntakeWristGoal.EXTENDED)));
 
-    NamedCommands.registerCommand(
-        "Run Kickers",
-        intakeRollers
-            .applyGoalCommand(IntakeRollersGoal.INTAKE)
-            .withTimeout(0.25)
-            .andThen(intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP)));
-  }
+  //     NamedCommands.registerCommand(
+  //         "Run Kickers",
+  //         intakeRollers
+  //             .applyGoalCommand(IntakeRollersGoal.INTAKE)
+  //             .withTimeout(0.25)
+  //             .andThen(intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP)));
+  //   }
 
   private void configureManualOverrides() {
     Controlboard.runBackFlywheel().whileTrue(flywheel.applyVoltageCommand(() -> -1.0));

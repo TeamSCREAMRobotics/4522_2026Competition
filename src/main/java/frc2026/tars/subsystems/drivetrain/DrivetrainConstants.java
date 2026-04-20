@@ -2,16 +2,10 @@ package frc2026.tars.subsystems.drivetrain;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import com.pathplanner.lib.config.ModuleConfig;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.controllers.PathFollowingController;
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.pid.ScreamPIDConstants;
-import com.teamscreamrobotics.util.PPUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import frc2026.tars.subsystems.drivetrain.generated.TunerConstants;
@@ -46,21 +40,21 @@ public final class DrivetrainConstants {
   public static final ScreamPIDConstants pathRotationConstants =
       new ScreamPIDConstants(7.0, 0.0, 0.0);
 
-  public static final ModuleConfig moduleConfig =
-      new ModuleConfig(Units.inchesToMeters(2), maxSpeed, 1.4, DCMotor.getKrakenX60(1), 85, 1);
+  //   public static final ModuleConfig moduleConfig =
+  //       new ModuleConfig(Units.inchesToMeters(2), maxSpeed, 1.4, DCMotor.getKrakenX60(1), 85, 1);
 
-  public static final RobotConfig robotConfig =
-      new RobotConfig(
-          Units.lbsToKilograms(121.0),
-          6.883,
-          moduleConfig,
-          TunerConstants.frontLeftPos,
-          TunerConstants.frontRightPos,
-          TunerConstants.backLeftPos,
-          TunerConstants.backRightPos);
+  //   public static final RobotConfig robotConfig =
+  //       new RobotConfig(
+  //           Units.lbsToKilograms(121.0),
+  //           6.883,
+  //           moduleConfig,
+  //           TunerConstants.frontLeftPos,
+  //           TunerConstants.frontRightPos,
+  //           TunerConstants.backLeftPos,
+  //           TunerConstants.backRightPos);
 
-  public static final PathFollowingController pathFollowingController =
-      new PPHolonomicDriveController(
-          PPUtil.screamPIDConstantsToPPConstants(pathTranslationConstants),
-          PPUtil.screamPIDConstantsToPPConstants(pathRotationConstants));
+  //   public static final PathFollowingController pathFollowingController =
+  //       new PPHolonomicDriveController(
+  //           PPUtil.screamPIDConstantsToPPConstants(pathTranslationConstants),
+  //           PPUtil.screamPIDConstantsToPPConstants(pathRotationConstants));
 }
