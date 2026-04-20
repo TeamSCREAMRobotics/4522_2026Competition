@@ -116,13 +116,6 @@ public class Shooter extends SubsystemBase {
   }
 
   public Length getShotDistance(Translation2d target) {
-    /* Pose2d pose = this.robotPose.get();
-    double centerToTarget = pose.getTranslation().getDistance(target);
-    double centerToShooter = 0.146; // meters
-    // Pythagorean offset so we measure from the shooter, not the robot center
-    double shooterToTarget =
-        Math.sqrt(Math.pow(centerToTarget, 2.0) - Math.pow(centerToShooter, 2.0));
-    return Length.fromMeters(shooterToTarget); */
     return Length.fromMeters(getFieldToShooter().getTranslation().getDistance(target));
   }
 

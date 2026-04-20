@@ -5,10 +5,12 @@ import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
+import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -20,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc2026.tars.autonomous.Routines;
 import frc2026.tars.commands.IntakeFeed;
 import frc2026.tars.constants.SimConstants;
 import frc2026.tars.controlboard.Controlboard;
@@ -49,7 +52,14 @@ import lombok.Getter;
 public class RobotContainer {
 
   public record Subsystems(
-      Drivetrain drivetrain, IntakeWrist intakeWrist, Hood hood, Flywheel flywheel, LED led) {}
+      Drivetrain drivetrain,
+      IntakeWrist intakeWrist,
+      IntakeRollers intakeRollers,
+      Feeder feeder,
+      Rollers rollers,
+      Hood hood,
+      Flywheel flywheel,
+      LED led) {}
 
   private final LED led = new LED();
 
@@ -64,7 +74,7 @@ public class RobotContainer {
 
   @Getter
   private final Subsystems subsystems =
-      new Subsystems(drivetrain, intakeWrist, hood, flywheel, led);
+      new Subsystems(drivetrain, intakeWrist, intakeRollers, feeder, rollers, hood, flywheel, led);
 
   @Getter private final RobotState robotState = new RobotState(subsystems);
 
@@ -93,6 +103,8 @@ public class RobotContainer {
           SimConstants.SETPOINT_MECHANISM,
           RobotContainer::telemeterizeMechanisms,
           intakeWrist.intakeMech);
+
+  private final Routines routines = new Routines(drivetrain, shooter, robotState, this);
 
   private final SendableChooser<Command> auto;
 
@@ -297,7 +309,7 @@ public class RobotContainer {
             .withName("Auto Intake In"));
 
     NamedCommands.registerCommand(
-        "Stop Intakeing", intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP).withTimeout(0.1));
+        "Stop Intaking", intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP).withTimeout(0.1));
 
     NamedCommands.registerCommand(
         "Aim at Hub",
@@ -387,7 +399,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return auto.getSelected();
+    return routines.getRoutineChooser().getSelected();
   }
 
   public static void telemeterizeMechanisms(Mechanism2d measured, Mechanism2d setpoint) {
@@ -397,7 +409,7 @@ public class RobotContainer {
 
   public void periodic() {
     visionManager.periodic();
-
+    robotState.logArea();
     // Logger.log("Area", RobotState.Area.val().toString());
   }
 }

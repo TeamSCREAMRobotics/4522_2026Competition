@@ -8,8 +8,10 @@
       "enabled": true,
       "distance_meters": 0.222,
       "side": "front",
-      "default_state": "shown",
-      "show_on_event_keys": [],
+      "default_state": "hidden",
+      "show_on_event_keys": [
+        "deployIntake"
+      ],
       "hide_on_event_keys": []
     }
   },
