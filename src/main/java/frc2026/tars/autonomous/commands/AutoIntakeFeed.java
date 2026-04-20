@@ -16,7 +16,7 @@ public class AutoIntakeFeed extends Command {
   private final CANrange beam;
   private final CANrange beamOne;
 
-  private Debouncer beamDebouncer = new Debouncer(0.03, DebounceType.kRising);
+  private final Debouncer beamDebouncer = new Debouncer(0.03, DebounceType.kRising);
 
   private boolean hasBallKnowledge;
 
@@ -47,7 +47,7 @@ public class AutoIntakeFeed extends Command {
   @Override
   public void execute() {
     if (!hasBallKnowledge
-        && beam.getIsDetected().getValue()
+        && beamDebouncer.calculate(beam.getIsDetected().getValue())
         && !beamOne.getIsDetected().getValue()) {
       intakeRollers.setVoltage(12.0);
       feeder.setVoltage(3.0);
@@ -58,12 +58,6 @@ public class AutoIntakeFeed extends Command {
       intakeRollers.setVoltage(12.0);
       feeder.setVoltage(0.0);
       rollers.setVoltage(0.0);
-    } else if (hasBallKnowledge
-        && !beam.getIsDetected().getValue()
-        && !beamOne.getIsDetected().getValue()) {
-      intakeRollers.setVoltage(12.0);
-      feeder.setVoltage(3.0);
-      rollers.setVoltage(1.5);
     } else {
       intakeRollers.setVoltage(12.0);
       feeder.setVoltage(0.0);

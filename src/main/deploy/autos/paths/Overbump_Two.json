@@ -14,26 +14,26 @@
     },
     {
       "type": "event_trigger",
-      "t_ratio": 0.09,
+      "t_ratio": 0.08999999999999976,
       "lib_key": "deployIntake"
     },
     {
       "type": "rotation",
       "rotation_radians": 1.5707963267948966,
-      "t_ratio": 0.4714941553112493,
+      "t_ratio": 0.471494155311249,
       "profiled_rotation": true
     },
     {
       "type": "translation",
-      "x_meters": 3.4309931888544893,
-      "y_meters": 0.5202167182662549,
+      "x_meters": 3.430993188854489,
+      "y_meters": 0.5047629737728645,
       "intermediate_handoff_radius_meters": 0.5
     },
     {
       "type": "waypoint",
       "translation_target": {
-        "x_meters": 6.138843962848298,
-        "y_meters": 0.5202167182662532,
+        "x_meters": 6.1233902183549045,
+        "y_meters": 0.5047629737728645,
         "intermediate_handoff_radius_meters": 0.5
       },
       "rotation_target": {
@@ -92,7 +92,7 @@
     {
       "type": "rotation",
       "rotation_radians": 3.141592653589793,
-      "t_ratio": 0.6417760680491595,
+      "t_ratio": 0.6417760680491594,
       "profiled_rotation": true
     },
     {
