@@ -48,41 +48,43 @@ public class FieldConstants {
       new RectangularPoseArea(new Translation2d(0, 0), fieldDimensions);
 
   public static final Translation2d BLUEALLIANCE_NEAR_RIGHT_CORNER = new Translation2d(0, 0);
+
+  public static final Translation2d BLUEALLIANCE_NEAR_LEFT_CORNER =
+      new Translation2d(0, Units.inchesToMeters(317.437500 + 0.25));
+
   public static final Translation2d BLUEALLIANCE_FAR_LEFT_CORNER =
       new Translation2d(Units.inchesToMeters(156.406250), Units.inchesToMeters(317.437500 + 0.25));
 
+   public static final Translation2d BLUEALLIANCE_FAR_MID_POINT = new Translation2d(Units.inchesToMeters(156.406250), fieldWidth / 2.0);
+
   public static final Translation2d REDALLIANCE_NEAR_RIGHT_CORNER =
-      new Translation2d(fieldLength - Units.inchesToMeters(156.406250), 0);
+      new Translation2d(Units.inchesToMeters(494.406250), 0);
+
+  public static final Translation2d REDALLIANCE_NEAR_LEFT_CORNER =
+      new Translation2d(Units.inchesToMeters(494.406250), Units.inchesToMeters(317.687500));
+
+public static final Translation2d REDALLIANCE_FAR_MID_POINT = new Translation2d(Units.inchesToMeters(650.812500), fieldWidth / 2.0);
+
   public static final Translation2d REDALLIANCE_FAR_LEFT_CORNER =
-      new Translation2d(fieldLength, Units.inchesToMeters(317.687500));
+      new Translation2d(Units.inchesToMeters(650.812500), Units.inchesToMeters(317.687500));
 
   public static final RectangularPoseArea BLUEALLIANCE =
       new RectangularPoseArea(BLUEALLIANCE_NEAR_RIGHT_CORNER, BLUEALLIANCE_FAR_LEFT_CORNER);
+
+    public static final RectangularPoseArea BLUEALLIANCE_DEPO =
+      new RectangularPoseArea(BLUEALLIANCE_FAR_MID_POINT, BLUEALLIANCE_NEAR_LEFT_CORNER);
+
+    public static final RectangularPoseArea BLUEALLIANCE_OUTPOST =
+      new RectangularPoseArea(BLUEALLIANCE_NEAR_RIGHT_CORNER, BLUEALLIANCE_FAR_MID_POINT);
+
   public static final RectangularPoseArea REDALLIANCE =
       new RectangularPoseArea(REDALLIANCE_NEAR_RIGHT_CORNER, REDALLIANCE_FAR_LEFT_CORNER);
 
-  public static final double ALLIANCE_ZONE_DEPTH = Units.inchesToMeters(158.6);
-  public static final double OUTPOST_SPLIT_Y = ALLIANCE_ZONE_DEPTH / 2.0;
+    public static final RectangularPoseArea REDALLIANCE_DEPO =
+      new RectangularPoseArea(REDALLIANCE_NEAR_LEFT_CORNER, REDALLIANCE_FAR_MID_POINT);
 
-  public static final Translation2d MID_BLUEALLIANCE_SPLIT =
-      new Translation2d(Units.inchesToMeters(156.406250), OUTPOST_SPLIT_Y);
-
-  public static final Translation2d MID_REDALLIANCE_SPLIT =
-      new Translation2d(fieldLength - Units.inchesToMeters(156.406250), OUTPOST_SPLIT_Y);
-
-  public static final RectangularPoseArea BLUEALLIANCE_OUTPOST =
-      new RectangularPoseArea(
-          BLUEALLIANCE_NEAR_RIGHT_CORNER, // near alliance wall
-          MID_BLUEALLIANCE_SPLIT);
-
-  public static final RectangularPoseArea BLUEALLIANCE_DEPO =
-      new RectangularPoseArea(MID_BLUEALLIANCE_SPLIT, BLUEALLIANCE_FAR_LEFT_CORNER);
-
-  public static final RectangularPoseArea REDALLIANCE_OUTPOST =
-      new RectangularPoseArea(REDALLIANCE_NEAR_RIGHT_CORNER, MID_REDALLIANCE_SPLIT);
-
-  public static final RectangularPoseArea REDALLIANCE_DEPO =
-      new RectangularPoseArea(MID_REDALLIANCE_SPLIT, REDALLIANCE_FAR_LEFT_CORNER);
+        public static final RectangularPoseArea REDALLIANCE_OUTPOST =  
+        new RectangularPoseArea(REDALLIANCE_NEAR_RIGHT_CORNER, REDALLIANCE_FAR_MID_POINT);
 
   public static final Translation2d LOWER_NEUTRAL_NEAR_RIGHT_CORNER =
       new Translation2d(Units.inchesToMeters(205.406250), 0);
