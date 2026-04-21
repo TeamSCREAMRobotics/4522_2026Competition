@@ -384,7 +384,7 @@ public class RobotContainer {
                     Commands.run(() -> feeder.setVoltage(Dashboard.manualFeeder.get()), feeder))
                 .ignoringDisable(true));
 
-    Controlboard.bumberShot()
+    Controlboard.bumperShot()
         .whileTrue(
             Commands.parallel(
                 flywheel.setTargetVelocityTorqueCurrentCommand(33.5, 0.0),

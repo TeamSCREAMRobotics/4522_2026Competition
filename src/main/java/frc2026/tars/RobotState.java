@@ -44,10 +44,10 @@ public class RobotState {
     ALLIANCEZONE(
         () -> AllianceFlipUtil.get(FieldConstants.BLUEALLIANCE, FieldConstants.REDALLIANCE)),
 
-    OTHER_ALLIANCEZONE_DEPO(
+    OTHER_ALLIANCEZONE_DEPOT(
         () ->
             AllianceFlipUtil.get(
-                FieldConstants.REDALLIANCE_DEPO, FieldConstants.BLUEALLIANCE_DEPO)),
+                FieldConstants.REDALLIANCE_DEPOT, FieldConstants.BLUEALLIANCE_DEPOT)),
 
     OTHER_ALLIANCEZONE_OUTPOST(
         () ->

@@ -333,7 +333,7 @@ public class Shooter extends SubsystemBase {
         setIdleState(IdleState.IDLE_FERRY_OUTPOST);
         led.wave(Color.kBlack, new Color(0.0f, 0.5019608f, 0.5019608f), 0.1, 1.25);
         break;
-      case OTHER_ALLIANCEZONE_DEPO:
+      case OTHER_ALLIANCEZONE_DEPOT:
         applyAimingSetpoints(
             robotPose,
             robotSpeeds,
@@ -405,7 +405,7 @@ public class Shooter extends SubsystemBase {
                 FieldConstants.AllianceZones.rightAllianceZone,
                 FieldConstants.AllianceZones.oppLeftAllianceZone));
         break;
-      case OTHER_ALLIANCEZONE_DEPO:
+      case OTHER_ALLIANCEZONE_DEPOT:
         applyAimingSetpoints(
             robotPose,
             robotSpeeds,
@@ -445,7 +445,7 @@ public class Shooter extends SubsystemBase {
     } else if (wantShoot
         && (area == RobotState.Area.DEPOT_SIDE_NEUTRALZONE
             || area == RobotState.Area.OUTPOST_SIDE_NEUTRALZONE
-            || area == RobotState.Area.OTHER_ALLIANCEZONE_DEPO
+            || area == RobotState.Area.OTHER_ALLIANCEZONE_DEPOT
             || area == RobotState.Area.OTHER_ALLIANCEZONE_OUTPOST)) {
       setState(ShooterState.FERRYING);
     } else if (Dashboard.manualMode.get()) {

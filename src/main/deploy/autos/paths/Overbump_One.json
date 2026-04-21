@@ -13,11 +13,6 @@
       }
     },
     {
-      "type": "event_trigger",
-      "t_ratio": 0.48000000000000026,
-      "lib_key": "deployIntake"
-    },
-    {
       "type": "waypoint",
       "translation_target": {
         "x_meters": 5.951466693113106,

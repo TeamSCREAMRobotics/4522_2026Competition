@@ -66,6 +66,7 @@ public class FieldConstants {
 
   public static final Translation2d REDALLIANCE_FAR_MID_POINT =
       new Translation2d(Units.inchesToMeters(650.812500), fieldWidth / 2.0);
+  public static final Translation2d REDALLIANCE_NEAR_MID_POINT = new Translation2d();
 
   public static final Translation2d REDALLIANCE_FAR_LEFT_CORNER =
       new Translation2d(Units.inchesToMeters(650.812500), Units.inchesToMeters(317.687500));
@@ -73,7 +74,7 @@ public class FieldConstants {
   public static final RectangularPoseArea BLUEALLIANCE =
       new RectangularPoseArea(BLUEALLIANCE_NEAR_RIGHT_CORNER, BLUEALLIANCE_FAR_LEFT_CORNER);
 
-  public static final RectangularPoseArea BLUEALLIANCE_DEPO =
+  public static final RectangularPoseArea BLUEALLIANCE_DEPOT =
       new RectangularPoseArea(BLUEALLIANCE_FAR_MID_POINT, BLUEALLIANCE_NEAR_LEFT_CORNER);
 
   public static final RectangularPoseArea BLUEALLIANCE_OUTPOST =
@@ -82,7 +83,7 @@ public class FieldConstants {
   public static final RectangularPoseArea REDALLIANCE =
       new RectangularPoseArea(REDALLIANCE_NEAR_RIGHT_CORNER, REDALLIANCE_FAR_LEFT_CORNER);
 
-  public static final RectangularPoseArea REDALLIANCE_DEPO =
+  public static final RectangularPoseArea REDALLIANCE_DEPOT =
       new RectangularPoseArea(REDALLIANCE_NEAR_LEFT_CORNER, REDALLIANCE_FAR_MID_POINT);
 
   public static final RectangularPoseArea REDALLIANCE_OUTPOST =
