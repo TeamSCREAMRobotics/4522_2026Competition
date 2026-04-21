@@ -163,7 +163,13 @@ public class Shooter extends SubsystemBase {
       double f = lookupTof - sotmTof;
       double fPrime = dTof_dDist * dDist_dTof - 1.0;
 
-      double nextTof = (Math.abs(fPrime) > 0.01) ? (sotmTof - f / fPrime) : lookupTof;
+      double nextTof;
+      if (Math.abs(fPrime) > 0.1) {
+        double step = Math.max(-0.3, Math.min(0.3, f / fPrime));
+        nextTof = sotmTof - step;
+      } else {
+        nextTof = lookupTof;
+      }
 
       sotmTof = Math.max(0.05, Math.min(5.0, nextTof));
     }
