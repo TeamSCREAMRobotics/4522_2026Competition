@@ -90,7 +90,7 @@ public class Routines {
 
     Overbump_Outpost =
         new BLinePathSequence(
-            pathBuilder, FieldSymmetry.kRotational, "Overbump_One", "Overbump_Two");
+            pathBuilder, FieldSymmetry.kRotational, "OverBump_Test", "Overbump_Two");
 
     Overbump_Depot = Overbump_Outpost.mirror();
 
@@ -130,6 +130,7 @@ public class Routines {
     logPoints("OverbumpOutpost", currentSequence);
     return new SequentialCommandGroup(
         resetPose(Overbump_Outpost),
+        intakeWrist.applyGoalCommand(IntakeWristGoal.EXTENDED),
         new ParallelRaceGroup(
             new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
             Overbump_Outpost.getNext()),
@@ -145,6 +146,7 @@ public class Routines {
     logPoints("OverbumpDepot", currentSequence);
     return new SequentialCommandGroup(
         resetPose(Overbump_Depot),
+        intakeWrist.applyGoalCommand(IntakeWristGoal.EXTENDED),
         new ParallelRaceGroup(
             new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
             Overbump_Depot.getNext()),
