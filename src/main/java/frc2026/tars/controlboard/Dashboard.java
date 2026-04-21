@@ -2,6 +2,8 @@ package frc2026.tars.controlboard;
 
 import com.teamscreamrobotics.dashboard.DashboardBoolean;
 import com.teamscreamrobotics.dashboard.DashboardNumber;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc2026.tars.subsystems.shooter.ShooterConstants;
@@ -108,6 +110,10 @@ public class Dashboard {
     functionCurve = new DashboardNumber(tuning, "Function Curve", ShooterConstants.FUNCTION_CURVE);
     functionScalar =
         new DashboardNumber(tuning, "Function Scalar", ShooterConstants.FUNCTION_SCALAR);
+
+    if (DriverStation.isAutonomous()) {
+      dissableShootOnTheMove.set(true);
+    }
   }
 
   public static void resetManuals() {

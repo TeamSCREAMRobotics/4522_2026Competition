@@ -78,8 +78,8 @@ public class Routines {
                 () -> drivetrain.getState().Speeds,
                 (speeds) ->
                     drivetrain.setControl(drivetrain.getHelper().getApplyRobotSpeeds(speeds)),
+                new PIDController(7.0, 0.0, 0.0),
                 new PIDController(5.0, 0.0, 0.0),
-                new PIDController(3.0, 0.0, 0.0),
                 new PIDController(2.0, 0.0, 0.0))
             .withDefaultShouldFlip();
 
@@ -122,7 +122,7 @@ public class Routines {
                             DrivetrainConstants.headingControllerProfiled))
             .beforeStarting(() -> drivetrain.resetHeadingController()),
         intakeRollers.applyGoalCommand(IntakeRollersGoal.AUTOINTAKE),
-        shooter.autoShoot());
+        shooter.autoShoot()).andThen(intakeWrist.instantApplyGoalCommand(IntakeWristGoal.EXTENDED));
   }
 
   public Command OverbumpOutpost() {
@@ -130,7 +130,7 @@ public class Routines {
     logPoints("OverbumpOutpost", currentSequence);
     return new SequentialCommandGroup(
         resetPose(Overbump_Outpost),
-        intakeWrist.applyGoalCommand(IntakeWristGoal.EXTENDED),
+        intakeWrist.instantApplyGoalCommand(IntakeWristGoal.EXTENDED),
         new ParallelRaceGroup(
             new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
             Overbump_Outpost.getNext()),
@@ -146,7 +146,7 @@ public class Routines {
     logPoints("OverbumpDepot", currentSequence);
     return new SequentialCommandGroup(
         resetPose(Overbump_Depot),
-        intakeWrist.applyGoalCommand(IntakeWristGoal.EXTENDED),
+        intakeWrist.instantApplyGoalCommand(IntakeWristGoal.EXTENDED),
         new ParallelRaceGroup(
             new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
             Overbump_Depot.getNext()),

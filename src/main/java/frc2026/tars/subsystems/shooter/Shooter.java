@@ -62,7 +62,7 @@ public class Shooter extends SubsystemBase {
   public final CANrange beamOne = new CANrange(1);
 
   // 0.75
-  private final Debouncer beamDebouncer = new Debouncer(0.85, DebounceType.kFalling);
+  private final Debouncer beamDebouncer = new Debouncer(0.2, DebounceType.kFalling);
 
   @Getter @Setter public Translation2d target = new Translation2d();
 
@@ -146,8 +146,8 @@ public class Shooter extends SubsystemBase {
     sotmPrevVx = vx;
     sotmPrevVy = vy;
 
-    double prx = rx - vx * sotmTof;
-    double pry = ry - vy * sotmTof;
+    double prx = rx + vx * sotmTof;
+    double pry = ry + vy * sotmTof;
     double projDist = Math.hypot(prx, pry);
 
     if (projDist > 0.01) {
@@ -158,7 +158,7 @@ public class Shooter extends SubsystemBase {
           (getTimeOfFlightForDistance(projDist + h) - getTimeOfFlightForDistance(projDist - h))
               / (2.0 * h);
 
-      double dDist_dTof = -(prx * vx + pry * vy) / projDist;
+      double dDist_dTof = (prx * vx + pry * vy) / projDist;
 
       double f = lookupTof - sotmTof;
       double fPrime = dTof_dDist * dDist_dTof - 1.0;
@@ -166,7 +166,7 @@ public class Shooter extends SubsystemBase {
       double nextTof;
       if (Math.abs(fPrime) > 0.1) {
         double step = Math.max(-0.3, Math.min(0.3, f / fPrime));
-        nextTof = sotmTof - step;
+        nextTof = sotmTof - f / fPrime;
       } else {
         nextTof = lookupTof;
       }
@@ -174,18 +174,18 @@ public class Shooter extends SubsystemBase {
       sotmTof = Math.max(0.05, Math.min(5.0, nextTof));
     }
 
-    double prxFinal = rx - vx * sotmTof;
-    double pryFinal = ry - vy * sotmTof;
+    double prxFinal = rx + vx * sotmTof;
+    double pryFinal = ry + vy * sotmTof;
     double futureDistance = Math.hypot(prxFinal, pryFinal);
 
-    Translation2d compTarget =
-        new Translation2d(target.getX() - vx * sotmTof, target.getY() - vy * sotmTof);
+    Translation2d futureShooterPos =
+        new Translation2d(launcherPos.getX() + vx * sotmTof, launcherPos.getY() + vy * sotmTof);
 
     robotState.setDrivetrainTarget(
-        ScreamMath.calculateAngleToPoint(robotPose.getTranslation(), compTarget)
+        ScreamMath.calculateAngleToPoint(futureShooterPos, target)
             .plus(Rotation2d.k180deg));
 
-    double multiplier = wantShoot ? 1.0 : 3.0;
+    double multiplier = wantShoot ? 1.0 : 2.0;
 
     hood.moveToAngle(
         wantShoot
@@ -198,13 +198,77 @@ public class Shooter extends SubsystemBase {
     Logger.log("SOTM/FutureDistance", futureDistance);
     Logger.log(
         "SOTM/FuturePose",
-        new Pose2d(
-            new Translation2d(launcherPos.getX() + vx * sotmTof, launcherPos.getY() + vy * sotmTof),
-            robotPose.getRotation()));
-    Logger.log("SOTM/CompTarget", compTarget);
+        new Pose2d(futureShooterPos, robotPose.getRotation()));
+    Logger.log("SOTM/Target", target);
     Logger.log("SOTM/LauncherVx", vx);
     Logger.log("SOTM/LauncherVy", vy);
   }
+
+  private void simpleShootOnTheFly(
+    Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
+
+  Translation2d launcherPos = getFieldToShooter().getTranslation();
+
+  double launcherFieldOffX = launcherPos.getX() - robotPose.getX();
+  double launcherFieldOffY = launcherPos.getY() - robotPose.getY();
+  double omega = robotSpeeds.omegaRadiansPerSecond;
+  double vx = robotSpeeds.vxMetersPerSecond + (-launcherFieldOffY) * omega;
+  double vy = robotSpeeds.vyMetersPerSecond + launcherFieldOffX * omega;
+
+  double currentDist = launcherPos.getDistance(target);
+  double tof = Math.min(2.0, getTimeOfFlightForDistance(currentDist));
+
+  double damping = 0.5;
+  
+  for (int i = 0; i < 5; i++) {
+    Translation2d futurePos = new Translation2d(
+        launcherPos.getX() + vx * tof,
+        launcherPos.getY() + vy * tof
+    );
+    
+    double futureDist = futurePos.getDistance(target);
+    
+    if (futureDist > 20.0) {
+      tof = getTimeOfFlightForDistance(currentDist);
+      break;
+    }
+    
+    double newTof = getTimeOfFlightForDistance(futureDist);
+    double clampedNewTof = Math.min(2.0, newTof);
+    
+    if (Math.abs(clampedNewTof - tof) < 0.01) {
+      tof = clampedNewTof;
+      break;
+    }
+    
+    tof = tof * (1.0 - damping) + clampedNewTof * damping;
+  }
+
+  Translation2d futureShooterPos = new Translation2d(
+      launcherPos.getX() + vx * tof,
+      launcherPos.getY() + vy * tof
+  );
+  double finalDistance = futureShooterPos.getDistance(target);
+
+  robotState.setDrivetrainTarget(
+      ScreamMath.calculateAngleToPoint(futureShooterPos, target)
+          .plus(Rotation2d.k180deg));
+
+  double multiplier = wantShoot ? 1.0 : 2.0;
+  hood.moveToAngle(
+      wantShoot
+          ? Rotation2d.fromDegrees(getHoodAngleFromDistance(finalDistance))
+          : Rotation2d.kZero);
+  flywheel.setTargetVelocityTorqueCurrent(
+      ShooterConstants.NEW_FLYWHEEL_MAP.get(finalDistance) / multiplier, 0.0);
+
+  Logger.log("SOTM/ToF", tof);
+  Logger.log("SOTM/FutureDistance", finalDistance);
+  Logger.log("SOTM/FuturePose", new Pose2d(futureShooterPos, robotPose.getRotation()));
+  Logger.log("SOTM/Target", target);
+  Logger.log("SOTM/LauncherVx", vx);
+  Logger.log("SOTM/LauncherVy", vy);
+}
 
   private double getTimeOfFlightForDistance(double distanceMeters) {
     double flywheelVelocity = ShooterConstants.NEW_FLYWHEEL_MAP.get(distanceMeters);
@@ -215,7 +279,7 @@ public class Shooter extends SubsystemBase {
   private void applyAimingSetpoints(
       Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
     if (!Dashboard.dissableShootOnTheMove.get()) {
-      shootOnTheFly(robotPose, robotSpeeds, target, wantShoot);
+      simpleShootOnTheFly(robotPose, robotSpeeds, target, wantShoot);
     } else {
       setTarget(target);
       double distanceMeters = getShotDistance(target).getMeters();
