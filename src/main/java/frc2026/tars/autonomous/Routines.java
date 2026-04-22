@@ -43,11 +43,11 @@ public class Routines {
   private final Feeder feeder;
   private final Rollers rollers;
 
-  private final FollowPath.Builder pathBuilder;
+  public final FollowPath.Builder pathBuilder;
   private final BLinePathSequence Overbump_Outpost;
   private final BLinePathSequence Overbump_Depot;
 
-  private final BLinePathSequence TestPath;
+  // private final BLinePathSequence TestPath;
 
   private final IntakeWrist intakeWrist;
   private final IntakeRollers intakeRollers;
@@ -90,17 +90,17 @@ public class Routines {
 
     Overbump_Outpost =
         new BLinePathSequence(
-            pathBuilder, FieldSymmetry.kRotational, "OverBump_Test", "Overbump_Two");
+            pathBuilder, FieldSymmetry.kRotational, "OverBump_One", "Overbump_Two");
 
     Overbump_Depot = Overbump_Outpost.mirror();
 
-    TestPath = new BLinePathSequence(pathBuilder, FieldSymmetry.kRotational, "test_test");
+    // TestPath = new BLinePathSequence(pathBuilder, FieldSymmetry.kRotational, "test_test");
 
     routineChooser = new SendableChooser<>();
     routineChooser.setDefaultOption("Do Nothing", Commands.none().withName("Do Nothing"));
     routineChooser.addOption("Overbump Outpost", OverbumpOutpost().withName("Overbump Outpost"));
     routineChooser.addOption("Overbump Depot", OverbumpDepot().withName("Overbump Depot"));
-    routineChooser.addOption("TestPath", Test().withName("Test"));
+    // routineChooser.addOption("TestPath", Test().withName("Test"));
 
     SmartDashboard.putData("AutoChooser", routineChooser);
   }
@@ -158,15 +158,15 @@ public class Routines {
         Shoot());
   }
 
-  public Command Test() {
-    currentSequence = TestPath;
-    logPoints("Test", currentSequence);
-    return new SequentialCommandGroup(
-        resetPose(TestPath),
-        new ParallelRaceGroup(
-            new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
-            TestPath.getNext()));
-  }
+  // public Command Test() {
+  //   currentSequence = TestPath;
+  //   logPoints("Test", currentSequence);
+  //   return new SequentialCommandGroup(
+  //       resetPose(TestPath),
+  //       new ParallelRaceGroup(
+  //           new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
+  //           TestPath.getNext()));
+  // }
 
   public static void logPoints(String name, BLinePathSequence sequence) {
     Logger.log(name, getPointsFromSequence(sequence));

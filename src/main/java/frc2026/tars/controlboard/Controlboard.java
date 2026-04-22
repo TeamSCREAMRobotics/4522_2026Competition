@@ -156,4 +156,8 @@ public class Controlboard {
   public static Trigger bumperShot() {
     return new Trigger(() -> Dashboard.bumperShoot.get());
   }
+
+  public static Trigger driveThroughTrench() {
+    return driveController.rightBumper();
+  }
 }

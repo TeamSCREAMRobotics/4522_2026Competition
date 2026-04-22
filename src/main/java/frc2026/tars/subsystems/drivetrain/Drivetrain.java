@@ -162,7 +162,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     return m_sysIdRoutineToApply.dynamic(direction);
   }
 
-  private void startSimThread() {
+  public void startSimThread() {
     m_lastSimTime = Utils.getCurrentTimeSeconds();
 
     /* Run simulation at a faster rate so PID gains behave more reasonably */

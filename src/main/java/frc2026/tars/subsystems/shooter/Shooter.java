@@ -125,87 +125,87 @@ public class Shooter extends SubsystemBase {
   private double lcLastHoodAngleRad = Double.NaN;
   private Rotation2d lcLastDriveAngle = null;
 
-  private double sotmTof = -1.0;
-  private double sotmPrevVx = 0.0;
-  private double sotmPrevVy = 0.0;
+  // private double sotmTof = -1.0;
+  // private double sotmPrevVx = 0.0;
+  // private double sotmPrevVy = 0.0;
 
-  private void shootOnTheFly(
-      Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
+  // private void shootOnTheFly(
+  //     Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
 
-    Translation2d launcherPos = getFieldToShooter().getTranslation();
+  //   Translation2d launcherPos = getFieldToShooter().getTranslation();
 
-    double launcherFieldOffX = launcherPos.getX() - robotPose.getX();
-    double launcherFieldOffY = launcherPos.getY() - robotPose.getY();
+  //   double launcherFieldOffX = launcherPos.getX() - robotPose.getX();
+  //   double launcherFieldOffY = launcherPos.getY() - robotPose.getY();
 
-    double omega = robotSpeeds.omegaRadiansPerSecond;
-    double vx = robotSpeeds.vxMetersPerSecond + (-launcherFieldOffY) * omega;
-    double vy = robotSpeeds.vyMetersPerSecond + launcherFieldOffX * omega;
+  //   double omega = robotSpeeds.omegaRadiansPerSecond;
+  //   double vx = robotSpeeds.vxMetersPerSecond + (-launcherFieldOffY) * omega;
+  //   double vy = robotSpeeds.vyMetersPerSecond + launcherFieldOffX * omega;
 
-    double rx = target.getX() - launcherPos.getX();
-    double ry = target.getY() - launcherPos.getY();
-    double staticDist = Math.hypot(rx, ry);
+  //   double rx = target.getX() - launcherPos.getX();
+  //   double ry = target.getY() - launcherPos.getY();
+  //   double staticDist = Math.hypot(rx, ry);
 
-    double speedDelta = Math.hypot(vx - sotmPrevVx, vy - sotmPrevVy);
-    if (sotmTof < 0.0 || speedDelta > 1.0) {
-      sotmTof = getTimeOfFlightForDistance(staticDist);
-    }
-    sotmPrevVx = vx;
-    sotmPrevVy = vy;
+  //   double speedDelta = Math.hypot(vx - sotmPrevVx, vy - sotmPrevVy);
+  //   if (sotmTof < 0.0 || speedDelta > 1.0) {
+  //     sotmTof = getTimeOfFlightForDistance(staticDist);
+  //   }
+  //   sotmPrevVx = vx;
+  //   sotmPrevVy = vy;
 
-    double prx = rx + vx * sotmTof;
-    double pry = ry + vy * sotmTof;
-    double projDist = Math.hypot(prx, pry);
+  //   double prx = rx + vx * sotmTof;
+  //   double pry = ry + vy * sotmTof;
+  //   double projDist = Math.hypot(prx, pry);
 
-    if (projDist > 0.01) {
-      double lookupTof = getTimeOfFlightForDistance(projDist);
+  //   if (projDist > 0.01) {
+  //     double lookupTof = getTimeOfFlightForDistance(projDist);
 
-      double h = 0.01;
-      double dTof_dDist =
-          (getTimeOfFlightForDistance(projDist + h) - getTimeOfFlightForDistance(projDist - h))
-              / (2.0 * h);
+  //     double h = 0.01;
+  //     double dTof_dDist =
+  //         (getTimeOfFlightForDistance(projDist + h) - getTimeOfFlightForDistance(projDist - h))
+  //             / (2.0 * h);
 
-      double dDist_dTof = (prx * vx + pry * vy) / projDist;
+  //     double dDist_dTof = (prx * vx + pry * vy) / projDist;
 
-      double f = lookupTof - sotmTof;
-      double fPrime = dTof_dDist * dDist_dTof - 1.0;
+  //     double f = lookupTof - sotmTof;
+  //     double fPrime = dTof_dDist * dDist_dTof - 1.0;
 
-      double nextTof;
-      if (Math.abs(fPrime) > 0.1) {
-        double step = Math.max(-0.3, Math.min(0.3, f / fPrime));
-        nextTof = sotmTof - step;
-      } else {
-        nextTof = lookupTof;
-      }
+  //     double nextTof;
+  //     if (Math.abs(fPrime) > 0.1) {
+  //       double step = Math.max(-0.3, Math.min(0.3, f / fPrime));
+  //       nextTof = sotmTof - step;
+  //     } else {
+  //       nextTof = lookupTof;
+  //     }
 
-      sotmTof = Math.max(0.05, Math.min(5.0, nextTof));
-    }
+  //     sotmTof = Math.max(0.05, Math.min(5.0, nextTof));
+  //   }
 
-    double prxFinal = rx + vx * sotmTof;
-    double pryFinal = ry + vy * sotmTof;
-    double futureDistance = Math.hypot(prxFinal, pryFinal);
+  //   double prxFinal = rx + vx * sotmTof;
+  //   double pryFinal = ry + vy * sotmTof;
+  //   double futureDistance = Math.hypot(prxFinal, pryFinal);
 
-    Translation2d futureShooterPos =
-        new Translation2d(launcherPos.getX() + vx * sotmTof, launcherPos.getY() + vy * sotmTof);
+  //   Translation2d futureShooterPos =
+  //       new Translation2d(launcherPos.getX() + vx * sotmTof, launcherPos.getY() + vy * sotmTof);
 
-    robotState.setDrivetrainTarget(
-        ScreamMath.calculateAngleToPoint(futureShooterPos, target).plus(Rotation2d.k180deg));
+  //   robotState.setDrivetrainTarget(
+  //       ScreamMath.calculateAngleToPoint(futureShooterPos, target).plus(Rotation2d.k180deg));
 
-    double multiplier = wantShoot ? 1.0 : 2.0;
+  //   double multiplier = wantShoot ? 1.0 : 2.0;
 
-    hood.moveToAngle(
-        wantShoot
-            ? Rotation2d.fromDegrees(getHoodAngleFromDistance(futureDistance))
-            : Rotation2d.kZero);
-    flywheel.setTargetVelocityTorqueCurrent(
-        ShooterConstants.NEW_FLYWHEEL_MAP.get(futureDistance) / multiplier, 0.0);
+  //   hood.moveToAngle(
+  //       wantShoot
+  //           ? Rotation2d.fromDegrees(getHoodAngleFromDistance(futureDistance))
+  //           : Rotation2d.kZero);
+  //   flywheel.setTargetVelocityTorqueCurrent(
+  //       ShooterConstants.NEW_FLYWHEEL_MAP.get(futureDistance) / multiplier, 0.0);
 
-    Logger.log("SOTM/ToF", sotmTof);
-    Logger.log("SOTM/FutureDistance", futureDistance);
-    Logger.log("SOTM/FuturePose", new Pose2d(futureShooterPos, robotPose.getRotation()));
-    Logger.log("SOTM/Target", target);
-    Logger.log("SOTM/LauncherVx", vx);
-    Logger.log("SOTM/LauncherVy", vy);
-  }
+  //   Logger.log("SOTM/ToF", sotmTof);
+  //   Logger.log("SOTM/FutureDistance", futureDistance);
+  //   Logger.log("SOTM/FuturePose", new Pose2d(futureShooterPos, robotPose.getRotation()));
+  //   Logger.log("SOTM/Target", target);
+  //   Logger.log("SOTM/LauncherVx", vx);
+  //   Logger.log("SOTM/LauncherVy", vy);
+  // }
 
   /*
    * Inspired by 6328, Mechanical Advantage
