@@ -221,9 +221,7 @@ public class Shooter extends SubsystemBase {
             robotPose.getY() + robotSpeeds.vyMetersPerSecond * phaseDelay,
             robotPose
                 .getRotation()
-                .plus(
-                    Rotation2d.fromRadians(
-                        robotSpeeds.omegaRadiansPerSecond * phaseDelay)));
+                .plus(Rotation2d.fromRadians(robotSpeeds.omegaRadiansPerSecond * phaseDelay)));
 
     Pose2d phasedLauncherPose =
         GeomUtil.transformToPose(
@@ -262,16 +260,14 @@ public class Shooter extends SubsystemBase {
 
     double hoodAngleRad = Units.degreesToRadians(getHoodAngleFromDistance(futureDistance));
     if (Double.isNaN(lcLastHoodAngleRad)) lcLastHoodAngleRad = hoodAngleRad;
-    double hoodVelocity =
-        lcHoodAngleFilter.calculate((hoodAngleRad - lcLastHoodAngleRad) / 0.02);
+    double hoodVelocity = lcHoodAngleFilter.calculate((hoodAngleRad - lcLastHoodAngleRad) / 0.02);
     lcLastHoodAngleRad = hoodAngleRad;
 
     Rotation2d driveAngle =
         ScreamMath.calculateAngleToPoint(futurePos, target).plus(Rotation2d.k180deg);
     if (lcLastDriveAngle == null) lcLastDriveAngle = driveAngle;
     double driveVelocity =
-        lcDriveAngleFilter.calculate(
-            driveAngle.minus(lcLastDriveAngle).getRadians() / 0.02);
+        lcDriveAngleFilter.calculate(driveAngle.minus(lcLastDriveAngle).getRadians() / 0.02);
     lcLastDriveAngle = driveAngle;
 
     robotState.setDrivetrainTarget(driveAngle);
