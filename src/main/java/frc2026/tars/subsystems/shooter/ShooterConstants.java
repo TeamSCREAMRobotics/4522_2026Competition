@@ -16,6 +16,10 @@ public class ShooterConstants {
 
   public static final double LATENCY = 0.15;
 
+  // Shoot-on-the-fly: control loop phase delay (s) and aerodynamic drag constant (1/s)
+  public static final double SOTF_PHASE_DELAY = 0.03;
+  public static final double SOTF_LINEAR_DRAG_CONSTANT = 0.375;
+
   public static final double FUNCTION_CURVE = 0.01;
   public static final double FUNCTION_SCALAR = 4.1;
 

@@ -10,6 +10,7 @@ import com.teamscreamrobotics.util.GeomUtil;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -119,6 +120,11 @@ public class Shooter extends SubsystemBase {
     return Length.fromMeters(getFieldToShooter().getTranslation().getDistance(target));
   }
 
+  private final LinearFilter lcHoodAngleFilter = LinearFilter.movingAverage(5);
+  private final LinearFilter lcDriveAngleFilter = LinearFilter.movingAverage(5);
+  private double lcLastHoodAngleRad = Double.NaN;
+  private Rotation2d lcLastDriveAngle = null;
+
   private double sotmTof = -1.0;
   private double sotmPrevVx = 0.0;
   private double sotmPrevVy = 0.0;
@@ -166,7 +172,7 @@ public class Shooter extends SubsystemBase {
       double nextTof;
       if (Math.abs(fPrime) > 0.1) {
         double step = Math.max(-0.3, Math.min(0.3, f / fPrime));
-        nextTof = sotmTof - f / fPrime;
+        nextTof = sotmTof - step;
       } else {
         nextTof = lookupTof;
       }
@@ -201,65 +207,88 @@ public class Shooter extends SubsystemBase {
     Logger.log("SOTM/LauncherVy", vy);
   }
 
-  private void simpleShootOnTheFly(
+  /*
+   * Inspired by 6328, Mechanical Advantage
+   * https://github.com/Mechanical-Advantage/RobotCode2026Public/blob/main/src/main/java/org/littletonrobotics/frc2026/subsystems/launcher/LaunchCalculator.java
+   */
+  private void launchCalcShootOnTheFly(
       Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
 
-    Translation2d launcherPos = getFieldToShooter().getTranslation();
+    double phaseDelay = ShooterConstants.SOTF_PHASE_DELAY;
+    Pose2d phasePose =
+        new Pose2d(
+            robotPose.getX() + robotSpeeds.vxMetersPerSecond * phaseDelay,
+            robotPose.getY() + robotSpeeds.vyMetersPerSecond * phaseDelay,
+            robotPose
+                .getRotation()
+                .plus(
+                    Rotation2d.fromRadians(
+                        robotSpeeds.omegaRadiansPerSecond * phaseDelay)));
 
-    double launcherFieldOffX = launcherPos.getX() - robotPose.getX();
-    double launcherFieldOffY = launcherPos.getY() - robotPose.getY();
+    Pose2d phasedLauncherPose =
+        GeomUtil.transformToPose(
+            GeomUtil.poseToTransform(phasePose)
+                .plus(Util.transform3dTo2dXY(ShooterConstants.flywheelToRobot)));
+    Translation2d launcherPos = phasedLauncherPose.getTranslation();
+
+    double offX = launcherPos.getX() - robotPose.getX();
+    double offY = launcherPos.getY() - robotPose.getY();
     double omega = robotSpeeds.omegaRadiansPerSecond;
-    double vx = robotSpeeds.vxMetersPerSecond + (-launcherFieldOffY) * omega;
-    double vy = robotSpeeds.vyMetersPerSecond + launcherFieldOffX * omega;
+    double vx = robotSpeeds.vxMetersPerSecond - offY * omega;
+    double vy = robotSpeeds.vyMetersPerSecond + offX * omega;
 
-    double currentDist = launcherPos.getDistance(target);
-    double tof = Math.min(2.0, getTimeOfFlightForDistance(currentDist));
+    double k = ShooterConstants.SOTF_LINEAR_DRAG_CONSTANT;
+    double tof = getTimeOfFlightForDistance(launcherPos.getDistance(target));
+    double projDist = launcherPos.getDistance(target);
 
-    double damping = 0.5;
-
-    for (int i = 0; i < 5; i++) {
-      Translation2d futurePos =
-          new Translation2d(launcherPos.getX() + vx * tof, launcherPos.getY() + vy * tof);
-
-      double futureDist = futurePos.getDistance(target);
-
-      if (futureDist > 20.0) {
-        tof = getTimeOfFlightForDistance(currentDist);
+    for (int i = 0; i < 20; i++) {
+      double effectiveTof = (1.0 - Math.exp(-tof * k)) / k;
+      double futX = launcherPos.getX() + vx * effectiveTof;
+      double futY = launcherPos.getY() + vy * effectiveTof;
+      projDist = Math.hypot(futX - target.getX(), futY - target.getY());
+      double newTof = getTimeOfFlightForDistance(projDist);
+      if (Math.abs(newTof - tof) < 0.001) {
+        tof = newTof;
         break;
       }
-
-      double newTof = getTimeOfFlightForDistance(futureDist);
-      double clampedNewTof = Math.min(2.0, newTof);
-
-      if (Math.abs(clampedNewTof - tof) < 0.01) {
-        tof = clampedNewTof;
-        break;
-      }
-
-      tof = tof * (1.0 - damping) + clampedNewTof * damping;
+      tof = newTof;
     }
 
-    Translation2d futureShooterPos =
-        new Translation2d(launcherPos.getX() + vx * tof, launcherPos.getY() + vy * tof);
-    double finalDistance = futureShooterPos.getDistance(target);
+    double effectiveTof = (1.0 - Math.exp(-tof * k)) / k;
+    Translation2d futurePos =
+        new Translation2d(
+            launcherPos.getX() + vx * effectiveTof, launcherPos.getY() + vy * effectiveTof);
+    double futureDistance = futurePos.getDistance(target);
 
-    robotState.setDrivetrainTarget(
-        ScreamMath.calculateAngleToPoint(futureShooterPos, target).plus(Rotation2d.k180deg));
+    double hoodAngleRad = Units.degreesToRadians(getHoodAngleFromDistance(futureDistance));
+    if (Double.isNaN(lcLastHoodAngleRad)) lcLastHoodAngleRad = hoodAngleRad;
+    double hoodVelocity =
+        lcHoodAngleFilter.calculate((hoodAngleRad - lcLastHoodAngleRad) / 0.02);
+    lcLastHoodAngleRad = hoodAngleRad;
+
+    Rotation2d driveAngle =
+        ScreamMath.calculateAngleToPoint(futurePos, target).plus(Rotation2d.k180deg);
+    if (lcLastDriveAngle == null) lcLastDriveAngle = driveAngle;
+    double driveVelocity =
+        lcDriveAngleFilter.calculate(
+            driveAngle.minus(lcLastDriveAngle).getRadians() / 0.02);
+    lcLastDriveAngle = driveAngle;
+
+    robotState.setDrivetrainTarget(driveAngle);
 
     double multiplier = wantShoot ? 1.0 : 2.0;
-    hood.moveToAngle(
-        wantShoot
-            ? Rotation2d.fromDegrees(getHoodAngleFromDistance(finalDistance))
-            : Rotation2d.kZero);
+    hood.moveToAngle(wantShoot ? Rotation2d.fromRadians(hoodAngleRad) : Rotation2d.kZero);
     flywheel.setTargetVelocityTorqueCurrent(
-        ShooterConstants.NEW_FLYWHEEL_MAP.get(finalDistance) / multiplier, 0.0);
+        ShooterConstants.NEW_FLYWHEEL_MAP.get(futureDistance) / multiplier, 0.0);
 
     Logger.log("SOTM/ToF", tof);
-    Logger.log("SOTM/FutureDistance", finalDistance);
-    Logger.log("SOTM/FuturePose", new Pose2d(futureShooterPos, robotPose.getRotation()));
+    Logger.log("SOTM/FutureDistance", futureDistance);
+    Logger.log("SOTM/FuturePose", new Pose2d(futurePos, robotPose.getRotation()));
     Logger.log("SOTM/Target", target);
     Logger.log("SOTM/LauncherVx", vx);
     Logger.log("SOTM/LauncherVy", vy);
+    Logger.log("SOTM/HoodVelocity", hoodVelocity);
+    Logger.log("SOTM/DriveVelocity", driveVelocity);
   }
 
   private double getTimeOfFlightForDistance(double distanceMeters) {
@@ -271,29 +300,30 @@ public class Shooter extends SubsystemBase {
   private void applyAimingSetpoints(
       Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
     if (!Dashboard.dissableShootOnTheMove.get()) {
-      simpleShootOnTheFly(robotPose, robotSpeeds, target, wantShoot);
+      launchCalcShootOnTheFly(robotPose, robotSpeeds, target, wantShoot);
     } else {
       setTarget(target);
       double distanceMeters = getShotDistance(target).getMeters();
       double hoodAngleDeg = getHoodAngleFromDistance(distanceMeters);
 
       double multiplier = wantShoot ? 1.0 : 3.0;
-      double flywheelMap = ShooterConstants.NEW_FLYWHEEL_MAP.get(distanceMeters / multiplier);
+      double flywheelMap = ShooterConstants.NEW_FLYWHEEL_MAP.get(distanceMeters);
 
-      double flywheelSetpoint = flywheelMap;
-
+      double flywheelSetpoint;
       if (distanceMeters <= 2.0) {
         flywheelSetpoint = flywheelMap * Dashboard.closeMapNudge.get();
-      } else if (distanceMeters <= 4.0 && distanceMeters > 2.0) {
+      } else if (distanceMeters <= 4.0) {
         flywheelSetpoint = flywheelMap * Dashboard.midMapNudge.get();
-      } else flywheelSetpoint = flywheelMap * Dashboard.farMapNudge.get();
+      } else {
+        flywheelSetpoint = flywheelMap * Dashboard.farMapNudge.get();
+      }
 
       robotState.setDrivetrainTarget(
           ScreamMath.calculateAngleToPoint(robotPose.getTranslation(), target)
               .plus(Rotation2d.k180deg));
 
       hood.moveToAngle(Rotation2d.fromDegrees(wantShoot ? hoodAngleDeg : 0.0));
-      flywheel.setTargetVelocityTorqueCurrent(flywheelMap / multiplier, 0.0);
+      flywheel.setTargetVelocityTorqueCurrent(flywheelSetpoint / multiplier, 0.0);
 
       Logger.log(logPrefix + "Hood Angle", hoodAngleDeg);
       Logger.log(logPrefix + "Flywheel Velocity", flywheelSetpoint);
@@ -613,6 +643,7 @@ public class Shooter extends SubsystemBase {
     double exitAngle = 90.0 - hoodAngleDeg;
     double horizontalVelocity = exitVelocity * Math.cos(Units.degreesToRadians(exitAngle));
 
+    if (horizontalVelocity < 0.01) return distance / 0.01;
     return distance / horizontalVelocity;
   }
 
