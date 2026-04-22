@@ -2,7 +2,6 @@ package frc2026.tars.controlboard;
 
 import com.teamscreamrobotics.dashboard.DashboardBoolean;
 import com.teamscreamrobotics.dashboard.DashboardNumber;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

@@ -111,18 +111,19 @@ public class Routines {
 
   private Command Shoot() {
     return new ParallelRaceGroup(
-        drivetrain
-            .applyRequest(
-                () ->
-                    drivetrain
-                        .getHelper()
-                        .getFacingAngleProfiled(
-                            Controlboard.getTranslation(),
-                            robotState.getDrivetrainTarget(),
-                            DrivetrainConstants.headingControllerProfiled))
-            .beforeStarting(() -> drivetrain.resetHeadingController()),
-        intakeRollers.applyGoalCommand(IntakeRollersGoal.AUTOINTAKE),
-        shooter.autoShoot()).andThen(intakeWrist.instantApplyGoalCommand(IntakeWristGoal.EXTENDED));
+            drivetrain
+                .applyRequest(
+                    () ->
+                        drivetrain
+                            .getHelper()
+                            .getFacingAngleProfiled(
+                                Controlboard.getTranslation(),
+                                robotState.getDrivetrainTarget(),
+                                DrivetrainConstants.headingControllerProfiled))
+                .beforeStarting(() -> drivetrain.resetHeadingController()),
+            intakeRollers.applyGoalCommand(IntakeRollersGoal.AUTOINTAKE),
+            shooter.autoShoot())
+        .andThen(intakeWrist.instantApplyGoalCommand(IntakeWristGoal.EXTENDED));
   }
 
   public Command OverbumpOutpost() {
