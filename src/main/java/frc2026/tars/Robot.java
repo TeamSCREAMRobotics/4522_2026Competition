@@ -65,6 +65,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
+
+    Dashboard.autonInit();
   }
 
   @Override

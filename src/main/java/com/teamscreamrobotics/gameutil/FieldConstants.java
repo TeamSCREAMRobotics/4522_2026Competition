@@ -85,7 +85,7 @@ public class FieldConstants {
       new RectangularPoseArea(BLUEALLIANCE_NEAR_RIGHT_CORNER, BLUEALLIANCE_FAR_LEFT_CORNER);
 
   public static final RectangularPoseArea BLUEALLIANCE_DEPOT =
-      new RectangularPoseArea(BLUEALLIANCE_FAR_MID_POINT, BLUEALLIANCE_NEAR_LEFT_CORNER);
+      new RectangularPoseArea(BLUEALLIANCE_NEAR_LEFT_CORNER, BLUEALLIANCE_FAR_MID_POINT);
 
   public static final RectangularPoseArea BLUEALLIANCE_OUTPOST =
       new RectangularPoseArea(BLUEALLIANCE_NEAR_MID_POINT, BLUEALLIANCE_FAR_RIGHT_CORNER);

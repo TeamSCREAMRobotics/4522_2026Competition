@@ -1,0 +1,86 @@
+{
+  "path_elements": [
+    {
+      "type": "waypoint",
+      "translation_target": {
+        "x_meters": 16.141436123348015,
+        "y_meters": 7.4403039647577085,
+        "intermediate_handoff_radius_meters": 0.2
+      },
+      "rotation_target": {
+        "rotation_radians": 0.0,
+        "profiled_rotation": true
+      }
+    },
+    {
+      "type": "translation",
+      "x_meters": 0.0,
+      "y_meters": 0.05786431718061813,
+      "intermediate_handoff_radius_meters": 0.2
+    },
+    {
+      "type": "translation",
+      "x_meters": 15.720908370044047,
+      "y_meters": 0.30512422907489345,
+      "intermediate_handoff_radius_meters": 0.2
+    },
+    {
+      "type": "translation",
+      "x_meters": 0.11707665198237649,
+      "y_meters": 7.939274008810573,
+      "intermediate_handoff_radius_meters": 0.2
+    },
+    {
+      "type": "translation",
+      "x_meters": 16.31705110132158,
+      "y_meters": 7.61474537444934,
+      "intermediate_handoff_radius_meters": 0.2
+    },
+    {
+      "type": "translation",
+      "x_meters": 0.0,
+      "y_meters": 0.02695682819383549,
+      "intermediate_handoff_radius_meters": 0.2
+    },
+    {
+      "type": "translation",
+      "x_meters": 15.550917180616736,
+      "y_meters": 0.47511541850220773,
+      "intermediate_handoff_radius_meters": 0.2
+    },
+    {
+      "type": "translation",
+      "x_meters": 0.33342907488986384,
+      "y_meters": 7.444754185022029,
+      "intermediate_handoff_radius_meters": 0.2
+    },
+    {
+      "type": "rotation",
+      "rotation_radians": 0.0,
+      "t_ratio": 1.0,
+      "profiled_rotation": true
+    },
+    {
+      "type": "translation",
+      "x_meters": 15.57527136563876,
+      "y_meters": 2.113212334801765,
+      "intermediate_handoff_radius_meters": 0.2
+    }
+  ],
+  "constraints": {
+    "max_acceleration_meters_per_sec2": [
+      {
+        "value": 10000.0,
+        "start_ordinal": 0,
+        "end_ordinal": 8
+      }
+    ],
+    "max_velocity_meters_per_sec": [
+      {
+        "value": 10000.0,
+        "start_ordinal": 0,
+        "end_ordinal": 8
+      }
+    ]
+  }
+}
