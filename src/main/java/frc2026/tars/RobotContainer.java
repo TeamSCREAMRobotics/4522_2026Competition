@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc2026.tars.autonomous.Routines;
 import frc2026.tars.commands.IntakeFeed;
-import frc2026.tars.commands.TrenchAutoDrive;
 import frc2026.tars.constants.SimConstants;
 import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
@@ -97,8 +96,6 @@ public class RobotContainer {
           intakeWrist.intakeMech);
 
   private final Routines routines = new Routines(drivetrain, shooter, robotState, this);
-
-  private final TrenchAutoDrive trenchAutoDrive = new TrenchAutoDrive(routines.pathBuilder);
 
   //   private final SendableChooser<Command> auto;
 
@@ -232,10 +229,6 @@ public class RobotContainer {
                 .applyVoltageCommand(() -> 0.0)
                 .alongWith(rollers.applyVoltageCommand(() -> 0.0))
                 .alongWith(feeder.applyVoltageCommand(() -> 0.0)));
-
-    Controlboard.driveThroughTrench()
-        .whileTrue(
-            trenchAutoDrive.driveThroughTrench(drivetrain::getEstimatedPose, robotState::getArea));
   }
 
   private void configureDefaultCommands() {
@@ -408,12 +401,6 @@ public class RobotContainer {
   public void periodic() {
     visionManager.periodic();
     robotState.logArea();
-
-    Logger.log(
-        "Path",
-        trenchAutoDrive
-            .getCurrentTrenchPath(drivetrain::getEstimatedPose, robotState::getArea)
-            .getName());
 
     // Logger.log("Area", RobotState.Area.val().toString());
   }

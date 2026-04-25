@@ -10,7 +10,6 @@ import com.teamscreamrobotics.util.GeomUtil;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -120,172 +119,151 @@ public class Shooter extends SubsystemBase {
     return Length.fromMeters(getFieldToShooter().getTranslation().getDistance(target));
   }
 
-  private final LinearFilter lcHoodAngleFilter = LinearFilter.movingAverage(5);
-  private final LinearFilter lcDriveAngleFilter = LinearFilter.movingAverage(5);
-  private double lcLastHoodAngleRad = Double.NaN;
-  private Rotation2d lcLastDriveAngle = null;
+  // Replace your old sotmTof/sotmPrevVx/sotmPrevVy fields with these:
+  private static final double SOTM_PHASE_DELAY_SECS = 0.02; // tune this
+  private static final double SOTM_LINEAR_DRAG_K = 0.275; // tune this — 6328's proven value
 
-  // private double sotmTof = -1.0;
-  // private double sotmPrevVx = 0.0;
-  // private double sotmPrevVy = 0.0;
+  private void shootOnTheFly(
+      Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
 
-  // private void shootOnTheFly(
-  //     Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
+    // Step 1: Phase-delayed launcher position to account for actuator latency.
+    // Move the robot pose forward a tiny bit before computing the launcher position.
+    Translation2d launcherPos = getFieldToShooter().getTranslation();
+    Translation2d phasedLauncherPos =
+        new Translation2d(
+            launcherPos.getX() + robotSpeeds.vxMetersPerSecond * SOTM_PHASE_DELAY_SECS,
+            launcherPos.getY() + robotSpeeds.vyMetersPerSecond * SOTM_PHASE_DELAY_SECS);
 
-  //   Translation2d launcherPos = getFieldToShooter().getTranslation();
+    // Step 2: Compute the field-relative velocity AT the launcher (not robot center).
+    // Accounts for the tangential velocity added by robot rotation.
+    double launcherOffX = launcherPos.getX() - robotPose.getX();
+    double launcherOffY = launcherPos.getY() - robotPose.getY();
+    double omega = robotSpeeds.omegaRadiansPerSecond;
+    double vx = robotSpeeds.vxMetersPerSecond + (-launcherOffY) * omega;
+    double vy = robotSpeeds.vyMetersPerSecond + (launcherOffX) * omega;
 
-  //   double launcherFieldOffX = launcherPos.getX() - robotPose.getX();
-  //   double launcherFieldOffY = launcherPos.getY() - robotPose.getY();
+    // Step 3: Iteratively find a self-consistent lookahead position and distance.
+    // The ball travels with robot velocity imparted to it, so we project forward
+    // by effectiveTof (not raw tof) to account for air drag reducing that offset.
+    Translation2d lookaheadPos = phasedLauncherPos;
+    double lookaheadDist = phasedLauncherPos.getDistance(target);
 
-  //   double omega = robotSpeeds.omegaRadiansPerSecond;
-  //   double vx = robotSpeeds.vxMetersPerSecond + (-launcherFieldOffY) * omega;
-  //   double vy = robotSpeeds.vyMetersPerSecond + launcherFieldOffX * omega;
+    for (int i = 0; i < 20; i++) {
+      double tof = getTimeOfFlightForDistance(lookaheadDist);
 
-  //   double rx = target.getX() - launcherPos.getX();
-  //   double ry = target.getY() - launcherPos.getY();
-  //   double staticDist = Math.hypot(rx, ry);
+      // Linear drag model: horizontal velocity decays as v(t) = v0 * e^(-k*t)
+      // Effective displacement = v0 * integral(0, tof) e^(-kt) dt = v0 * (1 - e^(-k*tof)) / k
+      // This prevents overcorrection at speed vs. naive v * tof.
+      double effectiveTof = (1.0 - Math.exp(-tof * SOTM_LINEAR_DRAG_K)) / SOTM_LINEAR_DRAG_K;
 
-  //   double speedDelta = Math.hypot(vx - sotmPrevVx, vy - sotmPrevVy);
-  //   if (sotmTof < 0.0 || speedDelta > 1.0) {
-  //     sotmTof = getTimeOfFlightForDistance(staticDist);
-  //   }
-  //   sotmPrevVx = vx;
-  //   sotmPrevVy = vy;
+      lookaheadPos =
+          new Translation2d(
+              phasedLauncherPos.getX() + vx * effectiveTof,
+              phasedLauncherPos.getY() + vy * effectiveTof);
+      lookaheadDist = lookaheadPos.getDistance(target);
+    }
 
-  //   double prx = rx + vx * sotmTof;
-  //   double pry = ry + vy * sotmTof;
-  //   double projDist = Math.hypot(prx, pry);
+    // Step 4: Aim the drivetrain from the lookahead position toward the target.
+    // This is equivalent to aiming at the "virtual target" corrected for robot motion.
+    robotState.setDrivetrainTarget(
+        ScreamMath.calculateAngleToPoint(lookaheadPos, target).plus(Rotation2d.k180deg));
 
-  //   if (projDist > 0.01) {
-  //     double lookupTof = getTimeOfFlightForDistance(projDist);
+    // Step 5: Flywheel and hood use the lookahead distance, not the static distance.
+    double multiplier = wantShoot ? 1.0 : 2.0;
+    hood.moveToAngle(
+        wantShoot
+            ? Rotation2d.fromDegrees(getHoodAngleFromDistance(lookaheadDist))
+            : Rotation2d.kZero);
+    flywheel.setTargetVelocityTorqueCurrent(
+        ShooterConstants.NEW_FLYWHEEL_MAP.get(lookaheadDist) / multiplier, 0.0);
 
-  //     double h = 0.01;
-  //     double dTof_dDist =
-  //         (getTimeOfFlightForDistance(projDist + h) - getTimeOfFlightForDistance(projDist - h))
-  //             / (2.0 * h);
-
-  //     double dDist_dTof = (prx * vx + pry * vy) / projDist;
-
-  //     double f = lookupTof - sotmTof;
-  //     double fPrime = dTof_dDist * dDist_dTof - 1.0;
-
-  //     double nextTof;
-  //     if (Math.abs(fPrime) > 0.1) {
-  //       double step = Math.max(-0.3, Math.min(0.3, f / fPrime));
-  //       nextTof = sotmTof - step;
-  //     } else {
-  //       nextTof = lookupTof;
-  //     }
-
-  //     sotmTof = Math.max(0.05, Math.min(5.0, nextTof));
-  //   }
-
-  //   double prxFinal = rx + vx * sotmTof;
-  //   double pryFinal = ry + vy * sotmTof;
-  //   double futureDistance = Math.hypot(prxFinal, pryFinal);
-
-  //   Translation2d futureShooterPos =
-  //       new Translation2d(launcherPos.getX() + vx * sotmTof, launcherPos.getY() + vy * sotmTof);
-
-  //   robotState.setDrivetrainTarget(
-  //       ScreamMath.calculateAngleToPoint(futureShooterPos, target).plus(Rotation2d.k180deg));
-
-  //   double multiplier = wantShoot ? 1.0 : 2.0;
-
-  //   hood.moveToAngle(
-  //       wantShoot
-  //           ? Rotation2d.fromDegrees(getHoodAngleFromDistance(futureDistance))
-  //           : Rotation2d.kZero);
-  //   flywheel.setTargetVelocityTorqueCurrent(
-  //       ShooterConstants.NEW_FLYWHEEL_MAP.get(futureDistance) / multiplier, 0.0);
-
-  //   Logger.log("SOTM/ToF", sotmTof);
-  //   Logger.log("SOTM/FutureDistance", futureDistance);
-  //   Logger.log("SOTM/FuturePose", new Pose2d(futureShooterPos, robotPose.getRotation()));
-  //   Logger.log("SOTM/Target", target);
-  //   Logger.log("SOTM/LauncherVx", vx);
-  //   Logger.log("SOTM/LauncherVy", vy);
-  // }
+    Logger.log("SOTM/LookaheadDist", lookaheadDist);
+    Logger.log("SOTM/LookaheadPos", new Pose2d(lookaheadPos, robotPose.getRotation()));
+    Logger.log("SOTM/Target", target);
+    Logger.log("SOTM/LauncherVx", vx);
+    Logger.log("SOTM/LauncherVy", vy);
+  }
 
   /*
    * Inspired by 6328, Mechanical Advantage
    * https://github.com/Mechanical-Advantage/RobotCode2026Public/blob/main/src/main/java/org/littletonrobotics/frc2026/subsystems/launcher/LaunchCalculator.java
    */
-  private void launchCalcShootOnTheFly(
-      Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
+  // private void launchCalcShootOnTheFly(
+  //     Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
 
-    double phaseDelay = ShooterConstants.SOTF_PHASE_DELAY;
-    Pose2d phasePose =
-        new Pose2d(
-            robotPose.getX() + robotSpeeds.vxMetersPerSecond * phaseDelay,
-            robotPose.getY() + robotSpeeds.vyMetersPerSecond * phaseDelay,
-            robotPose
-                .getRotation()
-                .plus(Rotation2d.fromRadians(robotSpeeds.omegaRadiansPerSecond * phaseDelay)));
+  //   double phaseDelay = ShooterConstants.SOTF_PHASE_DELAY;
+  //   Pose2d phasePose =
+  //       new Pose2d(
+  //           robotPose.getX() + robotSpeeds.vxMetersPerSecond * phaseDelay,
+  //           robotPose.getY() + robotSpeeds.vyMetersPerSecond * phaseDelay,
+  //           robotPose
+  //               .getRotation()
+  //               .plus(Rotation2d.fromRadians(robotSpeeds.omegaRadiansPerSecond * phaseDelay)));
 
-    Pose2d phasedLauncherPose =
-        GeomUtil.transformToPose(
-            GeomUtil.poseToTransform(phasePose)
-                .plus(Util.transform3dTo2dXY(ShooterConstants.flywheelToRobot)));
-    Translation2d launcherPos = phasedLauncherPose.getTranslation();
+  //   Pose2d phasedLauncherPose =
+  //       GeomUtil.transformToPose(
+  //           GeomUtil.poseToTransform(phasePose)
+  //               .plus(Util.transform3dTo2dXY(ShooterConstants.flywheelToRobot)));
+  //   Translation2d launcherPos = phasedLauncherPose.getTranslation();
 
-    double offX = launcherPos.getX() - robotPose.getX();
-    double offY = launcherPos.getY() - robotPose.getY();
-    double omega = robotSpeeds.omegaRadiansPerSecond;
-    double vx = robotSpeeds.vxMetersPerSecond - offY * omega;
-    double vy = robotSpeeds.vyMetersPerSecond + offX * omega;
+  //   double offX = launcherPos.getX() - robotPose.getX();
+  //   double offY = launcherPos.getY() - robotPose.getY();
+  //   double omega = robotSpeeds.omegaRadiansPerSecond;
+  //   double vx = robotSpeeds.vxMetersPerSecond - offY * omega;
+  //   double vy = robotSpeeds.vyMetersPerSecond + offX * omega;
 
-    double k = ShooterConstants.SOTF_LINEAR_DRAG_CONSTANT;
-    double tof = getTimeOfFlightForDistance(launcherPos.getDistance(target));
-    double projDist = launcherPos.getDistance(target);
+  //   double k = ShooterConstants.SOTF_LINEAR_DRAG_CONSTANT;
+  //   double tof = getTimeOfFlightForDistance(launcherPos.getDistance(target));
+  //   double projDist = launcherPos.getDistance(target);
 
-    for (int i = 0; i < 20; i++) {
-      double effectiveTof = (1.0 - Math.exp(-tof * k)) / k;
-      double futX = launcherPos.getX() + vx * effectiveTof;
-      double futY = launcherPos.getY() + vy * effectiveTof;
-      projDist = Math.hypot(futX - target.getX(), futY - target.getY());
-      double newTof = getTimeOfFlightForDistance(projDist);
-      if (Math.abs(newTof - tof) < 0.001) {
-        tof = newTof;
-        break;
-      }
-      tof = newTof;
-    }
+  //   for (int i = 0; i < 20; i++) {
+  //     double effectiveTof = (1.0 - Math.exp(-tof * k)) / k;
+  //     double futX = launcherPos.getX() + vx * effectiveTof;
+  //     double futY = launcherPos.getY() + vy * effectiveTof;
+  //     projDist = Math.hypot(futX - target.getX(), futY - target.getY());
+  //     double newTof = getTimeOfFlightForDistance(projDist);
+  //     if (Math.abs(newTof - tof) < 0.001) {
+  //       tof = newTof;
+  //       break;
+  //     }
+  //     tof = newTof;
+  //   }
 
-    double effectiveTof = (1.0 - Math.exp(-tof * k)) / k;
-    Translation2d futurePos =
-        new Translation2d(
-            launcherPos.getX() + vx * effectiveTof, launcherPos.getY() + vy * effectiveTof);
-    double futureDistance = futurePos.getDistance(target);
+  //   double effectiveTof = (1.0 - Math.exp(-tof * k)) / k;
+  //   Translation2d futurePos =
+  //       new Translation2d(
+  //           launcherPos.getX() + vx * effectiveTof, launcherPos.getY() + vy * effectiveTof);
+  //   double futureDistance = futurePos.getDistance(target);
 
-    double hoodAngleRad = Units.degreesToRadians(getHoodAngleFromDistance(futureDistance));
-    if (Double.isNaN(lcLastHoodAngleRad)) lcLastHoodAngleRad = hoodAngleRad;
-    double hoodVelocity = lcHoodAngleFilter.calculate((hoodAngleRad - lcLastHoodAngleRad) / 0.02);
-    lcLastHoodAngleRad = hoodAngleRad;
+  //   double hoodAngleRad = Units.degreesToRadians(getHoodAngleFromDistance(futureDistance));
+  //   if (Double.isNaN(lcLastHoodAngleRad)) lcLastHoodAngleRad = hoodAngleRad;
+  //   double hoodVelocity = lcHoodAngleFilter.calculate((hoodAngleRad - lcLastHoodAngleRad) /
+  // 0.02);
+  //   lcLastHoodAngleRad = hoodAngleRad;
 
-    Rotation2d driveAngle =
-        ScreamMath.calculateAngleToPoint(futurePos, target).plus(Rotation2d.k180deg);
-    if (lcLastDriveAngle == null) lcLastDriveAngle = driveAngle;
-    double driveVelocity =
-        lcDriveAngleFilter.calculate(driveAngle.minus(lcLastDriveAngle).getRadians() / 0.02);
-    lcLastDriveAngle = driveAngle;
+  //   Rotation2d driveAngle =
+  //       ScreamMath.calculateAngleToPoint(futurePos, target).plus(Rotation2d.k180deg);
+  //   if (lcLastDriveAngle == null) lcLastDriveAngle = driveAngle;
+  //   double driveVelocity =
+  //       lcDriveAngleFilter.calculate(driveAngle.minus(lcLastDriveAngle).getRadians() / 0.02);
+  //   lcLastDriveAngle = driveAngle;
 
-    robotState.setDrivetrainTarget(driveAngle);
+  //   robotState.setDrivetrainTarget(driveAngle);
 
-    double multiplier = wantShoot ? 1.0 : 2.0;
-    hood.moveToAngle(wantShoot ? Rotation2d.fromRadians(hoodAngleRad) : Rotation2d.kZero);
-    flywheel.setTargetVelocityTorqueCurrent(
-        ShooterConstants.NEW_FLYWHEEL_MAP.get(futureDistance) / multiplier, 0.0);
+  //   double multiplier = wantShoot ? 1.0 : 2.0;
+  //   hood.moveToAngle(wantShoot ? Rotation2d.fromRadians(hoodAngleRad) : Rotation2d.kZero);
+  //   flywheel.setTargetVelocityTorqueCurrent(
+  //       ShooterConstants.NEW_FLYWHEEL_MAP.get(futureDistance) / multiplier, 0.0);
 
-    Logger.log("SOTM/ToF", tof);
-    Logger.log("SOTM/FutureDistance", futureDistance);
-    Logger.log("SOTM/FuturePose", new Pose2d(futurePos, robotPose.getRotation()));
-    Logger.log("SOTM/Target", target);
-    Logger.log("SOTM/LauncherVx", vx);
-    Logger.log("SOTM/LauncherVy", vy);
-    Logger.log("SOTM/HoodVelocity", hoodVelocity);
-    Logger.log("SOTM/DriveVelocity", driveVelocity);
-  }
+  //   Logger.log("SOTM/ToF", tof);
+  //   Logger.log("SOTM/FutureDistance", futureDistance);
+  //   Logger.log("SOTM/FuturePose", new Pose2d(futurePos, robotPose.getRotation()));
+  //   Logger.log("SOTM/Target", target);
+  //   Logger.log("SOTM/LauncherVx", vx);
+  //   Logger.log("SOTM/LauncherVy", vy);
+  //   Logger.log("SOTM/HoodVelocity", hoodVelocity);
+  //   Logger.log("SOTM/DriveVelocity", driveVelocity);
+  // }
 
   private double getTimeOfFlightForDistance(double distanceMeters) {
     double flywheelVelocity = ShooterConstants.NEW_FLYWHEEL_MAP.get(distanceMeters);
@@ -296,14 +274,14 @@ public class Shooter extends SubsystemBase {
   private void applyAimingSetpoints(
       Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
     if (!Dashboard.dissableShootOnTheMove.get()) {
-      launchCalcShootOnTheFly(robotPose, robotSpeeds, target, wantShoot);
+      shootOnTheFly(robotPose, robotSpeeds, target, wantShoot);
     } else {
       setTarget(target);
       double distanceMeters = getShotDistance(target).getMeters();
       double hoodAngleDeg = getHoodAngleFromDistance(distanceMeters);
 
       double multiplier = wantShoot ? 1.0 : 3.0;
-      double flywheelMap = ShooterConstants.NEW_FLYWHEEL_MAP.get(distanceMeters);
+      double flywheelMap = ShooterConstants.NEW_NEW_FLYWHEEL_MAP.get(distanceMeters);
 
       double flywheelSetpoint;
       if (distanceMeters <= 2.0) {
@@ -320,6 +298,7 @@ public class Shooter extends SubsystemBase {
 
       hood.moveToAngle(Rotation2d.fromDegrees(wantShoot ? hoodAngleDeg : 0.0));
       flywheel.setTargetVelocityTorqueCurrent(flywheelSetpoint / multiplier, 0.0);
+      // flywheel.setTargetVelocityTorqueCurrent(Dashboard.flywheelVelocity.get(), 0.0);
 
       Logger.log(logPrefix + "Hood Angle", hoodAngleDeg);
       Logger.log(logPrefix + "Flywheel Velocity", flywheelSetpoint);
@@ -330,8 +309,7 @@ public class Shooter extends SubsystemBase {
   public Command autoShoot() {
     return Commands.parallel(
             Commands.run(() -> wantShoot = true),
-            intakeWrist.compress(() -> robotState.atTargetAngle()) /* ,
-            intakeRollers.applyGoalCommand(IntakeRollersGoal.INTAKE) */)
+            intakeWrist.compress(() -> robotState.atTargetAngle()))
         .withDeadline(
             new WaitUntilCommand(() -> !beamDebouncer.calculate(beam.getIsDetected().getValue())))
         .finallyDo(() -> wantShoot = false);
@@ -339,7 +317,7 @@ public class Shooter extends SubsystemBase {
 
   public void runFeed(Translation2d target) {
     if ((flywheel.atVel() || Dashboard.disableWaitUntilAtVelocity.get())
-        && (Math.abs(hood.getError()) <= 0.02 || Dashboard.disableWaitUntilHood.get())
+        && (Math.abs(hood.getError()) <= 0.1 || Dashboard.disableWaitUntilHood.get())
         && robotState.atTargetAngle()) {
       rollers.setVoltage(12.0);
       feeder.setVoltage(12.0);
@@ -646,7 +624,7 @@ public class Shooter extends SubsystemBase {
   public double getHoodAngleFromDistance(double distance) {
     // return Dashboard.saturationLevel.get() * (1 - Math.pow(Math.E, -(Dashboard.functionROA.get()
     // * distance))) + (Dashboard.functionLRG.get() * Math.pow(distance, 3));
-    if (distance < 2.2) {
+    if (distance < 2.0) {
       return 0.0;
     } else if (distance > 6.3) {
       return 50.0;

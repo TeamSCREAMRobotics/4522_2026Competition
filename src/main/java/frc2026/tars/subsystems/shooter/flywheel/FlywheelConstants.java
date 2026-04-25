@@ -42,8 +42,8 @@ public class FlywheelConstants {
     //         .getSlot0Configs(new FeedforwardConstants(kV, 0.34091, 0.0, (kV * 0.25) + 0.05));
 
     FLYWHEEL_CONFIG.slot0 =
-        new ScreamPIDConstants(12.0, 2.08, 0.0)
-            .getSlot0Configs(new FeedforwardConstants(0.12248, 0.33734, (0.12248 * 0.25), 0.08));
+        new ScreamPIDConstants(12.5, 2.08, 0.0)
+            .getSlot0Configs(new FeedforwardConstants(0.12248, 0.33734, 0.0, 0.5));
 
     FLYWHEEL_CONFIG.neutralMode = NeutralModeValue.Coast;
 
@@ -51,7 +51,7 @@ public class FlywheelConstants {
     FLYWHEEL_CONFIG.supplyCurrentLimit = 50;
     FLYWHEEL_CONFIG.sensorToMechRatio = FLYWHEEL_REDUCTION;
 
-    FLYWHEEL_CONFIG.peakForwardTorqueCurrent = 50.0;
+    FLYWHEEL_CONFIG.peakForwardTorqueCurrent = 160.0;
     FLYWHEEL_CONFIG.peakReverseTorqueCurrent = 0.0;
   }
 }

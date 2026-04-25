@@ -80,6 +80,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    // Dashboard.dissableShootOnTheMove.set(false);
   }
 
   @Override

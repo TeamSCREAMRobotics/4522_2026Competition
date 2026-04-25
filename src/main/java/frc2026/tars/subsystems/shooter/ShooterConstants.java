@@ -14,6 +14,9 @@ public class ShooterConstants {
   public static final InterpolatingDoubleTreeMap NEW_FLYWHEEL_MAP =
       new InterpolatingDoubleTreeMap();
 
+  public static final InterpolatingDoubleTreeMap NEW_NEW_FLYWHEEL_MAP =
+      new InterpolatingDoubleTreeMap();
+
   public static final double LATENCY = 0.15;
 
   // Shoot-on-the-fly: control loop phase delay (s) and aerodynamic drag constant (1/s)
@@ -80,6 +83,32 @@ public class ShooterConstants {
     NEW_FLYWHEEL_MAP.put(5.944, 43.5);
     NEW_FLYWHEEL_MAP.put(6.265, 45.0);
     // Running anything harder on the flywheel is to much for the battery.
+
+    NEW_NEW_FLYWHEEL_MAP.put(1.770, 29.93);
+    NEW_NEW_FLYWHEEL_MAP.put(1.985, 31.0);
+    NEW_NEW_FLYWHEEL_MAP.put(2.196, 31.25);
+    NEW_NEW_FLYWHEEL_MAP.put(2.414, 31.6);
+    NEW_NEW_FLYWHEEL_MAP.put(2.6204, 32.1);
+    NEW_NEW_FLYWHEEL_MAP.put(2.8214, 32.6);
+    NEW_NEW_FLYWHEEL_MAP.put(3.0268, 33.3);
+    NEW_NEW_FLYWHEEL_MAP.put(3.26803, 34.0);
+    NEW_NEW_FLYWHEEL_MAP.put(3.4405, 35.2);
+    NEW_NEW_FLYWHEEL_MAP.put(3.6298, 35.9);
+    NEW_NEW_FLYWHEEL_MAP.put(3.8246, 36.8);
+    NEW_NEW_FLYWHEEL_MAP.put(3.98114, 37.4);
+    NEW_NEW_FLYWHEEL_MAP.put(4.2055, 39.0);
+    NEW_NEW_FLYWHEEL_MAP.put(4.4453, 39.9);
+    NEW_NEW_FLYWHEEL_MAP.put(4.6694, 41.0);
+    NEW_NEW_FLYWHEEL_MAP.put(4.80105, 42.0);
+    NEW_NEW_FLYWHEEL_MAP.put(5.1055, 43.2);
+
+    NEW_FLYWHEEL_MAP.put(5.477, 41.0);
+    NEW_FLYWHEEL_MAP.put(5.727, 42.0);
+    NEW_FLYWHEEL_MAP.put(5.944, 43.5);
+    NEW_FLYWHEEL_MAP.put(6.265, 45.0);
+
+    // NEW_NEW_FLYWHEEL_MAP.put
+
   }
 
   public static final CANrangeConfiguration beamConfig = new CANrangeConfiguration();

@@ -3,7 +3,6 @@ package frc2026.tars.subsystems.shooter.flywheel;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.teamscreamrobotics.drivers.TalonFXSubsystem;
 import com.teamscreamrobotics.util.Logger;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc2026.tars.Robot;
 import java.util.function.DoubleSupplier;
@@ -25,16 +24,7 @@ public class Flywheel extends TalonFXSubsystem {
   }
 
   public boolean atVel() {
-    return (Math.abs(getError()) <= 0.05); // 0.25
-  }
-
-  public boolean atVelWithTime() {
-    if (atVel()) {
-      Timer.delay(0.25);
-      return true;
-    } else {
-      return false;
-    }
+    return (Math.abs(getError()) <= 0.15); // 0.25
   }
 
   public void setTargetVelocityTorqueCurrent(double velocity, double torqueFeedForward) {
