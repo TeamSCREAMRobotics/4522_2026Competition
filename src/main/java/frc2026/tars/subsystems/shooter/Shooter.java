@@ -126,34 +126,24 @@ public class Shooter extends SubsystemBase {
   private void shootOnTheFly(
       Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
 
-    // Step 1: Phase-delayed launcher position to account for actuator latency.
-    // Move the robot pose forward a tiny bit before computing the launcher position.
     Translation2d launcherPos = getFieldToShooter().getTranslation();
     Translation2d phasedLauncherPos =
         new Translation2d(
             launcherPos.getX() + robotSpeeds.vxMetersPerSecond * SOTM_PHASE_DELAY_SECS,
             launcherPos.getY() + robotSpeeds.vyMetersPerSecond * SOTM_PHASE_DELAY_SECS);
 
-    // Step 2: Compute the field-relative velocity AT the launcher (not robot center).
-    // Accounts for the tangential velocity added by robot rotation.
     double launcherOffX = launcherPos.getX() - robotPose.getX();
     double launcherOffY = launcherPos.getY() - robotPose.getY();
     double omega = robotSpeeds.omegaRadiansPerSecond;
     double vx = robotSpeeds.vxMetersPerSecond + (-launcherOffY) * omega;
     double vy = robotSpeeds.vyMetersPerSecond + (launcherOffX) * omega;
 
-    // Step 3: Iteratively find a self-consistent lookahead position and distance.
-    // The ball travels with robot velocity imparted to it, so we project forward
-    // by effectiveTof (not raw tof) to account for air drag reducing that offset.
     Translation2d lookaheadPos = phasedLauncherPos;
     double lookaheadDist = phasedLauncherPos.getDistance(target);
 
     for (int i = 0; i < 20; i++) {
       double tof = getTimeOfFlightForDistance(lookaheadDist);
 
-      // Linear drag model: horizontal velocity decays as v(t) = v0 * e^(-k*t)
-      // Effective displacement = v0 * integral(0, tof) e^(-kt) dt = v0 * (1 - e^(-k*tof)) / k
-      // This prevents overcorrection at speed vs. naive v * tof.
       double effectiveTof = (1.0 - Math.exp(-tof * SOTM_LINEAR_DRAG_K)) / SOTM_LINEAR_DRAG_K;
 
       lookaheadPos =
@@ -163,12 +153,9 @@ public class Shooter extends SubsystemBase {
       lookaheadDist = lookaheadPos.getDistance(target);
     }
 
-    // Step 4: Aim the drivetrain from the lookahead position toward the target.
-    // This is equivalent to aiming at the "virtual target" corrected for robot motion.
     robotState.setDrivetrainTarget(
         ScreamMath.calculateAngleToPoint(lookaheadPos, target).plus(Rotation2d.k180deg));
 
-    // Step 5: Flywheel and hood use the lookahead distance, not the static distance.
     double multiplier = wantShoot ? 1.0 : 2.0;
     hood.moveToAngle(
         wantShoot
@@ -528,6 +515,13 @@ public class Shooter extends SubsystemBase {
           robotSpeeds = drivetrain.getFieldVelocity();
           if (!DriverStation.isAutonomous()) {
             wantShoot = Controlboard.shoot().getAsBoolean();
+          }
+
+          if (state == ShooterState.FERRYING && !DriverStation.isAutonomous()) {
+            Dashboard.dissableShootOnTheMove.set(false);
+          } else if ((state == ShooterState.SHOOTING || state == ShooterState.IDLE)
+              && !DriverStation.isAutonomous()) {
+            Dashboard.dissableShootOnTheMove.set(true);
           }
 
           Logger.log(logPrefix + "Area", area != null ? area.toString() : "NULL");

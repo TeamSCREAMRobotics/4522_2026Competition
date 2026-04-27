@@ -47,8 +47,7 @@ public class Routines {
   private final BLinePathSequence Overbump_Outpost;
   private final BLinePathSequence Overbump_Depot;
 
-  private final BLinePathSequence Close_Overbump_Outpost;
-  private final BLinePathSequence Close_Overbump_Depot;
+  private final BLinePathSequence Middle;
 
   // private final BLinePathSequence TestPath;
 
@@ -97,11 +96,8 @@ public class Routines {
 
     Overbump_Depot = Overbump_Outpost.mirror();
 
-    Close_Overbump_Outpost =
-        new BLinePathSequence(
-            pathBuilder, FieldSymmetry.kRotational, "Close_Overbump_One", "Close_Overbump_Two");
-
-    Close_Overbump_Depot = Close_Overbump_Outpost.mirror();
+    Middle =
+        new BLinePathSequence(pathBuilder, FieldSymmetry.kRotational, "Middle_One", "Middle_Two");
 
     // TestPath = new BLinePathSequence(pathBuilder, FieldSymmetry.kRotational, "test_test");
 
@@ -109,11 +105,7 @@ public class Routines {
     routineChooser.setDefaultOption("Do Nothing", Commands.none().withName("Do Nothing"));
     routineChooser.addOption("Overbump Outpost", OverbumpOutpost().withName("Overbump Outpost"));
     routineChooser.addOption("Overbump Depot", OverbumpDepot().withName("Overbump Depot"));
-    routineChooser.addOption(
-        "Close_Overbump_Outpost", CloseOverbumpOutpost().withName("Close_Overbump_Outpost"));
-    routineChooser.addOption(
-        "Close_Overbump_Depot", CloseOverbumpDepot().withName("Close_Overbump_Depot"));
-    // routineChooser.addOption("TestPath", Test().withName("Test"));
+    routineChooser.addOption("Middle", Middle().withName("Middle"));
 
     SmartDashboard.putData("AutoChooser", routineChooser);
   }
@@ -171,35 +163,13 @@ public class Routines {
         Shoot());
   }
 
-  public Command CloseOverbumpOutpost() {
-    currentSequence = Close_Overbump_Outpost;
-    logPoints("CloseOverbumpOutpost", currentSequence);
+  public Command Middle() {
+    currentSequence = Middle;
+    logPoints("Middle", currentSequence);
     return new SequentialCommandGroup(
-        resetPose(Close_Overbump_Outpost),
+        resetPose(Middle),
         intakeWrist.instantApplyGoalCommand(IntakeWristGoal.EXTENDED),
-        new ParallelRaceGroup(
-            new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
-            Close_Overbump_Outpost.getNext()),
-        Shoot(),
-        new ParallelRaceGroup(
-            new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
-            Close_Overbump_Outpost.getNext()),
-        Shoot());
-  }
-
-  public Command CloseOverbumpDepot() {
-    currentSequence = Close_Overbump_Depot;
-    logPoints("CloseOverbumpDepot", currentSequence);
-    return new SequentialCommandGroup(
-        resetPose(Close_Overbump_Depot),
-        intakeWrist.instantApplyGoalCommand(IntakeWristGoal.EXTENDED),
-        new ParallelRaceGroup(
-            new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
-            Close_Overbump_Depot.getNext()),
-        Shoot(),
-        new ParallelRaceGroup(
-            new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
-            Close_Overbump_Depot.getNext()),
+        Middle.getNext(),
         Shoot());
   }
 
