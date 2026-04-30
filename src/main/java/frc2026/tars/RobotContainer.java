@@ -79,7 +79,6 @@ public class RobotContainer {
           intakeRollers,
           feeder,
           rollers,
-          // hopper,
           led,
           drivetrain,
           getRobotState());
@@ -97,10 +96,6 @@ public class RobotContainer {
 
   private final Routines routines = new Routines(drivetrain, shooter, robotState, this);
 
-  //   private final SendableChooser<Command> auto;
-
-  // private Debouncer stupidahhenginnerdebouncher = new Debouncer(0.35, DebounceType.kRising);
-
   public RobotContainer() {
     configureBindings();
     configureManualOverrides();
@@ -108,9 +103,6 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("test", 1);
 
-    // auto = AutoBuilder.buildAutoChooser();
-    // auto.setDefaultOption("Do Nothing", null);
-    // SmartDashboard.putData(auto);
     mechVisualizer.setEnabled(true);
   }
 
@@ -160,24 +152,6 @@ public class RobotContainer {
                                 DrivetrainConstants.headingControllerProfiled))
                 .beforeStarting(() -> drivetrain.resetHeadingController()));
 
-    // Controlboard.makeThingWork()
-    //     .whileTrue(
-    //         new SequentialCommandGroup(
-    //             Commands.parallel(
-    //                     rollers.applyVoltageCommand(() -> 1.0),
-    //                     feeder.applyVoltageCommand(() -> 2.0))
-    //                 .withDeadline(
-    //                     new WaitUntilCommand(
-    //                         () ->
-    //                             stupidahhenginnerdebouncher.calculate(
-    //                                 shooter.beam.getIsDetected().getValue()))),
-    //             Commands.parallel(
-    //                 rollers.applyVoltageCommand(() -> 0.0),
-    //                 feeder.applyVoltageCommand(() -> 0.0))));
-
-    // Controlboard.makeThingWork().whileTrue(new FeedForwardCharacterization(flywheel,
-    // flywheel::setVoltage, flywheel::getVelocity));
-
     Controlboard.rotateNegative90Degrees()
         .whileTrue(
             drivetrain
@@ -214,9 +188,6 @@ public class RobotContainer {
                                 Rotation2d.fromDegrees(180),
                                 DrivetrainConstants.headingControllerProfiled))
                 .beforeStarting(() -> drivetrain.resetHeadingController()));
-
-    // Controlboard.runBackHopper().whileTrue(Commands.parallel(intakeRollers.applyVoltageCommand(()
-    // -> -3.0), rollers.applyVoltageCommand(() -> -3.0), feeder.applyVoltageCommand(() -> -3.0)));
 
     Controlboard.runBackHopper()
         .onTrue(
@@ -272,63 +243,6 @@ public class RobotContainer {
             .ignoringDisable(true));
   }
 
-  //   private void configureAutoCommands() {
-
-  //     NamedCommands.registerCommand(
-  //         "Run Intake", intakeRollers.applyGoalCommand(IntakeRollersGoal.AUTOINTAKE));
-
-  //     NamedCommands.registerCommand(
-  //         "Stop Intake", intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP));
-
-  //     NamedCommands.registerCommand(
-  //         "BlipFuel",
-  //         Commands.parallel(
-  //                 rollers.applyVoltageCommand(() -> 1.0), feeder.applyVoltageCommand(() -> 2.0))
-  //             .until(() -> shooter.beam.getIsDetected().getValue())
-  //             .andThen(
-  //                 Commands.parallel(
-  //                     rollers.applyVoltageCommand(() -> 1.0),
-  //                     feeder.applyVoltageCommand(() -> 2.0))));
-
-  //     NamedCommands.registerCommand(
-  //         "Intake In",
-  //         new SequentialCommandGroup(
-  //                 intakeWrist
-  //                     .applyGoalCommand(IntakeWristGoal.STOW)
-  //                     .alongWith(intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP)))
-  //             .withName("Auto Intake In"));
-
-  //     NamedCommands.registerCommand(
-  //         "Stop Intaking",
-  // intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP).withTimeout(0.1));
-
-  //     NamedCommands.registerCommand(
-  //         "Aim at Hub",
-  //         drivetrain
-  //             .applyRequest(
-  //                 () ->
-  //                     drivetrain
-  //                         .getHelper()
-  //                         .getFacingAngleProfiled(
-  //                             Controlboard.getTranslation(),
-  //                             robotState.getDrivetrainTarget(),
-  //                             DrivetrainConstants.headingControllerProfiled))
-  //             .beforeStarting(() -> drivetrain.resetHeadingController()));
-
-  //     NamedCommands.registerCommand("Shoot", shooter.autoShoot());
-
-  //     NamedCommands.registerCommand(
-  //         "IntakeWristOut",
-  //         intakeWrist.runOnce(() -> intakeWrist.applyGoal(IntakeWristGoal.EXTENDED)));
-
-  //     NamedCommands.registerCommand(
-  //         "Run Kickers",
-  //         intakeRollers
-  //             .applyGoalCommand(IntakeRollersGoal.INTAKE)
-  //             .withTimeout(0.25)
-  //             .andThen(intakeRollers.applyGoalCommand(IntakeRollersGoal.STOP)));
-  //   }
-
   private void configureManualOverrides() {
     Controlboard.runBackFlywheel().whileTrue(flywheel.applyVoltageCommand(() -> -1.0));
 
@@ -383,10 +297,14 @@ public class RobotContainer {
     Controlboard.bumperShot()
         .whileTrue(
             Commands.parallel(
-                flywheel.setTargetVelocityTorqueCurrentCommand(33.5, 0.0),
-                feeder.applyVoltageCommand(() -> 12.0),
-                rollers.applyVoltageCommand(() -> 12.0),
-                Commands.run(() -> hood.moveToAngle(Rotation2d.fromDegrees(12.5)))));
+                    feeder.applyVoltageCommand(() -> 12.0),
+                    rollers.applyVoltageCommand(() -> 12.0),
+                    Commands.run(() -> hood.moveToAngle(Rotation2d.fromDegrees(12.5))),
+                    intakeWrist.compress(() -> true))
+                .onlyIf(() -> flywheel.atVel()));
+
+    Controlboard.bumperShot()
+        .whileTrue(flywheel.run(() -> flywheel.setTargetVelocityTorqueCurrent(33.6, 0.0)));
   }
 
   public Command getAutonomousCommand() {
@@ -401,7 +319,5 @@ public class RobotContainer {
   public void periodic() {
     visionManager.periodic();
     robotState.logArea();
-
-    // Logger.log("Area", RobotState.Area.val().toString());
   }
 }

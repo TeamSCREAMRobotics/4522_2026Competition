@@ -49,8 +49,6 @@ public class Routines {
 
   private final BLinePathSequence Middle;
 
-  // private final BLinePathSequence TestPath;
-
   private final IntakeWrist intakeWrist;
   private final IntakeRollers intakeRollers;
 
@@ -98,8 +96,6 @@ public class Routines {
 
     Middle =
         new BLinePathSequence(pathBuilder, FieldSymmetry.kRotational, "Middle_One", "Middle_Two");
-
-    // TestPath = new BLinePathSequence(pathBuilder, FieldSymmetry.kRotational, "test_test");
 
     routineChooser = new SendableChooser<>();
     routineChooser.setDefaultOption("Do Nothing", Commands.none().withName("Do Nothing"));
@@ -172,16 +168,6 @@ public class Routines {
         Middle.getNext(),
         Shoot());
   }
-
-  // public Command Test() {
-  //   currentSequence = TestPath;
-  //   logPoints("Test", currentSequence);
-  //   return new SequentialCommandGroup(
-  //       resetPose(TestPath),
-  //       new ParallelRaceGroup(
-  //           new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
-  //           TestPath.getNext()));
-  // }
 
   public static void logPoints(String name, BLinePathSequence sequence) {
     Logger.log(name, getPointsFromSequence(sequence));

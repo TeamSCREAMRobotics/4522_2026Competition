@@ -19,6 +19,7 @@ public class IntakeRollers extends TalonFXSubsystem {
     COMPRESS(() -> 7.7),
     INTAKE(() -> 12.0),
     AUTOINTAKE(() -> 12.0),
+    AGITATE(() -> 6.0),
     OUTTAKE(() -> -6.0);
 
     public final DoubleSupplier voltage;

@@ -77,7 +77,6 @@ public class Dashboard {
     dissableShootOnTheMove = new DashboardBoolean(overrides, "Disable Shoot On The Move", false);
 
     zeroIntake = new DashboardBoolean(overrides, "Zero Intake", false);
-    // zeroClimber = new DashboardBoolean(overrides, "Zero Climber", false);
     zeroHood = new DashboardBoolean(overrides, "Zero Hood", false);
     disableWaitUntilAtVelocity =
         new DashboardBoolean(overrides, "Disable Wait Until At Velocity", false);
@@ -89,7 +88,6 @@ public class Dashboard {
     manualIntakeWrist = new DashboardNumber(overrides, "Manual Intake Wrist", 90.0);
     manualFloorRollers = new DashboardNumber(overrides, "Manual Floor Rollers", 0);
     manualFeeder = new DashboardNumber(overrides, "Manual Feeder", 0);
-    // autoShoot = new DashboardBoolean(overrides, "Auto Shoot", false);
     bumperShoot = new DashboardBoolean(overrides, "Bumper Shoot", false);
     disableWaitUntilAim = new DashboardBoolean(overrides, "Dissable Wait until aim", false);
 

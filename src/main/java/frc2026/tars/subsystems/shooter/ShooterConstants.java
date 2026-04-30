@@ -27,8 +27,8 @@ public class ShooterConstants {
   public static final double FUNCTION_SCALAR = 4.1;
 
   public static final double CLOSE_MAP_NUDGE = 1;
-  public static final double MID_MAP_NUDGE = 1;
-  public static final double FAR_MAP_NUDGE = 1;
+  public static final double MID_MAP_NUDGE = 1.01;
+  public static final double FAR_MAP_NUDGE = 1.01;
 
   public static final Transform3d flywheelToRobot =
       new Transform3d(

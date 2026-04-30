@@ -1,6 +1,7 @@
 package frc2026.tars.subsystems.shooter;
 
 import com.ctre.phoenix6.hardware.CANrange;
+import com.team5000.Util;
 import com.teamscreamrobotics.data.Length;
 import com.teamscreamrobotics.gameutil.FieldConstants;
 import com.teamscreamrobotics.math.Conversions;
@@ -38,7 +39,6 @@ import frc2026.tars.subsystems.shooter.flywheel.Flywheel;
 import frc2026.tars.subsystems.shooter.flywheel.FlywheelConstants;
 import frc2026.tars.subsystems.shooter.hood.Hood;
 import frc2026.tars.subsystems.shooter.rollers.Rollers;
-import frc2026.tars.util.Util;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -52,7 +52,6 @@ public class Shooter extends SubsystemBase {
   private final Rollers rollers;
   private final Feeder feeder;
   private final LED led;
-  // private final Hopper hopper;
   private Pose2d robotPose;
   private ChassisSpeeds robotSpeeds;
   private final String logPrefix = "Subsystems/Shooter/";
@@ -61,7 +60,6 @@ public class Shooter extends SubsystemBase {
 
   public final CANrange beamOne = new CANrange(1);
 
-  // 0.75
   private final Debouncer beamDebouncer = new Debouncer(0.2, DebounceType.kFalling);
 
   @Getter @Setter public Translation2d target = new Translation2d();
@@ -94,7 +92,6 @@ public class Shooter extends SubsystemBase {
       IntakeRollers intakeRollers,
       Feeder feeder,
       Rollers rollers,
-      // Hopper hopper,
       LED led,
       Drivetrain drivetrain,
       RobotState robotState) {
@@ -119,9 +116,8 @@ public class Shooter extends SubsystemBase {
     return Length.fromMeters(getFieldToShooter().getTranslation().getDistance(target));
   }
 
-  // Replace your old sotmTof/sotmPrevVx/sotmPrevVy fields with these:
-  private static final double SOTM_PHASE_DELAY_SECS = 0.02; // tune this
-  private static final double SOTM_LINEAR_DRAG_K = 0.275; // tune this — 6328's proven value
+  private static final double SOTM_PHASE_DELAY_SECS = 0.02;
+  private static final double SOTM_LINEAR_DRAG_K = 0.275;
 
   private void shootOnTheFly(
       Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
@@ -171,87 +167,6 @@ public class Shooter extends SubsystemBase {
     Logger.log("SOTM/LauncherVy", vy);
   }
 
-  /*
-   * Inspired by 6328, Mechanical Advantage
-   * https://github.com/Mechanical-Advantage/RobotCode2026Public/blob/main/src/main/java/org/littletonrobotics/frc2026/subsystems/launcher/LaunchCalculator.java
-   */
-  // private void launchCalcShootOnTheFly(
-  //     Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
-
-  //   double phaseDelay = ShooterConstants.SOTF_PHASE_DELAY;
-  //   Pose2d phasePose =
-  //       new Pose2d(
-  //           robotPose.getX() + robotSpeeds.vxMetersPerSecond * phaseDelay,
-  //           robotPose.getY() + robotSpeeds.vyMetersPerSecond * phaseDelay,
-  //           robotPose
-  //               .getRotation()
-  //               .plus(Rotation2d.fromRadians(robotSpeeds.omegaRadiansPerSecond * phaseDelay)));
-
-  //   Pose2d phasedLauncherPose =
-  //       GeomUtil.transformToPose(
-  //           GeomUtil.poseToTransform(phasePose)
-  //               .plus(Util.transform3dTo2dXY(ShooterConstants.flywheelToRobot)));
-  //   Translation2d launcherPos = phasedLauncherPose.getTranslation();
-
-  //   double offX = launcherPos.getX() - robotPose.getX();
-  //   double offY = launcherPos.getY() - robotPose.getY();
-  //   double omega = robotSpeeds.omegaRadiansPerSecond;
-  //   double vx = robotSpeeds.vxMetersPerSecond - offY * omega;
-  //   double vy = robotSpeeds.vyMetersPerSecond + offX * omega;
-
-  //   double k = ShooterConstants.SOTF_LINEAR_DRAG_CONSTANT;
-  //   double tof = getTimeOfFlightForDistance(launcherPos.getDistance(target));
-  //   double projDist = launcherPos.getDistance(target);
-
-  //   for (int i = 0; i < 20; i++) {
-  //     double effectiveTof = (1.0 - Math.exp(-tof * k)) / k;
-  //     double futX = launcherPos.getX() + vx * effectiveTof;
-  //     double futY = launcherPos.getY() + vy * effectiveTof;
-  //     projDist = Math.hypot(futX - target.getX(), futY - target.getY());
-  //     double newTof = getTimeOfFlightForDistance(projDist);
-  //     if (Math.abs(newTof - tof) < 0.001) {
-  //       tof = newTof;
-  //       break;
-  //     }
-  //     tof = newTof;
-  //   }
-
-  //   double effectiveTof = (1.0 - Math.exp(-tof * k)) / k;
-  //   Translation2d futurePos =
-  //       new Translation2d(
-  //           launcherPos.getX() + vx * effectiveTof, launcherPos.getY() + vy * effectiveTof);
-  //   double futureDistance = futurePos.getDistance(target);
-
-  //   double hoodAngleRad = Units.degreesToRadians(getHoodAngleFromDistance(futureDistance));
-  //   if (Double.isNaN(lcLastHoodAngleRad)) lcLastHoodAngleRad = hoodAngleRad;
-  //   double hoodVelocity = lcHoodAngleFilter.calculate((hoodAngleRad - lcLastHoodAngleRad) /
-  // 0.02);
-  //   lcLastHoodAngleRad = hoodAngleRad;
-
-  //   Rotation2d driveAngle =
-  //       ScreamMath.calculateAngleToPoint(futurePos, target).plus(Rotation2d.k180deg);
-  //   if (lcLastDriveAngle == null) lcLastDriveAngle = driveAngle;
-  //   double driveVelocity =
-  //       lcDriveAngleFilter.calculate(driveAngle.minus(lcLastDriveAngle).getRadians() / 0.02);
-  //   lcLastDriveAngle = driveAngle;
-
-  //   robotState.setDrivetrainTarget(driveAngle);
-
-  //   double multiplier = wantShoot ? 1.0 : 2.0;
-  //   hood.moveToAngle(wantShoot ? Rotation2d.fromRadians(hoodAngleRad) : Rotation2d.kZero);
-  //   flywheel.setTargetVelocityTorqueCurrent(
-  //       ShooterConstants.NEW_FLYWHEEL_MAP.get(futureDistance) / multiplier, 0.0);
-
-  //   Logger.log("SOTM/ToF", tof);
-  //   Logger.log("SOTM/FutureDistance", futureDistance);
-  //   Logger.log("SOTM/FuturePose", new Pose2d(futurePos, robotPose.getRotation()));
-  //   Logger.log("SOTM/Target", target);
-  //   Logger.log("SOTM/LauncherVx", vx);
-  //   Logger.log("SOTM/LauncherVy", vy);
-  //   Logger.log("SOTM/HoodVelocity", hoodVelocity);
-  //   Logger.log("SOTM/DriveVelocity", driveVelocity);
-  // }
-
   private double getTimeOfFlightForDistance(double distanceMeters) {
     double flywheelVelocity = ShooterConstants.NEW_FLYWHEEL_MAP.get(distanceMeters);
     double hoodAngle = getHoodAngleFromDistance(distanceMeters);
@@ -262,6 +177,7 @@ public class Shooter extends SubsystemBase {
       Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
     if (!Dashboard.dissableShootOnTheMove.get()) {
       shootOnTheFly(robotPose, robotSpeeds, target, wantShoot);
+      Logger.log(logPrefix + "Point", target);
     } else {
       setTarget(target);
       double distanceMeters = getShotDistance(target).getMeters();
@@ -285,7 +201,6 @@ public class Shooter extends SubsystemBase {
 
       hood.moveToAngle(Rotation2d.fromDegrees(wantShoot ? hoodAngleDeg : 0.0));
       flywheel.setTargetVelocityTorqueCurrent(flywheelSetpoint / multiplier, 0.0);
-      // flywheel.setTargetVelocityTorqueCurrent(Dashboard.flywheelVelocity.get(), 0.0);
 
       Logger.log(logPrefix + "Hood Angle", hoodAngleDeg);
       Logger.log(logPrefix + "Flywheel Velocity", flywheelSetpoint);
@@ -308,7 +223,6 @@ public class Shooter extends SubsystemBase {
         && robotState.atTargetAngle()) {
       rollers.setVoltage(12.0);
       feeder.setVoltage(12.0);
-      // led.solid(Color.kRed);
     }
   }
 
@@ -339,7 +253,7 @@ public class Shooter extends SubsystemBase {
     }
 
     if (agitateForward) {
-      intakeRollers.applyGoal(IntakeRollersGoal.INTAKE);
+      intakeRollers.applyGoal(IntakeRollersGoal.AGITATE);
       intakeWrist.applyGoal(IntakeWristGoal.AGITATE_HIGH);
     } else {
       intakeWrist.applyGoal(IntakeWristGoal.EXTENDED);
@@ -390,15 +304,13 @@ public class Shooter extends SubsystemBase {
         applyAimingSetpoints(
             robotPose,
             robotSpeeds,
-            AllianceFlipUtil.get(
-                FieldConstants.AllianceZones.rightAllianceZone,
-                FieldConstants.AllianceZones.oppLeftAllianceZone),
+            AllianceFlipUtil.get(FieldConstants.rightMiddle, FieldConstants.leftMiddle),
             wantShoot);
         setIdleState(IdleState.IDLE_FERRY_DEPOT);
         led.wave(
             Color.kBlack,
             AllianceFlipUtil.get(
-                new Color(0.26078432f, 1.0f, 0.36078432f) /*new Color(0.0f, 1.0f, 0.83137256f)*/,
+                new Color(0.26078432f, 1.0f, 0.36078432f),
                 new Color(1.0f, 0.49803922f, 0.83137256f)),
             0.1,
             1.25);
@@ -407,15 +319,13 @@ public class Shooter extends SubsystemBase {
         applyAimingSetpoints(
             robotPose,
             robotSpeeds,
-            AllianceFlipUtil.get(
-                FieldConstants.AllianceZones.leftAllianceZone,
-                FieldConstants.AllianceZones.oppRightAllianceZone),
+            AllianceFlipUtil.get(FieldConstants.leftMiddle, FieldConstants.rightMiddle),
             wantShoot);
         setIdleState(IdleState.IDLE_FERRY_OUTPOST);
         led.wave(
             Color.kBlack,
             AllianceFlipUtil.get(
-                new Color(0.26078432f, 1.0f, 0.36078432f) /*new Color(0.0f, 1.0f, 0.83137256f)*/,
+                new Color(0.26078432f, 1.0f, 0.36078432f),
                 new Color(1.0f, 0.49803922f, 0.83137256f)),
             0.1,
             1.25);
@@ -462,27 +372,17 @@ public class Shooter extends SubsystemBase {
         applyAimingSetpoints(
             robotPose,
             robotSpeeds,
-            AllianceFlipUtil.get(
-                FieldConstants.AllianceZones.rightAllianceZone,
-                FieldConstants.AllianceZones.oppLeftAllianceZone),
+            AllianceFlipUtil.get(FieldConstants.rightMiddle, FieldConstants.leftMiddle),
             wantShoot);
-        runFeed(
-            AllianceFlipUtil.get(
-                FieldConstants.AllianceZones.rightAllianceZone,
-                FieldConstants.AllianceZones.oppLeftAllianceZone));
+        runFeed(AllianceFlipUtil.get(FieldConstants.rightMiddle, FieldConstants.leftMiddle));
         break;
       case OTHER_ALLIANCEZONE_OUTPOST:
         applyAimingSetpoints(
             robotPose,
             robotSpeeds,
-            AllianceFlipUtil.get(
-                FieldConstants.AllianceZones.leftAllianceZone,
-                FieldConstants.AllianceZones.oppRightAllianceZone),
+            AllianceFlipUtil.get(FieldConstants.leftMiddle, FieldConstants.rightMiddle),
             wantShoot);
-        runFeed(
-            AllianceFlipUtil.get(
-                FieldConstants.AllianceZones.leftAllianceZone,
-                FieldConstants.AllianceZones.oppRightAllianceZone));
+        runFeed(AllianceFlipUtil.get(FieldConstants.leftMiddle, FieldConstants.rightMiddle));
         break;
       default:
         stopFeed();
@@ -563,7 +463,6 @@ public class Shooter extends SubsystemBase {
               hood.moveToAngle(Rotation2d.fromDegrees(0.0));
               agitateStartTime = 0.0;
               agitateForward = true;
-              // flywheel.setTargetVelocityTorqueCurrent(ShooterConstants.FLYWHEEL_MAP.get(getShotDistance(AllianceFlipUtil.get(FieldConstants.Hub.hubCenter, FieldConstants.Hub.oppHubCenter)).getMeters()), 0.0);
               break;
             case NA:
               agitateStartTime = 0.0;
@@ -621,7 +520,7 @@ public class Shooter extends SubsystemBase {
     if (distance < 2.0) {
       return 0.0;
     } else if (distance > 6.3) {
-      return 50.0;
+      return 45.0;
     } else {
       return distance * Dashboard.functionScalar.get();
     }

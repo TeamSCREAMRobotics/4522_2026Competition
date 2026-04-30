@@ -39,22 +39,4 @@ public final class DrivetrainConstants {
       new ScreamPIDConstants(10.0, 0.0, 0.0);
   public static final ScreamPIDConstants pathRotationConstants =
       new ScreamPIDConstants(7.0, 0.0, 0.0);
-
-  //   public static final ModuleConfig moduleConfig =
-  //       new ModuleConfig(Units.inchesToMeters(2), maxSpeed, 1.4, DCMotor.getKrakenX60(1), 85, 1);
-
-  //   public static final RobotConfig robotConfig =
-  //       new RobotConfig(
-  //           Units.lbsToKilograms(121.0),
-  //           6.883,
-  //           moduleConfig,
-  //           TunerConstants.frontLeftPos,
-  //           TunerConstants.frontRightPos,
-  //           TunerConstants.backLeftPos,
-  //           TunerConstants.backRightPos);
-
-  //   public static final PathFollowingController pathFollowingController =
-  //       new PPHolonomicDriveController(
-  //           PPUtil.screamPIDConstantsToPPConstants(pathTranslationConstants),
-  //           PPUtil.screamPIDConstantsToPPConstants(pathRotationConstants));
 }

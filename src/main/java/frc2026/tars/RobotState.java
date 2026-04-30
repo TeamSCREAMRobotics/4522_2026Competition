@@ -112,13 +112,11 @@ public class RobotState {
   }
 
   private static Pose2d[] rectangleToPolygon(RectangularPoseArea r) {
-    // Extract min/max coordinates
     double minX = r.getMinX();
     double maxX = r.getMaxX();
     double minY = r.getMinY();
     double maxY = r.getMaxY();
 
-    // Build the corners in clockwise order (last point closes the loop)
     return new Pose2d[] {
       new Pose2d(minX, minY, new Rotation2d()),
       new Pose2d(maxX, minY, new Rotation2d()),
