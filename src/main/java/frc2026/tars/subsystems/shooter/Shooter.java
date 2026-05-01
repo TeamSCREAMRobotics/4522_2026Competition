@@ -116,96 +116,96 @@ public class Shooter extends SubsystemBase {
     return Length.fromMeters(getFieldToShooter().getTranslation().getDistance(target));
   }
 
-  private static final double SOTM_PHASE_DELAY_SECS = 0.02;
-  private static final double SOTM_LINEAR_DRAG_K = 0.275;
+  // private static final double SOTM_PHASE_DELAY_SECS = 0.02;
+  // private static final double SOTM_LINEAR_DRAG_K = 0.275;
 
-  private void shootOnTheFly(
-      Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
+  // private void shootOnTheFly(
+  //     Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
 
-    Translation2d launcherPos = getFieldToShooter().getTranslation();
-    Translation2d phasedLauncherPos =
-        new Translation2d(
-            launcherPos.getX() + robotSpeeds.vxMetersPerSecond * SOTM_PHASE_DELAY_SECS,
-            launcherPos.getY() + robotSpeeds.vyMetersPerSecond * SOTM_PHASE_DELAY_SECS);
+  //   Translation2d launcherPos = getFieldToShooter().getTranslation();
+  //   Translation2d phasedLauncherPos =
+  //       new Translation2d(
+  //           launcherPos.getX() + robotSpeeds.vxMetersPerSecond * SOTM_PHASE_DELAY_SECS,
+  //           launcherPos.getY() + robotSpeeds.vyMetersPerSecond * SOTM_PHASE_DELAY_SECS);
 
-    double launcherOffX = launcherPos.getX() - robotPose.getX();
-    double launcherOffY = launcherPos.getY() - robotPose.getY();
-    double omega = robotSpeeds.omegaRadiansPerSecond;
-    double vx = robotSpeeds.vxMetersPerSecond + (-launcherOffY) * omega;
-    double vy = robotSpeeds.vyMetersPerSecond + (launcherOffX) * omega;
+  //   double launcherOffX = launcherPos.getX() - robotPose.getX();
+  //   double launcherOffY = launcherPos.getY() - robotPose.getY();
+  //   double omega = robotSpeeds.omegaRadiansPerSecond;
+  //   double vx = robotSpeeds.vxMetersPerSecond + (-launcherOffY) * omega;
+  //   double vy = robotSpeeds.vyMetersPerSecond + (launcherOffX) * omega;
 
-    Translation2d lookaheadPos = phasedLauncherPos;
-    double lookaheadDist = phasedLauncherPos.getDistance(target);
+  //   Translation2d lookaheadPos = phasedLauncherPos;
+  //   double lookaheadDist = phasedLauncherPos.getDistance(target);
 
-    for (int i = 0; i < 20; i++) {
-      double tof = getTimeOfFlightForDistance(lookaheadDist);
+  //   for (int i = 0; i < 20; i++) {
+  //     double tof = getTimeOfFlightForDistance(lookaheadDist);
 
-      double effectiveTof = (1.0 - Math.exp(-tof * SOTM_LINEAR_DRAG_K)) / SOTM_LINEAR_DRAG_K;
+  //     double effectiveTof = (1.0 - Math.exp(-tof * SOTM_LINEAR_DRAG_K)) / SOTM_LINEAR_DRAG_K;
 
-      lookaheadPos =
-          new Translation2d(
-              phasedLauncherPos.getX() + vx * effectiveTof,
-              phasedLauncherPos.getY() + vy * effectiveTof);
-      lookaheadDist = lookaheadPos.getDistance(target);
-    }
+  //     lookaheadPos =
+  //         new Translation2d(
+  //             phasedLauncherPos.getX() + vx * effectiveTof,
+  //             phasedLauncherPos.getY() + vy * effectiveTof);
+  //     lookaheadDist = lookaheadPos.getDistance(target);
+  //   }
 
-    robotState.setDrivetrainTarget(
-        ScreamMath.calculateAngleToPoint(lookaheadPos, target).plus(Rotation2d.k180deg));
+  //   robotState.setDrivetrainTarget(
+  //       ScreamMath.calculateAngleToPoint(lookaheadPos, target).plus(Rotation2d.k180deg));
 
-    double multiplier = wantShoot ? 1.0 : 2.0;
-    hood.moveToAngle(
-        wantShoot
-            ? Rotation2d.fromDegrees(getHoodAngleFromDistance(lookaheadDist))
-            : Rotation2d.kZero);
-    flywheel.setTargetVelocityTorqueCurrent(
-        ShooterConstants.NEW_FLYWHEEL_MAP.get(lookaheadDist) / multiplier, 0.0);
+  //   double multiplier = wantShoot ? 1.0 : 2.0;
+  //   hood.moveToAngle(
+  //       wantShoot
+  //           ? Rotation2d.fromDegrees(getHoodAngleFromDistance(lookaheadDist))
+  //           : Rotation2d.kZero);
+  //   flywheel.setTargetVelocityTorqueCurrent(
+  //       ShooterConstants.NEW_FLYWHEEL_MAP.get(lookaheadDist) / multiplier, 0.0);
 
-    Logger.log("SOTM/LookaheadDist", lookaheadDist);
-    Logger.log("SOTM/LookaheadPos", new Pose2d(lookaheadPos, robotPose.getRotation()));
-    Logger.log("SOTM/Target", target);
-    Logger.log("SOTM/LauncherVx", vx);
-    Logger.log("SOTM/LauncherVy", vy);
-  }
+  //   Logger.log("SOTM/LookaheadDist", lookaheadDist);
+  //   Logger.log("SOTM/LookaheadPos", new Pose2d(lookaheadPos, robotPose.getRotation()));
+  //   Logger.log("SOTM/Target", target);
+  //   Logger.log("SOTM/LauncherVx", vx);
+  //   Logger.log("SOTM/LauncherVy", vy);
+  // }
 
-  private double getTimeOfFlightForDistance(double distanceMeters) {
-    double flywheelVelocity = ShooterConstants.NEW_FLYWHEEL_MAP.get(distanceMeters);
-    double hoodAngle = getHoodAngleFromDistance(distanceMeters);
-    return getTimeOfFlight(distanceMeters, flywheelVelocity, hoodAngle);
-  }
+  // private double getTimeOfFlightForDistance(double distanceMeters) {
+  //   double flywheelVelocity = ShooterConstants.NEW_FLYWHEEL_MAP.get(distanceMeters);
+  //   double hoodAngle = getHoodAngleFromDistance(distanceMeters);
+  //   return getTimeOfFlight(distanceMeters, flywheelVelocity, hoodAngle);
+  // }
 
   private void applyAimingSetpoints(
       Pose2d robotPose, ChassisSpeeds robotSpeeds, Translation2d target, boolean wantShoot) {
-    if (!Dashboard.dissableShootOnTheMove.get()) {
+    /* if (!Dashboard.dissableShootOnTheMove.get()) {
       shootOnTheFly(robotPose, robotSpeeds, target, wantShoot);
       Logger.log(logPrefix + "Point", target);
+    } else { */
+    setTarget(target);
+    double distanceMeters = getShotDistance(target).getMeters();
+    double hoodAngleDeg = getHoodAngleFromDistance(distanceMeters);
+
+    double multiplier = wantShoot ? 1.0 : 3.0;
+    double flywheelMap = ShooterConstants.NEW_NEW_FLYWHEEL_MAP.get(distanceMeters);
+
+    double flywheelSetpoint;
+    if (distanceMeters <= 2.0) {
+      flywheelSetpoint = flywheelMap * Dashboard.closeMapNudge.get();
+    } else if (distanceMeters <= 4.0) {
+      flywheelSetpoint = flywheelMap * Dashboard.midMapNudge.get();
     } else {
-      setTarget(target);
-      double distanceMeters = getShotDistance(target).getMeters();
-      double hoodAngleDeg = getHoodAngleFromDistance(distanceMeters);
-
-      double multiplier = wantShoot ? 1.0 : 3.0;
-      double flywheelMap = ShooterConstants.NEW_NEW_FLYWHEEL_MAP.get(distanceMeters);
-
-      double flywheelSetpoint;
-      if (distanceMeters <= 2.0) {
-        flywheelSetpoint = flywheelMap * Dashboard.closeMapNudge.get();
-      } else if (distanceMeters <= 4.0) {
-        flywheelSetpoint = flywheelMap * Dashboard.midMapNudge.get();
-      } else {
-        flywheelSetpoint = flywheelMap * Dashboard.farMapNudge.get();
-      }
-
-      robotState.setDrivetrainTarget(
-          ScreamMath.calculateAngleToPoint(robotPose.getTranslation(), target)
-              .plus(Rotation2d.k180deg));
-
-      hood.moveToAngle(Rotation2d.fromDegrees(wantShoot ? hoodAngleDeg : 0.0));
-      flywheel.setTargetVelocityTorqueCurrent(flywheelSetpoint / multiplier, 0.0);
-
-      Logger.log(logPrefix + "Hood Angle", hoodAngleDeg);
-      Logger.log(logPrefix + "Flywheel Velocity", flywheelSetpoint);
-      Logger.log(logPrefix + "Shot Distance", distanceMeters);
+      flywheelSetpoint = flywheelMap * Dashboard.farMapNudge.get();
     }
+
+    robotState.setDrivetrainTarget(
+        ScreamMath.calculateAngleToPoint(robotPose.getTranslation(), target)
+            .plus(Rotation2d.k180deg));
+
+    hood.moveToAngle(Rotation2d.fromDegrees(wantShoot ? hoodAngleDeg : 0.0));
+    flywheel.setTargetVelocityTorqueCurrent(flywheelSetpoint / multiplier, 0.0);
+
+    Logger.log(logPrefix + "Hood Angle", hoodAngleDeg);
+    Logger.log(logPrefix + "Flywheel Velocity", flywheelSetpoint);
+    Logger.log(logPrefix + "Shot Distance", distanceMeters);
+    // }
   }
 
   public Command autoShoot() {
@@ -417,12 +417,12 @@ public class Shooter extends SubsystemBase {
             wantShoot = Controlboard.shoot().getAsBoolean();
           }
 
-          if (state == ShooterState.FERRYING && !DriverStation.isAutonomous()) {
+          /* if (state == ShooterState.FERRYING && !DriverStation.isAutonomous()) {
             Dashboard.dissableShootOnTheMove.set(false);
           } else if ((state == ShooterState.SHOOTING || state == ShooterState.IDLE)
               && !DriverStation.isAutonomous()) {
             Dashboard.dissableShootOnTheMove.set(true);
-          }
+          } */
 
           Logger.log(logPrefix + "Area", area != null ? area.toString() : "NULL");
           Logger.log(logPrefix + "RobotPose X", robotPose.getX());
