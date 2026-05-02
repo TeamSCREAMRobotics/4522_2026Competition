@@ -1,7 +1,10 @@
 package frc2026.tars;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
+import com.team5000.HubTracker;
 import com.teamscreamrobotics.dashboard.MechanismVisualizer;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
@@ -319,5 +322,13 @@ public class RobotContainer {
   public void periodic() {
     visionManager.periodic();
     robotState.logArea();
+
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+    HubTracker.timeRemainingInCurrentShift()
+        .ifPresentOrElse(
+            t -> SmartDashboard.putNumber("Time in shift", t.abs(Seconds)),
+            () -> SmartDashboard.putNumber("Time in shift", -1.0));
+
+    SmartDashboard.putBoolean("Is Active", HubTracker.isActive());
   }
 }

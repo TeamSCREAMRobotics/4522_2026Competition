@@ -8,37 +8,130 @@
         "layouts": [],
         "containers": [
           {
-            "title": "Field",
-            "x": 0.0,
+            "title": "Disable Shoot On The Move",
+            "x": 640.0,
             "y": 0.0,
-            "width": 480.0,
-            "height": 320.0,
-            "type": "Field",
+            "width": 160.0,
+            "height": 160.0,
+            "type": "Toggle Button",
             "properties": {
-              "topic": "/SmartDashboard/Field",
+              "topic": "/Overrides/Disable Shoot On The Move",
               "period": 0.06,
-              "field_game": "Crescendo",
-              "robot_width": 0.85,
-              "robot_length": 0.85,
-              "show_other_objects": true,
-              "show_trajectories": true,
-              "field_rotation": 0.0,
-              "robot_color": 4294198070,
-              "trajectory_color": 4294967295,
-              "show_robot_outside_widget": true
+              "data_type": "boolean"
             }
           },
           {
-            "title": "SendableChooser[0]",
-            "x": 480.0,
+            "title": "AutoChooser",
+            "x": 0.0,
             "y": 0.0,
-            "width": 320.0,
+            "width": 640.0,
             "height": 160.0,
             "type": "ComboBox Chooser",
             "properties": {
-              "topic": "/SmartDashboard/SendableChooser[0]",
+              "topic": "/SmartDashboard/AutoChooser",
               "period": 0.06,
               "sort_options": false
+            }
+          },
+          {
+            "title": "Bumper Shoot",
+            "x": 800.0,
+            "y": 0.0,
+            "width": 160.0,
+            "height": 160.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Overrides/Bumper Shoot",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Run Back Flywheel",
+            "x": 960.0,
+            "y": 0.0,
+            "width": 160.0,
+            "height": 160.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Overrides/Run Back Flywheel",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Run Back Hopper",
+            "x": 1120.0,
+            "y": 0.0,
+            "width": 160.0,
+            "height": 160.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Overrides/Run Back Hopper",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Match Time",
+            "x": 0.0,
+            "y": 160.0,
+            "width": 640.0,
+            "height": 480.0,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/SmartDashboard/Match Time",
+              "period": 0.06,
+              "data_type": "double",
+              "time_display_mode": "Minutes and Seconds",
+              "red_start_time": 20,
+              "yellow_start_time": 30
+            }
+          },
+          {
+            "title": "Time in shift",
+            "x": 1280.0,
+            "y": 160.0,
+            "width": 640.0,
+            "height": 480.0,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/SmartDashboard/Time in shift",
+              "period": 0.06,
+              "data_type": "double",
+              "time_display_mode": "Minutes and Seconds",
+              "red_start_time": 20,
+              "yellow_start_time": 30
+            }
+          },
+          {
+            "title": "Area",
+            "x": 1280.0,
+            "y": 0.0,
+            "width": 640.0,
+            "height": 160.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/Robot/Subsystems/Shooter/Area",
+              "period": 0.06,
+              "data_type": "string"
+            }
+          },
+          {
+            "title": "Is Active",
+            "x": 640.0,
+            "y": 160.0,
+            "width": 640.0,
+            "height": 480.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Is Active",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
@@ -77,9 +170,9 @@
           },
           {
             "title": "Middle Tree Map Nudge",
-            "x": 480.0,
-            "y": 0.0,
-            "width": 480.0,
+            "x": 320.0,
+            "y": 160.0,
+            "width": 640.0,
             "height": 160.0,
             "type": "Number Slider",
             "properties": {
@@ -95,7 +188,7 @@
           {
             "title": "Manual Flywheel Velocity",
             "x": 1280.0,
-            "y": 320.0,
+            "y": 800.0,
             "width": 640.0,
             "height": 160.0,
             "type": "Number Slider",
@@ -112,7 +205,7 @@
           {
             "title": "Manual Intake Rollers",
             "x": 1280.0,
-            "y": 480.0,
+            "y": 160.0,
             "width": 640.0,
             "height": 160.0,
             "type": "Number Slider",
@@ -145,8 +238,8 @@
           },
           {
             "title": "Zero Intake",
-            "x": 960.0,
-            "y": 160.0,
+            "x": 0.0,
+            "y": 320.0,
             "width": 320.0,
             "height": 160.0,
             "type": "Toggle Button",
@@ -158,8 +251,8 @@
           },
           {
             "title": "Zero Hood",
-            "x": 960.0,
-            "y": 320.0,
+            "x": 0.0,
+            "y": 160.0,
             "width": 320.0,
             "height": 160.0,
             "type": "Toggle Button",
@@ -172,7 +265,7 @@
           {
             "title": "Far Tree Map Nudge",
             "x": 320.0,
-            "y": 160.0,
+            "y": 320.0,
             "width": 640.0,
             "height": 160.0,
             "type": "Number Slider",
@@ -189,7 +282,7 @@
           {
             "title": "Close Tree Map Nudge",
             "x": 320.0,
-            "y": 320.0,
+            "y": 0.0,
             "width": 640.0,
             "height": 160.0,
             "type": "Number Slider",
@@ -207,9 +300,9 @@
             "title": "Disable Wait Until At Velocity",
             "x": 160.0,
             "y": 0.0,
-            "width": 320.0,
+            "width": 160.0,
             "height": 160.0,
-            "type": "Toggle Switch",
+            "type": "Toggle Button",
             "properties": {
               "topic": "/Overrides/Disable Wait Until At Velocity",
               "period": 0.06,
@@ -245,7 +338,7 @@
           {
             "title": "Manual Intake Wrist",
             "x": 1280.0,
-            "y": 160.0,
+            "y": 0.0,
             "width": 640.0,
             "height": 160.0,
             "type": "Number Slider",
@@ -273,22 +366,9 @@
             }
           },
           {
-            "title": "Bumper Shoot",
-            "x": 0.0,
-            "y": 480.0,
-            "width": 320.0,
-            "height": 160.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Overrides/Bumper Shoot",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
             "title": "Manual Floor Rollers",
             "x": 1280.0,
-            "y": 0.0,
+            "y": 320.0,
             "width": 640.0,
             "height": 160.0,
             "type": "Number Slider",
@@ -303,35 +383,9 @@
             }
           },
           {
-            "title": "Run Back Hopper",
-            "x": 0.0,
-            "y": 320.0,
-            "width": 320.0,
-            "height": 160.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Overrides/Run Back Hopper",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "Run Back Flywheel",
-            "x": 0.0,
-            "y": 160.0,
-            "width": 320.0,
-            "height": 160.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Overrides/Run Back Flywheel",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
             "title": "Manual Feeder",
             "x": 1280.0,
-            "y": 800.0,
+            "y": 480.0,
             "width": 640.0,
             "height": 160.0,
             "type": "Number Slider",
@@ -344,25 +398,12 @@
               "divisions": 5,
               "update_continuously": true
             }
-          },
-          {
-            "title": "SendableChooser[0]",
-            "x": 320.0,
-            "y": 480.0,
-            "width": 640.0,
-            "height": 160.0,
-            "type": "ComboBox Chooser",
-            "properties": {
-              "topic": "/SmartDashboard/SendableChooser[0]",
-              "period": 0.06,
-              "sort_options": false
-            }
           }
         ]
       }
     },
     {
-      "name": "Cameras",
+      "name": "Camera View",
       "grid_layout": {
         "layouts": [],
         "containers": [
@@ -381,7 +422,7 @@
           },
           {
             "title": "limelight-right",
-            "x": 640.0,
+            "x": 1280.0,
             "y": 0.0,
             "width": 640.0,
             "height": 640.0,
@@ -394,7 +435,7 @@
           },
           {
             "title": "limelight-shooter",
-            "x": 1280.0,
+            "x": 640.0,
             "y": 0.0,
             "width": 640.0,
             "height": 640.0,

@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Seconds;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc2026.tars.Robot;
 import java.util.Optional;
 
 public class HubTracker {
@@ -126,7 +127,15 @@ public class HubTracker {
    * available.
    */
   public static Optional<Alliance> getAutoWinner() {
-    String msg = DriverStation.getGameSpecificMessage();
+    String msg =
+        Robot.isReal()
+            ? DriverStation.getGameSpecificMessage()
+            : (DriverStation.getAlliance().isPresent()
+                        ? DriverStation.getAlliance().get()
+                        : Alliance.Blue)
+                    == Alliance.Blue
+                ? "B"
+                : "R";
     char msgChar = msg.length() > 0 ? msg.charAt(0) : ' ';
     switch (msgChar) {
       case 'B':
