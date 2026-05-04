@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc2026.tars;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -33,10 +29,7 @@ public class Robot extends TimedRobot {
             .withLogEntryQueueCapacity(2000));
     Logger.setEnabled(true);
 
-    // SignalLogger.setPath("/media/sda1");
     SignalLogger.start();
-
-    // CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
 
     Threads.setCurrentThreadPriority(true, 10);
   }
@@ -80,8 +73,6 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-
-    // Dashboard.dissableShootOnTheMove.set(false);
   }
 
   @Override

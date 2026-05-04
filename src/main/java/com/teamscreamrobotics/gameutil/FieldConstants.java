@@ -8,6 +8,7 @@
 package com.teamscreamrobotics.gameutil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team6328.Constants;
 import com.teamscreamrobotics.zones.RectangularPoseArea;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,7 +16,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
-import frc2026.tars.constants.Constants;
 import java.io.IOException;
 import java.nio.file.Path;
 import lombok.Getter;
@@ -41,6 +41,12 @@ public class FieldConstants {
 
   public static final Translation2d middleOfField =
       new Translation2d(fieldLength / 2, fieldWidth / 2);
+
+  public static final Translation2d rightMiddle =
+      new Translation2d(fieldLength / 2, fieldWidth / 4);
+
+  public static final Translation2d leftMiddle =
+      new Translation2d(fieldLength / 2, (fieldWidth * 3) / 4);
 
   public static final Translation2d fieldDimensions = new Translation2d(fieldLength, fieldWidth);
 

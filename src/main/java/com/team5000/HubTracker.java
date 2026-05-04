@@ -1,18 +1,15 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 // Taken from LordOfFrogs on Github.
 // Code can be found here:
 // https://gist.github.com/LordOfFrogs/240ba37cf696ba156d87f387c1461bd5
 
-package frc2026.tars.util;
+package com.team5000;
 
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc2026.tars.Robot;
 import java.util.Optional;
 
 public class HubTracker {
@@ -130,7 +127,15 @@ public class HubTracker {
    * available.
    */
   public static Optional<Alliance> getAutoWinner() {
-    String msg = DriverStation.getGameSpecificMessage();
+    String msg =
+        Robot.isReal()
+            ? DriverStation.getGameSpecificMessage()
+            : (DriverStation.getAlliance().isPresent()
+                        ? DriverStation.getAlliance().get()
+                        : Alliance.Blue)
+                    == Alliance.Blue
+                ? "B"
+                : "R";
     char msgChar = msg.length() > 0 ? msg.charAt(0) : ' ';
     switch (msgChar) {
       case 'B':
