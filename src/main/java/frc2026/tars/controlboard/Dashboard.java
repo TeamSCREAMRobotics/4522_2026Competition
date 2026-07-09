@@ -23,7 +23,7 @@ public class Dashboard {
   public static DashboardBoolean runBackHopper;
 
   public static DashboardBoolean disableWaitUntilAtVelocity;
-  public static DashboardBoolean dissableShootOnTheMove;
+  public static DashboardBoolean disableShootOnTheMove;
 
   public static DashboardBoolean manualMode;
   public static DashboardBoolean resetManuals;
@@ -58,14 +58,17 @@ public class Dashboard {
 
   public static DashboardNumber functionCurve;
   public static DashboardNumber functionScalar;
+  public static DashboardNumber shootOnTheMovePhaseDelay;
+  public static DashboardNumber shootOnTheMoveLinearDrag;
 
   private static Field2d field = new Field2d();
-
-  static {
-    initialize();
-  }
+  private static boolean initialized = false;
 
   public static void initialize() {
+    if (initialized) {
+      return;
+    }
+
     zeroHopper = new DashboardBoolean(overrides, "Zero Hopper", false);
     disableAmbiguityRejection = new DashboardBoolean(vision, "Disable Ambiguity Rejection", false);
     disableAllVisionUpdates = new DashboardBoolean(vision, "Disable All Vision Updates", false);
@@ -74,7 +77,7 @@ public class Dashboard {
     disableWaitUntilHood = new DashboardBoolean(overrides, "Disable Wait Until Hood", false);
 
     runBackHopper = new DashboardBoolean(overrides, "Run Back Hopper", false);
-    dissableShootOnTheMove = new DashboardBoolean(overrides, "Disable Shoot On The Move", false);
+    disableShootOnTheMove = new DashboardBoolean(overrides, "Disable Shoot On The Move", false);
 
     zeroIntake = new DashboardBoolean(overrides, "Zero Intake", false);
     zeroHood = new DashboardBoolean(overrides, "Zero Hood", false);
@@ -89,7 +92,7 @@ public class Dashboard {
     manualFloorRollers = new DashboardNumber(overrides, "Manual Floor Rollers", 0);
     manualFeeder = new DashboardNumber(overrides, "Manual Feeder", 0);
     bumperShoot = new DashboardBoolean(overrides, "Bumper Shoot", false);
-    disableWaitUntilAim = new DashboardBoolean(overrides, "Dissable Wait until aim", false);
+    disableWaitUntilAim = new DashboardBoolean(overrides, "Disable Wait Until Aim", false);
 
     closeMapNudge =
         new DashboardNumber(overrides, "Close Tree Map Nudge", ShooterConstants.CLOSE_MAP_NUDGE);
@@ -106,6 +109,11 @@ public class Dashboard {
     functionCurve = new DashboardNumber(tuning, "Function Curve", ShooterConstants.FUNCTION_CURVE);
     functionScalar =
         new DashboardNumber(tuning, "Function Scalar", ShooterConstants.FUNCTION_SCALAR);
+    shootOnTheMovePhaseDelay =
+        new DashboardNumber(tuning, "SOTM Phase Delay", ShooterConstants.SOTF_PHASE_DELAY);
+    shootOnTheMoveLinearDrag =
+        new DashboardNumber(tuning, "SOTM Linear Drag", ShooterConstants.SOTF_LINEAR_DRAG_CONSTANT);
+    initialized = true;
   }
 
   public static void resetManuals() {
@@ -118,7 +126,7 @@ public class Dashboard {
   }
 
   public static void autonInit() {
-    dissableShootOnTheMove.set(true);
+    // Preserve the dashboard switch so shoot-on-the-move stays enabled until explicitly disabled.
   }
 
   public static void periodic() {

@@ -42,7 +42,7 @@ public class VisionManager {
                 Units.inchesToMeters(-13.066),
                 Units.inchesToMeters(0.0),
                 Units.inchesToMeters(13.925),
-                new Rotation3d(180.0, Units.degreesToRadians(-25.0), 0.0)));
+                new Rotation3d(Units.degreesToRadians(180.0), Units.degreesToRadians(-25.0), 0.0)));
 
     public static final Limelight right =
         new Limelight(
@@ -60,7 +60,10 @@ public class VisionManager {
                 Units.inchesToMeters(0.220),
                 Units.inchesToMeters(-12.670),
                 Units.inchesToMeters(18.285),
-                new Rotation3d(180.0, Units.degreesToRadians(0.0), Units.degreesToRadians(-90.0))));
+                new Rotation3d(
+                    Units.degreesToRadians(180.0),
+                    Units.degreesToRadians(0.0),
+                    Units.degreesToRadians(-90.0))));
   }
 
   private PhotonCamera swerveLeft;
@@ -84,7 +87,8 @@ public class VisionManager {
   }
 
   private final Drivetrain drivetrain;
-  private final Limelight[] limelights = new Limelight[] {Limelights.right, Limelights.shooter};
+  private final Limelight[] limelights =
+      new Limelight[] {Limelights.right, Limelights.shooter, Limelights.left};
 
   @SuppressWarnings("unused")
   public VisionManager(Drivetrain drivetrain) {
@@ -155,9 +159,9 @@ public class VisionManager {
 
   private void addPoseEstimate(
       PoseEstimate estimate, Limelight limelight, boolean mt1, boolean isTurret) {
-    boolean shouldUseMt2 = !rejectEstimate(estimate, limelight);
+    boolean shouldUseEstimate = !rejectEstimate(estimate, limelight);
 
-    if (shouldUseMt2 && !Dashboard.disableAllVisionUpdates.get()) {
+    if (shouldUseEstimate && !Dashboard.disableAllVisionUpdates.get()) {
       double stdFactor = Math.pow(estimate.avgTagDist, 2.75) / (estimate.tagCount * 0.5);
       double xyStds =
           VisionConstants.xyStdBaseline
@@ -172,7 +176,8 @@ public class VisionManager {
           VecBuilder.fill(xyStds, xyStds, mt1 ? thetaStds : 999999999999.0),
           !mt1);
 
-      Logger.log("Vision/" + limelight.name() + "/VisionType", VisionType.MT2);
+      Logger.log(
+          "Vision/" + limelight.name() + "/VisionType", mt1 ? VisionType.MT : VisionType.MT2);
       Logger.log("Vision/" + limelight.name() + "/PoseEstimate", estimate.pose);
       Logger.log("Vision/" + limelight.name() + "/XyStds", xyStds);
       Logger.log("Vision/" + limelight.name() + "/ThetaStds", thetaStds);
@@ -209,7 +214,9 @@ public class VisionManager {
         || !FieldConstants.fieldArea.contains(estimate.pose)) {
       Logger.log("Vision/" + limelight.name() + "/VisionType", VisionType.REJECTED_INVALID);
       return true;
-    } else if ((estimate.tagCount == 1 && estimate.rawFiducials[0].ambiguity > 0.3)
+    } else if ((estimate.tagCount == 1
+            && estimate.rawFiducials.length > 0
+            && estimate.rawFiducials[0].ambiguity > 0.3)
         && !Dashboard.disableAmbiguityRejection.get()) {
       Logger.log("Vision/" + limelight.name() + "/VisionType", VisionType.REJECTED_AMBIGUITY);
       return true;
@@ -281,6 +288,10 @@ public class VisionManager {
   }
 
   private double calculateAverageTagDistance(PhotonPipelineResult result) {
+    if (result.targets.isEmpty()) {
+      return 0.0;
+    }
+
     double distance = 0;
     for (PhotonTrackedTarget target : result.targets) {
       distance += target.getBestCameraToTarget().getTranslation().getNorm();

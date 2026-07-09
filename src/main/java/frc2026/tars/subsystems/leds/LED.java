@@ -57,10 +57,12 @@ public class LED extends SubsystemBase {
   }
 
   public void breathe(Color c1, Color c2, double duration, double timestamp) {
-    double x =
-        ((timestamp % LEDConstants.BREATHE_DURATION) / LEDConstants.BREATHE_DURATION)
-            * 2.0
-            * Math.PI;
+    if (duration <= 0.0) {
+      solid(c2);
+      return;
+    }
+
+    double x = ((timestamp % duration) / duration) * 2.0 * Math.PI;
     double ratio = (Math.sin(x) + 1.0) / 2.0;
     double red = (c1.red * (1 - ratio)) + (c2.red * ratio);
     double green = (c1.green * (1 - ratio)) + (c2.green * ratio);
@@ -91,13 +93,9 @@ public class LED extends SubsystemBase {
     for (int i = 0; i < length; i++) {
       x += xDiffPerLed;
       if (i >= 0) {
-        double ratio = (Math.pow(Math.sin(x), LEDConstants.BREATHE_DURATION) + 1.0) / 2.0;
-        if (Double.isNaN(ratio)) {
-          ratio = (-Math.pow(Math.sin(x + Math.PI), LEDConstants.BREATHE_DURATION) + 1.0) / 2.0;
-        }
-        if (Double.isNaN(ratio)) {
-          ratio = 0.5;
-        }
+        double wave = Math.sin(x);
+        double ratio =
+            (Math.copySign(Math.pow(Math.abs(wave), LEDConstants.WAVE_EXPONENT), wave) + 1.0) / 2.0;
         double red = (c1.red * (1 - ratio)) + (c2.red * ratio);
         double green = (c1.green * (1 - ratio)) + (c2.green * ratio);
         double blue = (c1.blue * (1 - ratio)) + (c2.blue * ratio);

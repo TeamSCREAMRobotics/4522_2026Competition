@@ -10,7 +10,6 @@ import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -72,8 +71,6 @@ public class RobotContainer {
 
   @Getter private final RobotState robotState = new RobotState(subsystems);
 
-  Field2d field = new Field2d();
-
   private final Shooter shooter =
       new Shooter(
           flywheel,
@@ -124,7 +121,7 @@ public class RobotContainer {
                             drivetrain
                                 .getHelper()
                                 .getFacingAngleProfiled(
-                                    Controlboard.getTranslation(),
+                                    Controlboard.getFieldRelativeTranslation(),
                                     robotState.getDrivetrainTarget(),
                                     DrivetrainConstants.headingControllerProfiled))
                     .beforeStarting(() -> drivetrain.resetHeadingController()),
@@ -150,7 +147,7 @@ public class RobotContainer {
                         drivetrain
                             .getHelper()
                             .getFacingAngleProfiled(
-                                Controlboard.getTranslation(),
+                                Controlboard.getFieldRelativeTranslation(),
                                 Rotation2d.fromDegrees(90),
                                 DrivetrainConstants.headingControllerProfiled))
                 .beforeStarting(() -> drivetrain.resetHeadingController()));
@@ -163,7 +160,7 @@ public class RobotContainer {
                         drivetrain
                             .getHelper()
                             .getFacingAngleProfiled(
-                                Controlboard.getTranslation(),
+                                Controlboard.getFieldRelativeTranslation(),
                                 Rotation2d.fromDegrees(-90),
                                 DrivetrainConstants.headingControllerProfiled))
                 .beforeStarting(() -> drivetrain.resetHeadingController()));
@@ -175,7 +172,7 @@ public class RobotContainer {
                         drivetrain
                             .getHelper()
                             .getFacingAngleProfiled(
-                                Controlboard.getTranslation(),
+                                Controlboard.getFieldRelativeTranslation(),
                                 Rotation2d.fromDegrees(0),
                                 DrivetrainConstants.headingControllerProfiled))
                 .beforeStarting(() -> drivetrain.resetHeadingController()));
@@ -187,22 +184,27 @@ public class RobotContainer {
                         drivetrain
                             .getHelper()
                             .getFacingAngleProfiled(
-                                Controlboard.getTranslation(),
+                                Controlboard.getFieldRelativeTranslation(),
                                 Rotation2d.fromDegrees(180),
                                 DrivetrainConstants.headingControllerProfiled))
                 .beforeStarting(() -> drivetrain.resetHeadingController()));
 
     Controlboard.runBackHopper()
-        .onTrue(
-            intakeRollers
-                .applyVoltageCommand(() -> -12.0)
-                .alongWith(rollers.applyVoltageCommand(() -> -12.0))
-                .alongWith(feeder.applyVoltageCommand(() -> -12.0)))
-        .onFalse(
-            intakeRollers
-                .applyVoltageCommand(() -> 0.0)
-                .alongWith(rollers.applyVoltageCommand(() -> 0.0))
-                .alongWith(feeder.applyVoltageCommand(() -> 0.0)));
+        .whileTrue(
+            Commands.runEnd(
+                () -> {
+                  intakeRollers.setVoltage(-12.0);
+                  rollers.setVoltage(-12.0);
+                  feeder.setVoltage(-12.0);
+                },
+                () -> {
+                  intakeRollers.setVoltage(0.0);
+                  rollers.setVoltage(0.0);
+                  feeder.setVoltage(0.0);
+                },
+                intakeRollers,
+                rollers,
+                feeder));
   }
 
   private void configureDefaultCommands() {
@@ -215,7 +217,7 @@ public class RobotContainer {
                         ? drivetrain
                             .getHelper()
                             .getFieldCentric(
-                                Controlboard.getTranslation()
+                                Controlboard.getFieldRelativeTranslation()
                                     .times(RobotState.getSpeedLimit().getAsDouble()),
                                 Controlboard.getRotation().getAsDouble())
                         : drivetrain
@@ -240,33 +242,38 @@ public class RobotContainer {
                                 : Color.kBlue),
                         1.25);
                   } else {
-                    robotState.flashLEDS();
+                    shooter.applyLedState();
                   }
                 })
             .ignoringDisable(true));
   }
 
   private void configureManualOverrides() {
-    Controlboard.runBackFlywheel().whileTrue(flywheel.applyVoltageCommand(() -> -1.0));
+    Controlboard.runBackFlywheel()
+        .whileTrue(
+            Commands.runEnd(
+                () -> flywheel.setVoltage(-1.0), () -> flywheel.setVoltage(0.0), flywheel));
 
     Controlboard.resetFieldCentric()
         .onTrue(Commands.runOnce(() -> drivetrain.resetRotation(AllianceFlipUtil.getFwdHeading())));
 
     Controlboard.zeroIntake()
-        .whileTrue(
+        .onTrue(
             Commands.runOnce(() -> intakeWrist.resetPosition(0.0), intakeWrist)
                 .andThen(() -> Dashboard.zeroIntake.set(false))
                 .ignoringDisable(true));
 
-    Controlboard.zeroHood().whileTrue(hood.zero().andThen(() -> Dashboard.zeroHood.set(false)));
+    Controlboard.zeroHood().onTrue(hood.zero().andThen(() -> Dashboard.zeroHood.set(false)));
 
     Controlboard.runBackIntake()
         .whileTrue(
-            (intakeRollers.applyVoltageCommand(() -> -2.0))
-                .andThen(() -> Dashboard.runBackIntake.set(false)));
+            Commands.runEnd(
+                () -> intakeRollers.setVoltage(-2.0),
+                () -> intakeRollers.setVoltage(0.0),
+                intakeRollers));
 
     Controlboard.resetManuals()
-        .whileTrue(
+        .onTrue(
             (Commands.runOnce(() -> Dashboard.resetManuals())
                     .andThen(() -> Dashboard.resetManuals.set(false)))
                 .ignoringDisable(true));
@@ -300,14 +307,23 @@ public class RobotContainer {
     Controlboard.bumperShot()
         .whileTrue(
             Commands.parallel(
-                    feeder.applyVoltageCommand(() -> 12.0),
-                    rollers.applyVoltageCommand(() -> 12.0),
-                    Commands.run(() -> hood.moveToAngle(Rotation2d.fromDegrees(12.5))),
-                    intakeWrist.compress(() -> true))
-                .onlyIf(() -> flywheel.atVel()));
-
-    Controlboard.bumperShot()
-        .whileTrue(flywheel.run(() -> flywheel.setTargetVelocityTorqueCurrent(33.6, 0.0)));
+                flywheel.run(() -> flywheel.setTargetVelocityTorqueCurrent(33.6, 0.0)),
+                Commands.run(() -> hood.moveToAngle(Rotation2d.fromDegrees(12.5)), hood),
+                Commands.waitUntil(
+                        () -> flywheel.atVel() || Dashboard.disableWaitUntilAtVelocity.get())
+                    .andThen(
+                        Commands.runEnd(
+                            () -> {
+                              feeder.setVoltage(12.0);
+                              rollers.setVoltage(12.0);
+                            },
+                            () -> {
+                              feeder.setVoltage(0.0);
+                              rollers.setVoltage(0.0);
+                            },
+                            feeder,
+                            rollers)),
+                intakeWrist.compress(() -> flywheel.atVel())));
   }
 
   public Command getAutonomousCommand() {

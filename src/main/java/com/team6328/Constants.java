@@ -10,7 +10,7 @@ package com.team6328;
 import edu.wpi.first.wpilibj.RobotBase;
 
 public final class Constants {
-  public static final RobotType robot = RobotType.DEVBOT;
+  public static final RobotType robot = RobotType.COMPBOT;
   public static final boolean tuningMode = false;
 
   public static final double loopPeriodSecs = 0.02;

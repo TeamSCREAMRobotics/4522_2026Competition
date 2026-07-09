@@ -41,6 +41,8 @@ public class RobotState {
 
   @SuppressWarnings("unchecked")
   public enum Area {
+    UNKNOWN,
+
     ALLIANCEZONE(
         () -> AllianceFlipUtil.get(FieldConstants.BLUEALLIANCE, FieldConstants.REDALLIANCE)),
 
@@ -135,15 +137,13 @@ public class RobotState {
   }
 
   public Mode getMode() {
-    Mode currentMode = Mode.NOTHING;
-
-    if ("AUTO".equals(GameState.determineGameState().toString())) {
-      currentMode = Mode.AUTO;
-    } else {
-
+    if (DriverStation.isAutonomousEnabled()) {
+      return Mode.AUTO;
     }
-
-    return currentMode;
+    if (DriverStation.isTeleopEnabled()) {
+      return Mode.TELEOP;
+    }
+    return Mode.NOTHING;
   }
 
   private final boolean hopperElevated = false;
@@ -175,6 +175,7 @@ public class RobotState {
   }
 
   private DriverStation.Alliance lastAlliance = null;
+  private DriverStation.Alliance lastLoggedAlliance = null;
 
   private void resolveAreasIfNeeded() {
 
@@ -207,7 +208,7 @@ public class RobotState {
       }
     }
 
-    return null;
+    return Area.UNKNOWN;
   }
 
   public static DoubleSupplier getSpeedLimit() {
@@ -265,6 +266,12 @@ public class RobotState {
   }
 
   public void logArea() {
+    if (lastAlliance == null || lastAlliance == lastLoggedAlliance) {
+      return;
+    }
+
+    lastLoggedAlliance = lastAlliance;
+
     for (Area area : AREA_VALUES) {
 
       if (area.resolved == null) continue;

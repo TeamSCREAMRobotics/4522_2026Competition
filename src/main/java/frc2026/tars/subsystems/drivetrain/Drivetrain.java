@@ -9,9 +9,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.teamscreamrobotics.drivers.PhoenixSwerveHelper;
 import com.teamscreamrobotics.gameutil.FieldConstants;
-import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
-import com.teamscreamrobotics.util.RunnableUtil.RunOnce;
 import com.teamscreamrobotics.util.ScreamUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,7 +20,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,8 +43,6 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
   private double m_lastSimTime;
 
   @Getter private final PhoenixSwerveHelper helper;
-
-  private RunOnce operatorPerspectiveApplier = new RunOnce();
 
   /* Swerve requests to apply during SysId characterization */
   private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization =
@@ -121,31 +116,6 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
             DrivetrainConstants.maxSpeed,
             DrivetrainConstants.headingCorrectionConstants,
             DrivetrainConstants.headingCorrectionConstants);
-
-    // RobotConfig config = DrivetrainConstants.robotConfig;
-    // try {
-    //   config = RobotConfig.fromGUISettings();
-    // } catch (Exception e) {
-    //   // TODO Auto-generated catch block
-    //   e.printStackTrace();
-    // }
-
-    // AutoBuilder.configure(
-    //     this::getEstimatedPose,
-    //     this::resetPose,
-    //     () -> getState().Speeds,
-    //     (speeds, feedforwards) ->
-    //         setControl(
-    //             helper
-    //                 .getApplyRobotSpeeds(speeds)
-    //                 .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
-    //                 .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
-    //     DrivetrainConstants.pathFollowingController,
-    //     config,
-    //     () ->
-    //         DriverStation.getAlliance().isPresent()
-    //             && DriverStation.getAlliance().get() == Alliance.Red,
-    //     this);
 
     registerTelemetry(this::logTelemetry);
   }
@@ -250,16 +220,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
   }
 
   @Override
-  public void periodic() {
-    // attemptToSetPerspective();
-  }
-
-  public void attemptToSetPerspective() {
-    operatorPerspectiveApplier.runOnceWhenTrueThenWhenChanged(
-        () -> setOperatorPerspectiveForward(AllianceFlipUtil.getFwdHeading()),
-        DriverStation.getAlliance().isPresent(),
-        DriverStation.getAlliance().orElse(null));
-  }
+  public void periodic() {}
 
   public void stop() {
     setControl(new SwerveRequest.Idle());

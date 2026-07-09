@@ -16,9 +16,10 @@ public class AutoIntakeFeed extends Command {
   private final CANrange beam;
   private final CANrange beamOne;
 
-  private final Debouncer beamDebouncer = new Debouncer(0.03, DebounceType.kRising);
+  private Debouncer intakeBeamDebouncer = new Debouncer(0.03, DebounceType.kRising);
+  private Debouncer indexedBeamDebouncer = new Debouncer(0.03, DebounceType.kRising);
 
-  private boolean hasBallKnowledge;
+  private boolean pieceSeen;
 
   public AutoIntakeFeed(
       Feeder feeder,
@@ -37,29 +38,23 @@ public class AutoIntakeFeed extends Command {
 
   @Override
   public void initialize() {
-    if (beam.getIsDetected().getValue()) {
-      hasBallKnowledge = true;
-    } else {
-      hasBallKnowledge = false;
-    }
+    intakeBeamDebouncer = new Debouncer(0.03, DebounceType.kRising);
+    indexedBeamDebouncer = new Debouncer(0.03, DebounceType.kRising);
+    pieceSeen = beam.getIsDetected().getValue();
   }
 
   @Override
   public void execute() {
-    if (!hasBallKnowledge
-        && beamDebouncer.calculate(beam.getIsDetected().getValue())
-        && !beamOne.getIsDetected().getValue()) {
-      intakeRollers.setVoltage(12.0);
+    boolean intakeBeamDetected = intakeBeamDebouncer.calculate(beam.getIsDetected().getValue());
+    boolean indexed = beamOne.getIsDetected().getValue();
+
+    pieceSeen = pieceSeen || intakeBeamDetected;
+    intakeRollers.setVoltage(12.0);
+
+    if (pieceSeen && !indexed) {
       feeder.setVoltage(3.0);
       rollers.setVoltage(1.5);
-    } else if (!hasBallKnowledge
-        && beam.getIsDetected().getValue()
-        && beamDebouncer.calculate(beamOne.getIsDetected().getValue())) {
-      intakeRollers.setVoltage(12.0);
-      feeder.setVoltage(0.0);
-      rollers.setVoltage(0.0);
     } else {
-      intakeRollers.setVoltage(12.0);
       feeder.setVoltage(0.0);
       rollers.setVoltage(0.0);
     }
@@ -70,5 +65,10 @@ public class AutoIntakeFeed extends Command {
     intakeRollers.setVoltage(0.0);
     rollers.setVoltage(0.0);
     feeder.setVoltage(0.0);
+  }
+
+  @Override
+  public boolean isFinished() {
+    return indexedBeamDebouncer.calculate(beamOne.getIsDetected().getValue());
   }
 }

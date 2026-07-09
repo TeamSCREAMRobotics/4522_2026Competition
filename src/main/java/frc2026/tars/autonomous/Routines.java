@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.lib.BLine.FlippingUtil.FieldSymmetry;
@@ -133,13 +134,13 @@ public class Routines {
     return new SequentialCommandGroup(
         resetPose(Overbump_Outpost),
         intakeWrist.instantApplyGoalCommand(IntakeWristGoal.EXTENDED),
-        new ParallelRaceGroup(
-            new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
-            Overbump_Outpost.getNext()),
+        new ParallelDeadlineGroup(
+            Overbump_Outpost.getNext(),
+            new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne)),
         Shoot(),
-        new ParallelRaceGroup(
-            new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
-            Overbump_Outpost.getNext()),
+        new ParallelDeadlineGroup(
+            Overbump_Outpost.getNext(),
+            new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne)),
         Shoot());
   }
 
@@ -149,13 +150,13 @@ public class Routines {
     return new SequentialCommandGroup(
         resetPose(Overbump_Depot),
         intakeWrist.instantApplyGoalCommand(IntakeWristGoal.EXTENDED),
-        new ParallelRaceGroup(
-            new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
-            Overbump_Depot.getNext()),
+        new ParallelDeadlineGroup(
+            Overbump_Depot.getNext(),
+            new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne)),
         Shoot(),
-        new ParallelRaceGroup(
-            new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne),
-            Overbump_Depot.getNext()),
+        new ParallelDeadlineGroup(
+            Overbump_Depot.getNext(),
+            new AutoIntakeFeed(feeder, rollers, intakeRollers, shooter.beam, shooter.beamOne)),
         Shoot());
   }
 
