@@ -1,7 +1,6 @@
 package frc2026.tars;
 
 import com.teamscreamrobotics.gameutil.FieldConstants;
-import com.teamscreamrobotics.gameutil.GameState;
 import com.teamscreamrobotics.util.AllianceFlipUtil;
 import com.teamscreamrobotics.util.Logger;
 import com.teamscreamrobotics.zones.RectangularPoseArea;
@@ -14,7 +13,6 @@ import frc2026.tars.controlboard.Controlboard;
 import frc2026.tars.controlboard.Dashboard;
 import frc2026.tars.subsystems.drivetrain.Drivetrain;
 import frc2026.tars.subsystems.intake.IntakeWrist;
-import frc2026.tars.subsystems.leds.LED;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import lombok.Getter;
@@ -28,8 +26,6 @@ public class RobotState {
 
   @Getter @Setter private Rotation2d drivetrainTarget = Rotation2d.kZero;
 
-  private final LED led;
-
   public enum Mode {
     AUTO,
     TELEOP,
@@ -41,6 +37,8 @@ public class RobotState {
 
   @SuppressWarnings("unchecked")
   public enum Area {
+    UNKNOWN,
+
     ALLIANCEZONE(
         () -> AllianceFlipUtil.get(FieldConstants.BLUEALLIANCE, FieldConstants.REDALLIANCE)),
 
@@ -131,19 +129,16 @@ public class RobotState {
   public RobotState(Subsystems subsystems) {
     this.drivetrain = subsystems.drivetrain();
     this.intakeWrist = subsystems.intakeWrist();
-    this.led = subsystems.led();
   }
 
   public Mode getMode() {
-    Mode currentMode = Mode.NOTHING;
-
-    if ("AUTO".equals(GameState.determineGameState().toString())) {
-      currentMode = Mode.AUTO;
-    } else {
-
+    if (DriverStation.isAutonomousEnabled()) {
+      return Mode.AUTO;
     }
-
-    return currentMode;
+    if (DriverStation.isTeleopEnabled()) {
+      return Mode.TELEOP;
+    }
+    return Mode.NOTHING;
   }
 
   private final boolean hopperElevated = false;
@@ -175,6 +170,7 @@ public class RobotState {
   }
 
   private DriverStation.Alliance lastAlliance = null;
+  private DriverStation.Alliance lastLoggedAlliance = null;
 
   private void resolveAreasIfNeeded() {
 
@@ -207,7 +203,7 @@ public class RobotState {
       }
     }
 
-    return null;
+    return Area.UNKNOWN;
   }
 
   public static DoubleSupplier getSpeedLimit() {
@@ -230,41 +226,13 @@ public class RobotState {
         || Dashboard.disableWaitUntilAim.get();
   }
 
-  public void flashLEDS() {
-    GameState gameStateUtil = new GameState();
-    GameState.States hub = gameStateUtil.getActiveHub();
-    GameState.States state = GameState.determineGameState();
-
-    boolean flashing =
-        state == GameState.States.SHIFTONEFLASHING
-            || state == GameState.States.SHIFTTWOFLASHING
-            || state == GameState.States.SHIFTTHREEFLASHING
-            || state == GameState.States.SHIFTFOURFLASHING
-            || state == GameState.States.ENDGAMEFLASHING;
-
-    boolean normal =
-        state == GameState.States.SHIFTONE
-            || state == GameState.States.SHIFTTWO
-            || state == GameState.States.SHIFTTHREE
-            || state == GameState.States.SHIFTFOUR
-            || state == GameState.States.ENDGAME;
-
-    edu.wpi.first.wpilibj.util.Color hubColor;
-
-    if (hub == GameState.States.RED) {
-      hubColor = edu.wpi.first.wpilibj.util.Color.kGreen;
-    } else {
-      hubColor = edu.wpi.first.wpilibj.util.Color.kRed;
-    }
-
-    if (flashing) {
-      led.strobe(hubColor, 0.2);
-    } else if (normal) {
-      led.breathe(hubColor, edu.wpi.first.wpilibj.util.Color.kBlack, 1.0);
-    }
-  }
-
   public void logArea() {
+    if (lastAlliance == null || lastAlliance == lastLoggedAlliance) {
+      return;
+    }
+
+    lastLoggedAlliance = lastAlliance;
+
     for (Area area : AREA_VALUES) {
 
       if (area.resolved == null) continue;

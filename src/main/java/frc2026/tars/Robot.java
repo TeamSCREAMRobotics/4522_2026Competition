@@ -15,23 +15,19 @@ public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
 
   public Robot() {
-    m_robotContainer = new RobotContainer();
-
+    super(0.008);
     Dashboard.initialize();
+    m_robotContainer = new RobotContainer();
 
     Logger.setOptions(
         new DogLogOptions()
             .withCaptureDs(true)
             .withCaptureNt(false)
             .withLogExtras(true)
-            .withNtPublish(true)
-            .withUseLogThread(false)
-            .withLogEntryQueueCapacity(2000));
+            .withNtPublish(true));
     Logger.setEnabled(true);
 
     SignalLogger.start();
-
-    Threads.setCurrentThreadPriority(true, 10);
   }
 
   @Override
